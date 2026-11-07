@@ -14,7 +14,7 @@ export function Numbers({ stats }: { stats: HomeStats }) {
   return (
     <section data-numbers aria-labelledby="numbers-title" className="py-[clamp(4rem,12svh,9rem)]">
       <div className="shell">
-        <MonoLabel as="h2" index={5} id="numbers-title">
+        <MonoLabel as="h2" index={6} id="numbers-title">
           By the numbers
         </MonoLabel>
         <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-12 md:mt-14 md:grid-cols-4 md:gap-x-8">

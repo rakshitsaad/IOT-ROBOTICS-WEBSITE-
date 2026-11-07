@@ -13,7 +13,8 @@ Check everything visually at **`/lab`**. The robot mascot's developer test page 
 
 - Next.js 16 (App Router, TypeScript, **Cache Components on**, see §9), Tailwind CSS v4 (CSS-first config, no `tailwind.config`).
 - Motion: `gsap` + `@gsap/react` (ScrollTrigger), `lenis`, `motion` (Framer Motion).
-- 3D: `three`, `@react-three/fiber`, `@react-three/drei`, used only by the robot mascot (§11) and loaded lazily.
+- 3D: `three`, `@react-three/fiber`, `@react-three/drei`, loaded lazily: the robot mascot (§11), the /projects reel (§16)
+  and the Mission Control drone (§18, which also uses `@react-three/postprocessing` for its bloom).
 - State: `zustand` (`lib/store.ts`, client UI state only).
 - Data: Supabase later. For now, typed mock data.
 
@@ -34,6 +35,7 @@ app/
   events/page.tsx    /events: the feature card showcase, the All events grid (§17)
   lab/page.tsx       primitive showcase (noindex)
   lab/robot/page.tsx robot mascot controls (noindex, dev only, not linked)
+  lab/drone/page.tsx drone test bench: a button per effect (noindex, dev only, not linked)
 components/
   ui/                primitives (Pill, MonoLabel, GridBackground, IrisButton, PillButton, Capsule, DotGrid, CrossMark,
                      RotatingBadge)
@@ -63,7 +65,9 @@ components/
   events/            /events (§17): EventsExperience (state, autoplay, keys, overlays), EventShowcase (the card,
                      banners, cutout, entrance, swipe, progress), EventThumbs, EventDetail (full-screen overlay),
                      AllEvents (grid by year), EventTint (+ useEventColor), parts (status badge, details line, title)
-  lab/               /lab helpers (MotionDemos, RobotLab)
+  drone/             Mission Control drone (§18): Drone (model), DroneRig (flight + effects), director (phases),
+                     Trail, ScanBeam, HoloGlobe, Dissolve, DroneCanvas (bloom), DroneStage (lazy mount, poster), store
+  lab/               /lab helpers (MotionDemos, RobotLab, DroneLab)
 hooks/               useReducedMotion, useMediaQuery
 lib/
   types.ts           row types for every Supabase table
@@ -78,6 +82,7 @@ lib/
   projects.ts        /projects config: filters, REEL constants and curve maths, Sora capital widths, the split title,
                      STRIP sizes and buildStrip(); client-safe
   events.ts          /events config: showcase order, filters, IST dates, EVENTS_MOTION, EVENT_BANNER; client-safe
+  mission.ts         Mission Control config: MissionStats type, MISSION (hold, phases, scan order), phaseAt(); client-safe
   tokens.ts          JS mirror of tokens, team accent map, textOn()
   motion.ts          EASE / BEZIER / DURATION / STAGGER constants
   gsap.ts            the only place GSAP is imported from and plugins registered
@@ -355,6 +360,9 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
   second), not a tween, so drags, wheels and flicks blend. The reel ↔ gallery flight is **1.1s `expo.inOut`** (the spec's
   timing; reversing mid-flight takes the remaining share, at least 0.35s). The title's letters swap 25ms apart (§5
   `animate-letter-in/out`).
+- Exception: the **drone** (§18) flies on a damped spring (`FLIGHT`: stiffness 14, damping ratio 0.82, slightly under-damped)
+  rather than tweens, so scroll targets, the cursor and taps blend; its tilt, yaw and effects ease with exponential damping.
+  Its flip is 0.75s (cubic in-out).
 - Exception: the **/events entrance** (§17, `EVENTS_MOTION` in `lib/events.ts`) follows the spec's offsets: banner 0.8s
   expo, cutout at +150ms, title letters at +300ms (**30ms** apart), details at +550ms, thumbnails at +650ms (**40ms**
   apart). The old event leaves in **250ms**. The thumbnails widen over 500ms, and the background tint crossfades over
@@ -433,7 +441,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has 12 projects (the home lab shows up to 3 per station), with picsum photos in five shapes.
 - Mock rows in `lib/mock/*.ts`. Image URLs are `picsum.photos` placeholders (allowed in `next.config.ts` `images.remotePatterns`, along with `*.supabase.co` storage).
 - **Pages and components read data only through `lib/data.ts`** (`getSettings`, `getTeams`, `getMembers`, `getSeniorCore`, `getJuniorCore`, `getProjects`, `getEvents`, `getAchievements`, `getGalleryItems`, `getMilestones`). Switching to Supabase means changing those function bodies only.
-- Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) and `getHomeStats()` (members, projects, events that have started, years since `founded_year`). The last two depend on the current time, so they use `cacheLife("hours")`.
+- Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) `getHomeStats()` (members, projects, events that have started, years since `founded_year`) and `getMissionStats()` (Mission Control, §18: members and their running total by joining year, from `year` of study and the Senior Core term; projects per lab domain; this year's events, done and coming; the next event; workshops that have run (type `workshop`, started) and the next one; competitions won = achievements whose `position` is a podium, `PODIUM` in `lib/mission.ts`). The last three depend on the current time, so they use `cacheLife("hours")`.
 - `gallery_items`: `event_id`, `type` (`photo` | `video`), `url` (null for a note), `poster_url` (videos), `caption`,
   `alt`, `width` / `height` (null for notes), `layout_group`, `sort_order` (the spec's "order"; every table here uses
   `sort_order`), `taken_at`. How they become journal pages is in §14. The mock has four journals (Tech Expo 2025, Hack the
@@ -695,6 +703,7 @@ Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and
   <HomeRobot />                       // the page's only <BotStage> (in a fixed box) + useBotMood()
   <Statement clubName />              // B
   <Lab projects />                    // C: "Inside the lab", four stations
+  <MissionControl stats />            // C2: the drone over a dashboard of club stats (§18)
   <Featured projects />               // D: featured slider
   {event && <UpcomingEvent event />}  // E: only when an event is in the future
   <Numbers stats />                   // F
@@ -702,7 +711,7 @@ Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and
 </HomeScroll>
 ```
 
-Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomingEvent` and `getHomeStats` (§8). Section labels: `[03]` featured, `[04]` event, `[05]` numbers, `[06]` join (the lab stations use `[01]`–`[04]`).
+Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomingEvent`, `getHomeStats` and `getMissionStats` (§8). Section labels: `[03]` Mission Control, `[04]` featured, `[05]` event, `[06]` numbers, `[07]` join (the lab stations use `[01]`–`[04]`).
 
 ### Hero (`HomeHero`)
 - 100svh, pinned for an extra **120vh** (60vh on phones).
@@ -729,7 +738,8 @@ One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, tim
 | lab top enters → lab top reaches the viewport top (md and up) | The robot moves to centre-right (55% of the width, base at 93% of the stage) at 1.1× its hero size (smaller on screens squarer than 1.55:1), facing the camera. Where the card would cover it, it steps left of the card (landscape, 1.2:1 or wider) or stands above the card, as big as fits under the heading (portrait tablets) |
 | each station boundary, over 0.7 screens centred on it | The photo layers pan left one station (`LAB_PAN` 1.25 screens × depth: back 0.6×, mid 1×, front 1.3×), the grid pans 40px (`--grid-x`), and the robot turns 0.26 rad (≈15°) towards the incoming photos and back |
 | each station (one screen) | Its pip's fill grows (scaleX 0 → 1) |
-| lab lets go → +0.8 screens (md and up) | The robot ducks into the bottom-right corner: 34% of the stage tall, 22% of the stage peeking over the bottom edge, turned -0.3 rad. It stays there through the slider, the event and the numbers |
+| Mission Control (md and up) | The robot never shares the screen with the drone (§18): it fades out (`autoAlpha`) over the last 0.35 screens before the section's top enters, then moves off stage (its canvas stops). Once the section's bottom has left the top of the viewport it reappears in the corner pose below and fades in over 0.3 screens (`HOME_SCROLL.mission`). Without the section, it ducks into the corner over 0.8 screens as the lab lets go |
+| slider, event, numbers (md and up) | The robot sits in the bottom-right corner: 34% of the stage tall, 22% of the stage peeking over the bottom edge, turned -0.3 rad |
 | join card comes up (md and up) | The robot moves to the centre and lands on the card's top edge when the card's bottom reaches 90% of the viewport (lower if needed, so the robot stays clear of the header and inside its stage) |
 | after landing | It rides up with the card (1:1), then fades out (`autoAlpha`) over 0.25 screens, gone when the footer's top reaches 80% of the viewport (portrait tablets: when half of it has ridden out of its stage). Off stage, the canvas stops |
 | end of pin → +45vh (phones) | The robot stage fades out (`autoAlpha`) while the robot sinks, then the robot moves off stage so the canvas stops. Phones don't show the robot after the statement |
@@ -1350,3 +1360,91 @@ The banners and cutouts in `/public/events/` are generated placeholders (procedu
 members cutout figure), graded into the palette: dark areas fall to black and charcoal, and only bright, colourful light
 maps through maroon and red to warm white. Replace them with real art that follows the cutout convention above; real
 photography keeps its own colours, but event art made for the site should follow the same grade.
+
+---
+
+## 18. Mission Control and the drone (`components/home/MissionControl.tsx`, `components/drone`)
+
+A home section between "Inside the lab" and the featured slider: a club quadcopter flies over a dashboard of live club
+stats, scans cards, projects a hologram globe and dissolves into streaks towards the next section. The reference was
+cyan and violet; here every light is the site's deep red (maroon for the glow), per §1.
+
+### Section (`MissionControl`, `MissionDashboard`; config in `lib/mission.ts`)
+- **Hold**: 100svh held for 2.5 screens (1.5 on phones) with CSS **sticky** (the section is 350svh / 250svh tall), like
+  the lab, so HomeScroll measures it like any other section (no second GSAP pin under the hero's). One ScrollTrigger
+  (`start: top top`, `end: bottom bottom`, scrub 1, `refreshPriority: -1`) writes the progress to `droneState.progress`.
+- **Background**: `bg-bg` with a faint maroon radial glow (42% maroon, fading by 72%).
+- **Heading**: `[03] Mission control`, "The club, live." (Sora 700), and a mono "Live data" label with a pulsing red dot.
+- **Dashboard** (HTML/CSS, `getMissionStats()`): six cards (`bg-bg-2`, hairline, `rounded-card` from md, `rounded-image`
+  on phones): Members (number + line chart of the running total by joining year, the latest point red), Projects built
+  (number + bars per lab domain), Events this year (done · coming, dots), Next event (title, IST date, venue,
+  `Countdown size="sm"`), Workshops run (+ the next one), Competitions won (+ the latest podium). Phones 2 per row
+  (3 rows), md 3 per row, lg a 12-column grid (5/4/3 over 6/3/3). Charts are plain SVG/HTML; the chart's dots and labels
+  are HTML so the stretched SVG doesn't distort them.
+- **Scanned card** (`data-scanning` on the `data-mc-card` wrapper, set from `useDroneStore`): the article lifts
+  (`translateZ(40px) rotateX(8deg)`, the grid has `perspective: 1200px`) over 600ms expo, gets a red border and a soft
+  red glow, and its number (and chart: the line redraws, the bars regrow) re-counts from 0 (1.2s power3). The wrapper
+  never moves, so the drone maps to a still box.
+- **Robot**: never on screen with it. HomeScroll fades it out before the section and back in after (§12), and
+  `html[data-mission-on]` (set while any part of the section is on screen) hides `[data-home-robot]` outright, so a fast
+  scroll can't catch both while the scrub catches up.
+- **Caption** (md+, under the drone at 88% of the height, a small blurred pill): "`{club_name}` / `{N}` members connected
+  since `{founded_year}`" (`globeCaption`), shown with the globe.
+
+### Scroll phases (`MISSION.phases`, `phaseAt()`)
+| Progress | Desktop | Phones |
+| --- | --- | --- |
+| 0 → 15% | Flies in from the bottom right (from behind, z −2.5) towards the camera, trailing particles, and slows to a hover at 62% / 42% of the stage | same |
+| 15 → 40% (phones 15 → 80%) | Over the Members card, then the Projects card (equal shares); the beam switches on once it has arrived (30% into each share) | same, slower; a tapped card overrides for 3.5s |
+| 40 → 65% | Rises to the centre (50% / 72%) and projects the globe; caption shows | (no globe) |
+| 65 → 85% | Free flight (below) | (none) |
+| 85 → 100% (phones 80 → 100%) | Dissolves into streaks (the amount is the phase's progress, so scrolling back reassembles it) | same |
+
+### Interaction (free flight, and `/lab/drone`'s Follow mode)
+- **Fine pointers**: the drone follows the cursor on its spring, keeping up to 110px away on the side it came from.
+- **Hover a card** (mouse): it flies over and scans it; it keeps it for 1.2s after the pointer leaves.
+- **Still for 4s**: a lazy figure-eight patrol over the dashboard (one loop per 14s) until the cursor moves.
+- **Touch**: no following; it patrols, and a tapped card is scanned for 3.5s.
+- **Click / tap the drone**: an invisible button follows it ("Flip the drone"); a 360° roll with a hop and a 140-particle burst.
+
+### The drone (`Drone.tsx`)
+Primitives in code, about 1.6 units across (rotor tip to tip on the diagonal): a rounded matte light grey body
+(`#C9CBD1`, the one light material, like brushed aluminium) with a dark glossy top panel, a front LED strip in the iris
+sheen, four arms in an X (dark metallic), motor pods with an emissive red ring under each rotor, two-blade props drawn
+with a faint motion-blur disc, and a gimbal with a red lens dot. Seen from a little above (base pitch 0.42 rad).
+Emissive parts are pushed past 1.0 (`GLOW`) and not tone mapped.
+
+**Flight** (`DroneRig`, `FLIGHT`): a damped spring to the director's target (§7). It tilts towards its motion
+(velocity × 0.11 + acceleration × 0.016, **capped at 20°**), yaws a little into lateral motion (≤ 0.5 rad), bobs ±0.035
+units while slow, and wobbles slightly. Phones: 60% scale.
+
+### Effects
+- **Trail** (`Trail`): ONE `Points` ring buffer, max **1500** (750 on phones). Emission ≈ 2 + 260 × speed per second
+  (≤ 700/s), from behind the rotors; each particle drifts down, slows, shrinks and fades over **1.4s** (all in the vertex
+  shader; the CPU only writes new particles). Red, a quarter warm white, additive.
+- **Scan beam** (`ScanBeam`): an open cone from the lens to the card (radius ≤ 34% of its width), additive, brightest at
+  the apex and fading towards the card, brighter at its silhouette edges, with scanlines running down.
+- **Globe** (`HoloGlobe`): 620 Fibonacci dots, latitude and longitude rings, 8 city points and arcs with pulses, turning
+  slowly on a tilted axis; it reveals from the bottom up, the far side dimmer, with a light cone up from the top panel.
+- **Dissolve** (`Dissolve`): 900 surface samples (420 on phones) become points that peel from the nose back and shoot
+  down and towards the camera as streaks (longer as they speed up). A pure function of the amount.
+- **Bloom** (`DroneCanvas`): `@react-three/postprocessing` Bloom (threshold 1, mipmap blur, intensity 1.15) then ACES
+  tone mapping, so only the emissive parts bloom and the look matches with bloom off. Off when `deviceMemory` ≤ 4
+  (`?drone=nobloom` / `?drone=bloom` force it).
+
+### Performance
+- The canvas loads with `next/dynamic` (`ssr: false`), mounted in idle time once the section is within a screen and
+  unmounted when it is further away; it renders only while the section is on screen and the tab is visible.
+- dpr `[1, 1.5]`. Every shader is compiled at mount and drawn for 4 warm-up frames (the canvas renders for 0.8s after it
+  mounts, off screen), so the beam, globe and dissolve never stall a frame when they first appear.
+- If frames run slower than 45fps, the trail's emission drops (to 30% at worst) before anything else; it recovers above 58fps.
+
+### Reduced motion and fallbacks
+No hold, no canvas: the dashboard with `/drone-poster.png` (a render of the model, 884×508, transparent) at the top
+right. The same poster replaces the canvas without WebGL or after a lost context.
+
+### `/lab/drone`
+A test bench (manual mode, `droneActions`): choose a card, then Fly to card, Scan card, Globe on/off, Flip, Dissolve,
+Reassemble, Follow cursor, Patrol, Home; live speed, tilt, particle count and fps. `window.__drone` (state, actions,
+store) exists on this page only, for scripted checks.
+

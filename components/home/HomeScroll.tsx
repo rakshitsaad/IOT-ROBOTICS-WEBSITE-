@@ -77,6 +77,12 @@ export const HOME_SCROLL = {
   },
   /** Slider → numbers: robot height and how much of it peeks above the bottom edge (fractions of the stage). */
   corner: { height: 0.34, peek: 0.22 },
+  /**
+   * Mission Control (the drone's section) never shares the screen with the robot: it fades out over `fadeOut`
+   * screens, gone as the section's top enters, and fades back in (in its corner) over `fadeIn` once the section's
+   * bottom has left the top of the viewport.
+   */
+  mission: { fadeOut: 0.35, fadeIn: 0.3 },
   join: {
     /** Robot height (fraction of the stage). */
     height: 0.34,
@@ -121,6 +127,7 @@ export function HomeScroll({ children }: { children: ReactNode }) {
       /** Scroll position at which `el`'s top reaches the viewport top (everything below the hero moves down by P). */
       const at = (el: Element) => el.getBoundingClientRect().top + window.scrollY - rootTop + P;
       const lab = root.querySelector<HTMLElement>("[data-lab]");
+      const mission = root.querySelector<HTMLElement>("[data-mission]");
       const slider = root.querySelector<HTMLElement>("[data-slider]");
       const event = root.querySelector<HTMLElement>("[data-event]");
       const numbers = root.querySelector<HTMLElement>("[data-numbers]");
@@ -129,6 +136,7 @@ export function HomeScroll({ children }: { children: ReactNode }) {
       const grid = document.querySelector<HTMLElement>("[data-grid-lines]");
       const marks = {
         lab: lab ? at(lab) : 0,
+        mission: mission ? at(mission) : 0,
         slider: slider ? at(slider) : 0,
         event: event ? at(event) : 0,
         numbers: numbers ? at(numbers) : 0,
@@ -259,12 +267,24 @@ export function HomeScroll({ children }: { children: ReactNode }) {
 
         /* 4. Slider, event, numbers: ducks into the bottom-right corner, only its head peeking up. */
         const C = HOME_SCROLL.corner;
-        const cornerAt = lab ? labEnd : P + enter;
-        tl.to(
-          botTransform,
-          { ...pose(W - gutter - halfWidth(C.height), 1 + C.height - C.peek, C.height), rotY: -0.3, duration: 0.8 * H },
-          cornerAt,
-        );
+        const corner = { ...pose(W - gutter - halfWidth(C.height), 1 + C.height - C.peek, C.height), rotY: -0.3 };
+        let cornerAt = lab ? labEnd : P + enter;
+        if (mission) {
+          /* Mission Control: the robot is gone before the section's top enters the viewport (and parked off stage,
+             so its canvas stops), and comes back in its corner once the section has scrolled away. */
+          const M = HOME_SCROLL.mission;
+          const floor = P + enter; // after the statement phase, even if there were no lab
+          const goneAt = Math.max(floor + 2, marks.mission - H); // the section's top reaches the viewport bottom
+          const fadeStart = Math.max(floor + 1, goneAt - M.fadeOut * H);
+          tl.to(stage, { autoAlpha: 0, duration: Math.max(1, goneAt - fadeStart) }, fadeStart);
+          tl.set(botTransform, { x: OFFSTAGE_X }, goneAt);
+          const backAt = marks.mission + mission.offsetHeight;
+          tl.set(botTransform, corner, backAt);
+          tl.to(stage, { autoAlpha: 1, duration: M.fadeIn * H }, backAt);
+          cornerAt = backAt - 0.8 * H; // the join phase below starts 0.8 screens after this
+        } else {
+          tl.to(botTransform, { ...corner, duration: 0.8 * H }, cornerAt);
+        }
 
         /* 5. Join: lands on the card's top edge, centred, waves, rides up with the card, fades before the footer. */
         const J = HOME_SCROLL.join;

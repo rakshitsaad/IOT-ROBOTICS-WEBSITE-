@@ -248,6 +248,13 @@ html[data-ann="off"] {
   }
 }
 
+/* Home: while any part of Mission Control is on screen, the robot's stage is hidden outright (the drone owns the
+   view; HomeScroll also fades the robot out and back in, this covers a fast scroll while the scrub catches up). */
+html[data-mission-on] [data-home-robot] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 /* Dismissed / disabled announcement: hidden before first paint.
    Unlayered on purpose so it beats the `grid` utility on the same element. */
 html[data-ann="off"] [data-announcement] {

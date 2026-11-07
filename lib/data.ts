@@ -4,6 +4,9 @@ import * as mock from "./mock";
 import { buildJournalPages, isMedia, journalYear, type Journal, type JournalSummary } from "./gallery";
 import { sortShowcase, type EventPhoto, type ShowcaseEvent } from "./events";
 import type { ProjectWithTeam } from "./projects";
+import { LAB_STATIONS } from "./home";
+import { SENIOR_CORE_TERM } from "./members";
+import { PODIUM, type MissionStats } from "./mission";
 import type {
   Achievement,
   ClubEvent,
@@ -222,6 +225,73 @@ export async function getHomeStats(): Promise<HomeStats> {
     projects: projects.length,
     events: events.filter((e) => Date.parse(e.starts_at) <= now.getTime()).length,
     years: settings.founded_year ? Math.max(0, now.getFullYear() - settings.founded_year) : 0,
+  };
+}
+
+/**
+ * The home "Mission Control" dashboard (DESIGN.md §12). Time-dependent (this year's events, the next event,
+ * workshops that have run), so it is cached for hours like getHomeStats().
+ */
+export async function getMissionStats(): Promise<MissionStats> {
+  "use cache";
+  cacheLife("hours");
+  const [settings, members, projects, events, achievements] = await Promise.all([
+    getSettings(),
+    getMembers(),
+    getProjects(),
+    getEvents(),
+    getAchievements(),
+  ]);
+  const now = Date.now();
+  const thisYear = new Date(now).getFullYear();
+
+  // Year joined = the term's start year minus (year of study - 1); a running total per year.
+  const joined = new Map<number, number>();
+  for (const m of members) {
+    const y = SENIOR_CORE_TERM.year - (m.year - 1);
+    joined.set(y, (joined.get(y) ?? 0) + 1);
+  }
+  const years = [...joined.keys()].sort((a, b) => a - b);
+  let running = 0;
+  const growth = years.map((year) => ({ year, total: (running += joined.get(year) ?? 0) }));
+
+  const domains = LAB_STATIONS.map((s) => ({
+    domain: s.domain,
+    label: s.short,
+    count: projects.filter((p) => p.tags.some((t) => t.toLowerCase() === s.domain)).length,
+  }));
+
+  const started = (e: ClubEvent) => Date.parse(e.starts_at) <= now;
+  const inYear = events.filter((e) => new Date(e.starts_at).getFullYear() === thisYear);
+  const future = events.filter((e) => !started(e)).sort((a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at));
+  const workshops = events.filter((e) => e.type === "workshop");
+  const nextWorkshop = future.find((e) => e.type === "workshop") ?? null;
+  const podiums = achievements
+    .filter((a) => PODIUM.test(a.position))
+    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+
+  return {
+    clubName: settings.club_name,
+    foundedYear: settings.founded_year,
+    members: { total: members.length, growth },
+    projects: { total: projects.length, domains },
+    events: {
+      year: thisYear,
+      total: inYear.length,
+      done: inYear.filter(started).length,
+      upcoming: inYear.filter((e) => !started(e)).length,
+    },
+    next: future[0]
+      ? { title: future[0].title, slug: future[0].slug, starts_at: future[0].starts_at, venue: future[0].venue }
+      : null,
+    workshops: {
+      run: workshops.filter(started).length,
+      next: nextWorkshop ? { title: nextWorkshop.title, starts_at: nextWorkshop.starts_at } : null,
+    },
+    competitions: {
+      won: podiums.length,
+      latest: podiums[0] ? { event: podiums[0].event_name, position: podiums[0].position } : null,
+    },
   };
 }
 
