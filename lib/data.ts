@@ -1,0 +1,236 @@
+import "server-only";
+import { cacheLife } from "next/cache";
+import * as mock from "./mock";
+import { buildJournalPages, isMedia, journalYear, type Journal, type JournalSummary } from "./gallery";
+import { sortShowcase, type EventPhoto, type ShowcaseEvent } from "./events";
+import type { ProjectWithTeam } from "./projects";
+import type {
+  Achievement,
+  ClubEvent,
+  GalleryItem,
+  Member,
+  Milestone,
+  Project,
+  Settings,
+  Team,
+} from "./types";
+
+/**
+ * Data access layer. Every page/component reads through these functions.
+ * Today they return mock data; later each body becomes a Supabase query.
+ *
+ * Cache Components is on (next.config.ts). When these start doing real I/O,
+ * keep `'use cache'` (plus cacheLife/cacheTag) at the top of each function so
+ * the shared layout stays in the static shell. Read cookies/headers outside
+ * these functions and pass values in as arguments.
+ */
+
+export async function getSettings(): Promise<Settings> {
+  "use cache";
+  return mock.settings;
+}
+
+export async function getTeams(): Promise<Team[]> {
+  "use cache";
+  return [...mock.teams].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export async function getMembers(): Promise<Member[]> {
+  "use cache";
+  return mock.members
+    .filter((m) => m.is_active)
+    .sort((a, b) => a.sort_order - b.sort_order);
+}
+
+/** Senior Core (tier "senior"), in display order: the /members spreads. */
+export async function getSeniorCore(): Promise<Member[]> {
+  "use cache";
+  return (await getMembers()).filter((m) => m.tier === "senior");
+}
+
+/** Junior Core (tier "junior"), in display order. */
+export async function getJuniorCore(): Promise<Member[]> {
+  "use cache";
+  return (await getMembers()).filter((m) => m.tier === "junior");
+}
+
+/** One team's Junior Core members, for the /members accordions. */
+export interface JuniorCoreTeam {
+  team: Team;
+  members: Member[];
+}
+
+/**
+ * Junior Core grouped by team, in the teams' `sort_order`; members keep their
+ * own `sort_order` within a team. Teams without juniors are left out.
+ */
+export async function getJuniorCoreByTeam(): Promise<JuniorCoreTeam[]> {
+  "use cache";
+  const [teams, juniors] = await Promise.all([getTeams(), getJuniorCore()]);
+  return teams
+    .map((team) => ({ team, members: juniors.filter((m) => m.team_id === team.id) }))
+    .filter((group) => group.members.length > 0);
+}
+
+export async function getProjects(): Promise<Project[]> {
+  "use cache";
+  return [...mock.projects].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+/**
+ * Every project with its team's names (from `member_ids`, in that order;
+ * unknown or inactive members are left out): the /projects reel and gallery.
+ */
+export async function getProjectsWithTeam(): Promise<ProjectWithTeam[]> {
+  "use cache";
+  const [projects, members] = await Promise.all([getProjects(), getMembers()]);
+  const names = new Map(members.map((m) => [m.id, m.full_name]));
+  return projects.map((p) => ({
+    ...p,
+    team: p.member_ids.flatMap((id) => names.get(id) ?? []),
+  }));
+}
+
+/** One project (/projects/[slug]), or null. */
+export async function getProject(slug: string): Promise<ProjectWithTeam | null> {
+  "use cache";
+  return (await getProjectsWithTeam()).find((p) => p.slug === slug) ?? null;
+}
+
+export async function getEvents(): Promise<ClubEvent[]> {
+  "use cache";
+  return mock.events
+    .filter((e) => e.is_published)
+    .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+}
+
+export async function getAchievements(): Promise<Achievement[]> {
+  "use cache";
+  return [...mock.achievements].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export async function getGalleryItems(): Promise<GalleryItem[]> {
+  "use cache";
+  return [...mock.galleryItems].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+/** The club's history, oldest first: the /about timeline. */
+export async function getMilestones(): Promise<Milestone[]> {
+  "use cache";
+  return [...mock.milestones].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+/**
+ * The /gallery shelf: every published event that has gallery items, newest
+ * first, with its page, photo and video counts.
+ */
+export async function getJournals(): Promise<JournalSummary[]> {
+  "use cache";
+  const [events, items] = await Promise.all([getEvents(), getGalleryItems()]);
+  return events.flatMap((event) => {
+    const own = items.filter((i) => i.event_id === event.id);
+    if (own.length === 0) return [];
+    return [
+      {
+        slug: event.slug,
+        title: event.title,
+        date: event.starts_at,
+        year: journalYear(event.starts_at),
+        cover_url: event.cover_url,
+        pages: buildJournalPages(own).length,
+        photos: own.filter((i) => i.type === "photo" && isMedia(i)).length,
+        videos: own.filter((i) => i.type === "video").length,
+      },
+    ];
+  });
+}
+
+/** One event's journal (/gallery/[slug]), or null when the event has no gallery. */
+export async function getJournal(slug: string): Promise<Journal | null> {
+  "use cache";
+  const [events, items] = await Promise.all([getEvents(), getGalleryItems()]);
+  const event = events.find((e) => e.slug === slug);
+  if (!event) return null;
+  const own = items.filter((i) => i.event_id === event.id);
+  if (own.length === 0) return null;
+  return { event, items: own, pages: buildJournalPages(own) };
+}
+
+/**
+ * /events: every published event with its gallery photos, upcoming first (soonest first), then past (newest
+ * first).
+ */
+export async function getEventShowcase(): Promise<ShowcaseEvent[]> {
+  "use cache";
+  const [events, items] = await Promise.all([getEvents(), getGalleryItems()]);
+  return sortShowcase(
+    events.map((event) => {
+      const own = items.filter((i) => i.event_id === event.id);
+      return {
+        ...event,
+        photos: own.filter((i): i is EventPhoto => i.type === "photo" && isMedia(i)),
+        has_gallery: own.length > 0,
+      };
+    }),
+  );
+}
+
+/* ------------------------------------------------------------- derived */
+
+export async function getFeaturedProjects(): Promise<Project[]> {
+  "use cache";
+  return (await getProjects()).filter((p) => p.is_featured);
+}
+
+/**
+ * The next published event that hasn't started yet, or null. Depends on the
+ * current time, so it is cached for an hour (the page re-renders hourly) and
+ * the countdown on the page handles the last stretch on the client.
+ */
+export async function getUpcomingEvent(): Promise<ClubEvent | null> {
+  "use cache";
+  cacheLife("hours");
+  const now = Date.now();
+  const upcoming = (await getEvents())
+    .filter((e) => Date.parse(e.starts_at) > now)
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+  return upcoming[0] ?? null;
+}
+
+export interface HomeStats {
+  members: number;
+  projects: number;
+  /** Published events that have already started. */
+  events: number;
+  /** Whole years since settings.founded_year (0 if unknown). */
+  years: number;
+}
+
+/** The home page's numbers, always computed from the data (never typed in). */
+export async function getHomeStats(): Promise<HomeStats> {
+  "use cache";
+  cacheLife("hours");
+  const [settings, members, projects, events] = await Promise.all([
+    getSettings(),
+    getMembers(),
+    getProjects(),
+    getEvents(),
+  ]);
+  const now = new Date();
+  return {
+    members: members.length,
+    projects: projects.length,
+    events: events.filter((e) => Date.parse(e.starts_at) <= now.getTime()).length,
+    years: settings.founded_year ? Math.max(0, now.getFullYear() - settings.founded_year) : 0,
+  };
+}
+
+/* -------------------------------------------------------------- writes */
+
+/**
+ * Someone asked to be emailed when recruitment opens (home join card).
+ * Mock: accepted and dropped. With Supabase: insert into a subscribers table.
+ */
+export async function addRecruitmentSubscriber(email: string): Promise<void> {
+  void email;
+}

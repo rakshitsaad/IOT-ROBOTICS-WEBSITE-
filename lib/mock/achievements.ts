@@ -1,0 +1,73 @@
+import type { Achievement } from "@/lib/types";
+
+const m = (n: number) => `20000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+const p = (n: number) => `30000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+const id = (n: number) => `50000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+
+export const achievements: Achievement[] = [
+  {
+    id: id(1),
+    title: "Smart India Hackathon — Hardware Edition",
+    description: "AgriSense won the agriculture track out of 200+ shortlisted teams.",
+    event_name: "Smart India Hackathon 2025",
+    position: "Winner",
+    date: "2025-12-12",
+    image_url: "https://picsum.photos/seed/iotr-sih/1200/900",
+    member_ids: [m(2), m(14), m(6)],
+    project_id: p(2),
+    sort_order: 1,
+    created_at: "2025-12-15T10:00:00+05:30",
+  },
+  {
+    id: id(2),
+    title: "Line Follower, IIT Delhi Tryst",
+    description: "Line Runner v3 posted the fastest lap of the final round.",
+    event_name: "Tryst 2026, IIT Delhi",
+    position: "1st Place",
+    date: "2026-03-01",
+    image_url: "https://picsum.photos/seed/iotr-tryst/1200/900",
+    member_ids: [m(6), m(13)],
+    project_id: p(5),
+    sort_order: 2,
+    created_at: "2026-03-05T10:00:00+05:30",
+  },
+  {
+    id: id(3),
+    title: "Robo Soccer, Techfest IIT Bombay",
+    description: "Reached the national finals against 64 teams.",
+    event_name: "Techfest 2025, IIT Bombay",
+    position: "1st Runner-up",
+    date: "2025-12-20",
+    image_url: "https://picsum.photos/seed/iotr-techfest/1200/900",
+    member_ids: [m(1), m(4)],
+    project_id: null,
+    sort_order: 3,
+    created_at: "2025-12-22T10:00:00+05:30",
+  },
+  {
+    id: id(4),
+    title: "Best Paper, IEEE Student Conference",
+    description: "Published our work on swarm map merging over ESP-NOW.",
+    event_name: "IEEE Delhi Section Student Conference",
+    position: "Best Paper",
+    date: "2026-05-18",
+    image_url: null,
+    member_ids: [m(7), m(15), m(1)],
+    project_id: p(1),
+    sort_order: 4,
+    created_at: "2026-05-20T10:00:00+05:30",
+  },
+  {
+    id: id(5),
+    title: "Innovation Grant",
+    description: "University seed grant to deploy Campus Air across all hostels.",
+    event_name: "Bennett Innovation Fund",
+    position: "Grant Awarded",
+    date: "2026-08-02",
+    image_url: null,
+    member_ids: [m(7)],
+    project_id: p(4),
+    sort_order: 5,
+    created_at: "2026-08-03T10:00:00+05:30",
+  },
+];
