@@ -17,7 +17,7 @@ import { IrisRing } from "@/components/about/IrisRing";
 import { MotionStatus, PillRevealDemo, RevealDemo } from "@/components/lab/MotionDemos";
 import { BotHeadIcon } from "@/components/robot/BotHeadIcon";
 import { BOT_ICON_NAMES } from "@/components/robot/icons";
-import { ACCENTS, TEAM_ACCENT } from "@/lib/tokens";
+import { COLORS, TEAM_ACCENT } from "@/lib/tokens";
 import type { TeamName } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -26,30 +26,28 @@ export const metadata: Metadata = {
 };
 
 const SURFACES = [
-  { name: "bg", value: "#08080B", className: "bg-bg" },
-  { name: "bg-2", value: "#101016", className: "bg-bg-2" },
-  { name: "line", value: "rgba(255,255,255,0.08)", className: "bg-line" },
-  { name: "text", value: "#EDEDF2", className: "bg-text" },
-  { name: "muted", value: "#8B8B99", className: "bg-muted" },
+  { name: "bg · matte black", value: COLORS.bg, className: "bg-bg" },
+  { name: "bg-2 · charcoal", value: COLORS.bg2, className: "bg-bg-2" },
+  { name: "line · border grey", value: COLORS.line, className: "bg-line" },
+  { name: "text · warm white", value: COLORS.text, className: "bg-text" },
+  { name: "muted · grey", value: COLORS.muted, className: "bg-muted" },
 ];
 
-const ACCENT_CLASS: Record<keyof typeof ACCENTS, string> = {
-  blue: "bg-blue",
-  violet: "bg-violet",
-  coral: "bg-coral",
-  orange: "bg-orange",
-  amber: "bg-amber",
-};
+const ACCENT_SWATCHES = [
+  { name: "red · deep red", value: COLORS.red, className: "bg-red" },
+  { name: "red-deep · hover", value: COLORS.redDeep, className: "bg-red-deep" },
+  { name: "maroon · dark maroon", value: COLORS.maroon, className: "bg-maroon" },
+];
 
-const PILL_COLORS: PillColor[] = ["blue", "violet", "coral", "orange", "amber", "white", "iris", "raised", "dark"];
+const PILL_COLORS: PillColor[] = ["red", "maroon", "white", "iris", "raised", "dark"];
 
 const CAPSULES: { tone: CapsuleTone; speed: number }[] = [
   { tone: "raised", speed: 0.5 },
   { tone: "iris", speed: -0.35 },
   { tone: "outline", speed: 0.25 },
-  { tone: "coral", speed: -0.5 },
+  { tone: "red", speed: -0.5 },
   { tone: "glass", speed: 0.4 },
-  { tone: "amber", speed: 0 },
+  { tone: "maroon", speed: 0 },
   { tone: "iris-line", speed: 0.3 },
   { tone: "haze", speed: -0.25 },
 ];
@@ -77,12 +75,12 @@ export default function LabPage() {
             {SURFACES.map((c) => (
               <Swatch key={c.name} name={c.name} value={c.value} className={c.className} />
             ))}
-            {Object.entries(ACCENTS).map(([name, value]) => (
-              <Swatch key={name} name={name} value={value} className={ACCENT_CLASS[name as keyof typeof ACCENTS]} />
+            {ACCENT_SWATCHES.map((c) => (
+              <Swatch key={c.name} name={c.name} value={c.value} className={c.className} />
             ))}
           </div>
           <div className="mt-6">
-            <MonoLabel>--iris · brand signature, use sparingly</MonoLabel>
+            <MonoLabel>--iris · maroon → red sheen, use sparingly</MonoLabel>
             <div className="mt-3 h-16 rounded-image bg-iris md:h-20" />
           </div>
         </Section>
@@ -116,13 +114,13 @@ export default function LabPage() {
               <p className="mono-label mt-3 text-text">ESP32-S3 · ROS 2 · LoRaWAN · [04] Projects</p>
             </div>
             <div>
-              <MonoLabel tone="violet">Bodoni Moda · Senior Core section only</MonoLabel>
+              <MonoLabel tone="red">Bodoni Moda · Senior Core section only</MonoLabel>
               <p className="mt-3 font-serif text-4xl leading-tight md:text-5xl">
                 The Senior <em className="italic">Core</em>
               </p>
             </div>
             <div>
-              <MonoLabel tone="orange">Caveat · handwritten gallery captions only</MonoLabel>
+              <MonoLabel tone="white">Caveat · handwritten gallery captions only</MonoLabel>
               <p className="mt-3 -rotate-2 font-hand text-3xl text-text/90">3am, 14th attempt, it finally moved</p>
             </div>
           </div>
@@ -131,7 +129,7 @@ export default function LabPage() {
         {/* 04 Pill */}
         <Section index={4} title="<Pill color>">
           <p className="text-[length:clamp(1.75rem,4.5vw,3.25rem)] font-bold leading-[1.15] tracking-[-0.035em]">
-            We build <Pill color="blue">robots</Pill> that <Pill color="coral">sense</Pill>, <Pill color="amber">think</Pill>{" "}
+            We build <Pill color="white">robots</Pill> that <Pill color="raised">sense</Pill>, <Pill color="red">think</Pill>{" "}
             and <Pill color="raised">move</Pill>.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-lg font-semibold">
@@ -153,7 +151,7 @@ export default function LabPage() {
             <MonoLabel>Plain label</MonoLabel>
             <MonoLabel index={1}>With an index prefix</MonoLabel>
             <MonoLabel index={12} tone="text">Tone: text</MonoLabel>
-            <MonoLabel index="A4" tone="amber">Custom index, accent tone</MonoLabel>
+            <MonoLabel index="A4" tone="red">Custom index, accent tone</MonoLabel>
           </div>
         </Section>
 
@@ -202,11 +200,11 @@ export default function LabPage() {
         <Section index={8} title="<DotGrid> & <CrossMark>">
           <div className="flex flex-wrap items-center gap-8 md:gap-12">
             <DotGrid />
-            <DotGrid rows={2} cols={6} className="text-coral" />
+            <DotGrid rows={2} cols={6} className="text-red" />
             <DotGrid rows={4} cols={4} size={2} gap={8} className="text-text/40" />
-            <DotGrid rows={3} cols={8} size={4} gap={14} className="text-violet" />
+            <DotGrid rows={3} cols={8} size={4} gap={14} className="text-text/40" />
             <CrossMark />
-            <CrossMark size={16} className="text-amber" />
+            <CrossMark size={16} className="text-red" />
             <CrossMark size={24} strokeWidth={1.5} className="text-text" />
           </div>
         </Section>
@@ -291,7 +289,7 @@ export default function LabPage() {
         <Section index={15} title="<RotatingBadge> · turns faster while you scroll">
           <div className="flex flex-wrap items-center gap-8 md:gap-12">
             <RotatingBadge items={["IoT & Robotics", "Senior Core", "2026"]} />
-            <RotatingBadge items={["Sense", "Think", "Move"]} period={12} className="size-28 text-amber md:size-28" />
+            <RotatingBadge items={["Sense", "Think", "Move"]} period={12} className="size-28 text-red md:size-28" />
             <RotatingBadge items={["Static under reduced motion"]} period={40} className="size-24 text-muted md:size-24" />
           </div>
         </Section>

@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 /**
  * Small decorative "x" mark. Colour follows `currentColor` (default text-muted).
  *
- *   <CrossMark size={14} className="text-amber" />
+ *   <CrossMark size={14} className="text-red" />
  */
 interface CrossMarkProps {
   size?: number;

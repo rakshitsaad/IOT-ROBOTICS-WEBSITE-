@@ -50,7 +50,7 @@ export function HandsSection({ clubName }: { clubName: string }) {
               >
                 <span className="block font-bold">{clubName}</span>
                 <span className="block font-medium text-text/75">
-                  where humans meet <span className="text-iris">machines</span>
+                  where humans meet <span className="text-red">machines</span>
                 </span>
               </h1>
             </div>
@@ -65,7 +65,7 @@ export function HandsSection({ clubName }: { clubName: string }) {
             className="pointer-events-none absolute top-(--tip-y) left-1/2 size-[clamp(5rem,16vmin,10rem)] -translate-1/2 motion-reduce:hidden"
           >
             <div data-hands-glow className="size-full opacity-0">
-              <div className="size-full animate-pulse-soft rounded-full bg-radial from-white from-5% via-white/25 via-25% to-transparent to-65% motion-reduce:animate-none" />
+              <div className="size-full animate-pulse-soft rounded-full bg-radial from-text from-5% via-text/25 via-25% to-transparent to-65% motion-reduce:animate-none" />
             </div>
           </div>
 

@@ -12,8 +12,8 @@ export type Timestamp = string;
 /** ISO date string, e.g. "2026-03-21" */
 export type DateString = string;
 
-/** The five brand accent colours. See DESIGN.md → Tokens. */
-export type Accent = "blue" | "violet" | "coral" | "orange" | "amber";
+/** Accent colours: deep red (the signal colour) or warm white. See DESIGN.md → Tokens. */
+export type Accent = "red" | "white";
 
 export type TeamName =
   | "Tech"

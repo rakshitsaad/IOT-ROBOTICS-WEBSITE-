@@ -205,7 +205,7 @@ function LabHeading() {
   return (
     <h2 className="text-[length:clamp(1.9rem,3.3vw,3.4rem)] leading-[1.14] font-bold tracking-[-0.03em]">
       <span className="block">
-        <Pill color="iris">What we build</Pill>
+        <Pill color="red">What we build</Pill>
       </span>
       <span className="mt-[0.1em] block">
         <Pill color="white">inside the lab</Pill>

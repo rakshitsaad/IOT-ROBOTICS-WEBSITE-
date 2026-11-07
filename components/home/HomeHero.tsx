@@ -44,14 +44,14 @@ const CAPSULES: (Decor & { tone: CapsuleTone; rise: number; size: string; rotate
 const DOT_GRIDS: (Decor & { drift: number; rows: number; cols: number })[] = [
   { drift: -90, rows: 3, cols: 4, className: "right-[10%] top-[20%] text-text/30 md:right-auto md:left-[35%] md:top-[19%]" },
   { drift: 120, rows: 2, cols: 6, className: "left-[5%] bottom-[14%] text-muted md:left-[7%] md:bottom-[17%]" },
-  { drift: -70, rows: 4, cols: 3, className: "right-[5%] top-[78%] text-violet/70 md:right-[4%] md:top-[34%]" },
+  { drift: -70, rows: 4, cols: 3, className: "right-[5%] top-[78%] text-red/55 md:right-[4%] md:top-[34%]" },
 ];
 
-const CROSSES: (Decor & { size: number; tone: "blue" | "coral" })[] = [
-  { tone: "blue", size: 14, className: "left-[62%] top-[17%] md:left-[52%] md:top-[25%]" },
-  { tone: "coral", size: 12, className: "left-[30%] top-[52%] md:left-[39%] md:top-[76%]" },
-  { tone: "blue", size: 16, className: "right-[30%] bottom-[11%] md:right-[13%] md:bottom-[15%]" },
-  { tone: "coral", size: 12, className: "right-[6%] top-[46%] md:right-[24%] md:top-[15%]" },
+const CROSSES: (Decor & { size: number; tone: "muted" | "red" })[] = [
+  { tone: "muted", size: 14, className: "left-[62%] top-[17%] md:left-[52%] md:top-[25%]" },
+  { tone: "red", size: 12, className: "left-[30%] top-[52%] md:left-[39%] md:top-[76%]" },
+  { tone: "muted", size: 16, className: "right-[30%] bottom-[11%] md:right-[13%] md:bottom-[15%]" },
+  { tone: "red", size: 12, className: "right-[6%] top-[46%] md:right-[24%] md:top-[15%]" },
 ];
 
 export function HomeHero({ settings }: { settings: Settings }) {
@@ -75,7 +75,7 @@ export function HomeHero({ settings }: { settings: Settings }) {
         ))}
         {CROSSES.map(({ tone, size, className }, i) => (
           <div key={i} data-spin className={cn("absolute will-change-transform", className)}>
-            <CrossMark size={size} strokeWidth={1.5} className={tone === "blue" ? "text-blue" : "text-coral"} />
+            <CrossMark size={size} strokeWidth={1.5} className={tone === "red" ? "text-red" : "text-text/45"} />
           </div>
         ))}
       </div>

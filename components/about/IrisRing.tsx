@@ -2,9 +2,9 @@ import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * The soft iridescent ring behind the /about hands (DESIGN.md §15): a conic
- * gradient of the --iris colours shaped into a thin ring with feathered edges,
- * so it reads like the edge of a soap bubble. It turns once every 40s and
+ * The soft ring behind the /about hands (DESIGN.md §15): a conic gradient of
+ * maroon and red shaped into a thin ring with feathered edges, so it reads
+ * like a lit edge in the dark. It turns once every 40s and
  * breathes (scale 0.98 ↔ 1.02 over 6s); both stop under reduced motion.
  *
  * The softness is drawn by the mask (a band that fades over about 30px each
@@ -16,12 +16,12 @@ import { cn } from "@/lib/cn";
  * the scroll scale and the cursor parallax never fight over one transform):
  *   data-ring-parallax  moved by the cursor
  *   data-ring-scale     scaled and faded by the scroll timeline
- *   data-ring-flash     a white copy of the ring that flashes at the touch
+ *   data-ring-flash     a warm white copy of the ring that flashes at the touch
  */
 
-/** The iris colours around the circle, with clear gaps so it looks like light on a bubble, not a solid band. */
+/** Maroon and red around the circle, with clear gaps so it reads as light catching an edge, not a solid band. */
 const CONIC =
-  "conic-gradient(from 200deg, var(--blue), var(--violet) 14%, transparent 27%, transparent 33%, var(--coral) 46%, var(--orange) 57%, transparent 69%, transparent 75%, var(--amber) 85%, var(--blue))";
+  "conic-gradient(from 200deg, var(--maroon), var(--red) 14%, transparent 27%, transparent 33%, var(--maroon) 46%, var(--red) 57%, transparent 69%, transparent 75%, var(--red) 85%, var(--maroon))";
 
 /**
  * A ring centred `inset` inside the circle's edge: solid for `core`, fading to
@@ -52,7 +52,7 @@ export function IrisRing({ className }: { className?: string }) {
             {/* The flash at the touch (invisible until then). */}
             <div
               data-ring-flash
-              className="absolute inset-0 bg-white opacity-0"
+              className="absolute inset-0 bg-text opacity-0"
               style={ringMask("min(8vmin, 64px)", "0px", "min(4vmin, 30px)")}
             />
           </div>

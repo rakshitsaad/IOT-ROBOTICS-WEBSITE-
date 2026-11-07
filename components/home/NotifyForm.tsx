@@ -40,7 +40,7 @@ export function NotifyForm({ className }: { className?: string }) {
         {pending ? "Sending…" : "Get notified"}
       </IrisButton>
       {state.status === "error" && (
-        <p id="notify-error" role="alert" className="text-[14px] text-coral sm:basis-full">
+        <p id="notify-error" role="alert" className="text-[14px] text-red sm:basis-full">
           {state.message}
         </p>
       )}

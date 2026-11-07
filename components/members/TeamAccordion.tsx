@@ -70,8 +70,8 @@ const CARD = cn(
   "md:h-(--jc-h) md:w-(--jc-closed) md:rounded-[calc(var(--jc-closed)/2)] md:data-active:w-(--jc-open) md:data-active:rounded-card",
   "transition-[width,height,border-radius,box-shadow]",
   RESIZE,
-  // A soft glow in the team's accent (--jc-accent, set on the team row).
-  "data-active:shadow-[0_0_32px_-8px_color-mix(in_oklab,var(--jc-accent)_50%,transparent),0_30px_80px_-30px_color-mix(in_oklab,var(--jc-accent)_75%,transparent)]",
+  // A faint glow in the team's accent (--jc-accent, set on the team row): kept low so red stays a hint.
+  "data-active:shadow-[0_0_28px_-10px_color-mix(in_oklab,var(--jc-accent)_35%,transparent),0_30px_80px_-30px_color-mix(in_oklab,var(--jc-accent)_45%,transparent)]",
 );
 
 /** Photo frame: a 56px circle on a closed phone pill, the whole card otherwise. */

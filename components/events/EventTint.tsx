@@ -6,8 +6,8 @@ import type { ClubEvent } from "@/lib/types";
 import { EVENTS_MOTION } from "@/lib/events";
 
 /**
- * The /events page tint (DESIGN.md §17): the near-black page blended with the active event's colour, a radial
- * gradient at 18% centred behind the card. `--tint` is a registered colour (globals.css), so a new event's colour
+ * The /events page tint (DESIGN.md §17): the matte black page blended with the active event's colour, a radial
+ * gradient at 12% centred behind the card (kept low so the page stays matte black). `--tint` is a registered colour (globals.css), so a new event's colour
  * crossfades over 900ms. Fixed behind everything (below the grid).
  */
 export function EventTint({ color }: { color: string | null }) {
@@ -20,7 +20,7 @@ export function EventTint({ color }: { color: string | null }) {
           "--tint": color ?? COLORS.bg,
           transitionDuration: `${EVENTS_MOTION.tint}ms`,
           background:
-            "radial-gradient(ellipse 80% 70% at 50% 50%, color-mix(in oklab, var(--tint) 18%, var(--bg)) 0%, color-mix(in oklab, var(--tint) 7%, var(--bg)) 55%, var(--bg) 100%)",
+            "radial-gradient(ellipse 80% 70% at 50% 50%, color-mix(in oklab, var(--tint) 12%, var(--bg)) 0%, color-mix(in oklab, var(--tint) 4%, var(--bg)) 55%, var(--bg) 100%)",
         } as CSSProperties
       }
     />
@@ -32,7 +32,10 @@ export function EventTint({ color }: { color: string | null }) {
 const sampled = new Map<string, string | null>();
 const pending = new Map<string, Promise<string | null>>();
 
-/** The event's tint: its `accent_color`, else the dominant colour sampled from its banner (null until known). */
+/**
+ * The event's tint: its `accent_color`, else the banner's dominant colour snapped into the palette (red or maroon,
+ * see paletteTint), null until known.
+ */
 export function useEventColor(event: Pick<ClubEvent, "accent_color" | "banner_url">): string | null {
   const src = event.accent_color ? null : event.banner_url;
   const [found, setFound] = useState<{ src: string; color: string | null } | null>(null);
@@ -78,8 +81,8 @@ function sampleBanner(src: string): Promise<string | null> {
 
 /**
  * The most prominent hue: pixels are binned by hue (24 bins), weighted by saturation and brightness so dark and
- * grey areas count little; the winning bin's average colour is then lifted to a vivid, mid-light tone so an 18%
- * tint still reads.
+ * grey areas count little; the winning bin's average colour is then snapped into the palette (paletteTint), so a
+ * colourful banner never brings a foreign hue onto the page.
  */
 function dominant(img: HTMLImageElement): string | null {
   const w = 48;
@@ -126,10 +129,15 @@ function dominant(img: HTMLImageElement): string | null {
   }
   if (best < 0 || weight[best] === 0) return null;
   const [r, g, b] = sum[best].map((v) => v / weight[best]);
-  return vivid(r, g, b);
+  return paletteTint(r, g, b);
 }
 
-function vivid(r: number, g: number, b: number): string {
+/**
+ * Maps a sampled colour onto the brand palette: warm, saturated hues (reds, oranges, magentas) give red; anything
+ * else (blues, greens, greys) gives maroon, a quieter tint. Every event still gets a tint of its own banner's
+ * temperature, but only in the black + deep red system.
+ */
+function paletteTint(r: number, g: number, b: number): string {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const l = (max + min) / 2;
@@ -142,5 +150,6 @@ function vivid(r: number, g: number, b: number): string {
     else h = (r - g) / d + 4;
   }
   h = (h * 60 + 360) % 360;
-  return `hsl(${h.toFixed(0)} ${Math.max(s * 100, 70).toFixed(0)}% ${Math.min(Math.max(l * 100, 55), 65).toFixed(0)}%)`;
+  const warm = (h < 40 || h > 320) && s > 0.35;
+  return warm ? COLORS.red : COLORS.maroon;
 }

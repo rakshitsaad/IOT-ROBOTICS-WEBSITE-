@@ -13,11 +13,8 @@ type Tone = "muted" | "text" | Accent;
 const TONE: Record<Tone, string> = {
   muted: "text-muted",
   text: "text-text",
-  blue: "text-blue",
-  violet: "text-violet",
-  coral: "text-coral",
-  orange: "text-orange",
-  amber: "text-amber",
+  red: "text-red",
+  white: "text-text",
 };
 
 interface MonoLabelProps {

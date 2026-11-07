@@ -8,7 +8,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      color: ["bg", "bg-2", "line", "text", "muted", "blue", "violet", "coral", "orange", "amber", "white", "black"],
+      color: ["bg", "bg-2", "line", "text", "muted", "red", "red-deep", "maroon", "white", "black"],
       radius: ["pill", "card", "image"],
       font: ["sans", "display", "mono", "serif", "hand"],
       ease: ["power3", "expo"],

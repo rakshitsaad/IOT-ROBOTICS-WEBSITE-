@@ -229,16 +229,17 @@ function buildAssets() {
   };
 
   const mat = {
-    graphite: new THREE.MeshStandardMaterial({ color: BOT_COLORS.graphite, roughness: 0.55, metalness: 0.05 }),
-    joint: new THREE.MeshStandardMaterial({ color: BOT_COLORS.joint, roughness: 0.42, metalness: 0.4 }),
-    plate: new THREE.MeshStandardMaterial({ color: BOT_COLORS.plate, roughness: 0.42, metalness: 0.1 }),
+    // Matte graphite shell, dark metallic joints, matte black plate.
+    graphite: new THREE.MeshStandardMaterial({ color: BOT_COLORS.graphite, roughness: 0.62, metalness: 0.18 }),
+    joint: new THREE.MeshStandardMaterial({ color: BOT_COLORS.joint, roughness: 0.34, metalness: 0.7 }),
+    plate: new THREE.MeshStandardMaterial({ color: BOT_COLORS.plate, roughness: 0.7, metalness: 0.1 }),
     screen: new THREE.MeshPhysicalMaterial({
       color: BOT_COLORS.screen,
       roughness: 0.15,
       metalness: 0,
       clearcoat: 1,
       clearcoatRoughness: 0.06,
-      emissive: 0xffffff,
+      emissive: BOT_COLORS.face,
       emissiveIntensity: 1.15,
       toneMapped: false,
     }),
@@ -248,13 +249,10 @@ function buildAssets() {
       metalness: 0.45,
       clearcoat: 0.6,
       clearcoatRoughness: 0.2,
-      iridescence: 1,
-      iridescenceIOR: 1.5,
-      iridescenceThicknessMinimum: 180,
-      iridescenceThicknessMaximum: 820,
+      // No iridescence: the bezel is dark metal lit by a slow maroon → red sheen.
       emissive: 0xffffff,
       emissiveMap: iris,
-      emissiveIntensity: 1.5,
+      emissiveIntensity: 0.75,
       toneMapped: false,
     }),
     antennaLed: new THREE.MeshStandardMaterial({
@@ -264,12 +262,13 @@ function buildAssets() {
       roughness: 0.3,
       toneMapped: false,
     }),
-    chestLeds: [BOT_COLORS.blue, BOT_COLORS.violet, BOT_COLORS.coral].map(
+    // One lit red status LED, two dim maroon ones.
+    chestLeds: [BOT_COLORS.red, BOT_COLORS.maroon, BOT_COLORS.maroon].map(
       (c) =>
-        new THREE.MeshStandardMaterial({ color: "#0d0d10", emissive: c, emissiveIntensity: 1.6, toneMapped: false }),
+        new THREE.MeshStandardMaterial({ color: "#0b0b0b", emissive: c, emissiveIntensity: 1.6, toneMapped: false }),
     ),
     // Diffuse only: a PBR top, seen at this grazing angle, turns into one
-    // big violet sheen from the rim light and hides the traces.
+    // big red sheen from the rim light and hides the traces.
     baseTop: new THREE.MeshLambertMaterial({
       color: BOT_COLORS.baseTop,
       emissive: 0xffffff,
@@ -277,7 +276,7 @@ function buildAssets() {
       emissiveIntensity: 0.6,
     }),
     baseSide: new THREE.MeshStandardMaterial({ color: BOT_COLORS.baseSide, roughness: 0.5, metalness: 0.4 }),
-    rim: new THREE.MeshBasicMaterial({ color: BOT_COLORS.violet, transparent: true, opacity: 0.55, toneMapped: false }),
+    rim: new THREE.MeshBasicMaterial({ color: BOT_COLORS.red, transparent: true, opacity: 0.4, toneMapped: false }),
   };
 
   return { geo, mat, textures: [iris, circuit] };

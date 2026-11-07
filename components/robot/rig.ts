@@ -24,9 +24,9 @@ export interface BotRig {
     screen: THREE.MeshPhysicalMaterial;
     /** [bezel] Iris emissive gradient; U runs around the frame. */
     bezel: THREE.MeshPhysicalMaterial;
-    /** [antenna_led] Pulses green every 2s. */
+    /** [antenna_led] Pulses deep red every 2s. */
     antennaLed: THREE.MeshStandardMaterial;
-    /** [chest_led_1..3] Blue, violet, coral. */
+    /** [chest_led_1..3] Red, maroon, maroon. */
     chestLeds: THREE.MeshStandardMaterial[];
   };
   /** Rest pose the animation adds offsets to. */

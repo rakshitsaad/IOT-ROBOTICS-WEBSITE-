@@ -28,12 +28,9 @@ const LOOK_PRESETS: { label: string; point: Vec3 }[] = [
 ];
 
 const GLOWS = [
-  { name: "blue", value: ACCENTS.blue, swatch: "bg-blue" },
-  { name: "violet", value: ACCENTS.violet, swatch: "bg-violet" },
-  { name: "coral", value: ACCENTS.coral, swatch: "bg-coral" },
-  { name: "orange", value: ACCENTS.orange, swatch: "bg-orange" },
-  { name: "amber", value: ACCENTS.amber, swatch: "bg-amber" },
-  { name: "white", value: COLORS.text, swatch: "bg-text" },
+  { name: "red", value: ACCENTS.red, swatch: "bg-red" },
+  { name: "maroon", value: COLORS.maroon, swatch: "bg-maroon" },
+  { name: "white", value: ACCENTS.white, swatch: "bg-text" },
 ];
 
 const PLACEMENTS = [
@@ -237,7 +234,7 @@ function Stat({ label, value, on }: { label: string; value: string; on: boolean 
     <div className="rounded-image border border-line bg-bg-2 px-3.5 py-3">
       <dt className="mono-label text-muted">{label}</dt>
       <dd className="mt-1.5 flex items-center gap-2 truncate text-sm font-semibold">
-        <span className={cn("size-2 shrink-0 rounded-full", on ? "bg-blue" : "bg-muted")} />
+        <span className={cn("size-2 shrink-0 rounded-full", on ? "bg-red" : "bg-muted")} />
         {value}
       </dd>
     </div>

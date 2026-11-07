@@ -126,7 +126,7 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
                       {item.label}
                     </span>
                     {active && (
-                      <span className="ml-auto size-2.5 shrink-0 rounded-full bg-iris md:size-3" aria-hidden="true" />
+                      <span className="ml-auto size-2.5 shrink-0 rounded-full bg-red md:size-3" aria-hidden="true" />
                     )}
                   </Link>
                 </motion.div>
@@ -142,7 +142,7 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
         animate={{ opacity: 1 }}
         transition={{ duration: DURATION.fast, delay: 0.5 }}
       >
-        <a href={`mailto:${email}`} data-cursor="link" className="mono-label text-text hover:text-amber">
+        <a href={`mailto:${email}`} data-cursor="link" className="mono-label text-text transition-colors duration-[350ms] hover:text-red">
           {email}
         </a>
         <ul className="flex flex-wrap gap-x-5 gap-y-2">

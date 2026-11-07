@@ -282,11 +282,11 @@ export function ClubBot({ logoUrl, bootOnMount = false }: ClubBotProps) {
     const dim = 1 - 0.45 * sleep;
     const bezelPower = S.power.bezel * dim * (1 + 2.2 * S.flash.v);
     m.screen.emissiveIntensity = 1.15 * S.power.screen * (1 - 0.25 * sleep);
-    m.bezel.emissiveIntensity = 1.5 * bezelPower;
+    m.bezel.emissiveIntensity = 0.75 * bezelPower;
     if (m.bezel.emissiveMap && !still) m.bezel.emissiveMap.offset.x = (t * 0.035) % 1;
     S.glowUniforms.uGlowAmount.value = S.glow.amount;
     S.glowUniforms.uGlowColor.value.copy(S.glow.color);
-    S.glowUniforms.uGlowBoost.value = 2.4 * bezelPower;
+    S.glowUniforms.uGlowBoost.value = 1.6 * bezelPower;
 
     const phase = (t % 2) / 2; // antenna: "device online" pulse every 2s
     const pulse = still ? 0.3 : phase < 0.06 ? phase / 0.06 : Math.exp(-(phase - 0.06) * 9);
@@ -333,7 +333,7 @@ function createRuntime() {
     glowUniforms: {
       uGlowColor: { value: new THREE.Color("#ffffff") },
       uGlowAmount: { value: 0 },
-      uGlowBoost: { value: 2.4 },
+      uGlowBoost: { value: 1.6 },
     },
     look: { target: null as THREE.Vector3 | null, until: 0 },
     face: {

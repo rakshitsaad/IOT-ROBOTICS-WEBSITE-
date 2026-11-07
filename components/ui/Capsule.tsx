@@ -19,16 +19,14 @@ import {
  *
  *   <Capsule tone="iris" speed={0.4} className="w-16 h-48" />
  */
-export type CapsuleTone = Accent | "iris" | "iris-line" | "raised" | "outline" | "glass" | "haze";
+export type CapsuleTone = Accent | "maroon" | "iris" | "iris-line" | "raised" | "outline" | "glass" | "haze";
 
 const TONE: Record<CapsuleTone, string> = {
-  blue: "bg-blue",
-  violet: "bg-violet",
-  coral: "bg-coral",
-  orange: "bg-orange",
-  amber: "bg-amber",
+  red: "bg-red",
+  white: "bg-text",
+  maroon: "bg-maroon",
   iris: "bg-iris",
-  /** Raised fill with a 1px --iris border. */
+  /** Raised fill with a 1px --iris (maroon → red) border. */
   "iris-line": "iris-border bg-bg-2",
   raised: "bg-bg-2 border border-line",
   outline: "border border-text/20",

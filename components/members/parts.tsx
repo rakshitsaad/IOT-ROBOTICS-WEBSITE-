@@ -105,14 +105,14 @@ export function Portrait({
   );
 }
 
-/** A soft iris blob (blurred circle at 35%), behind the spread's content. Size and place it with className. */
+/** A soft iris blob (a blurred maroon → red circle at 30%), behind the spread's content. Size and place it with className. */
 export function Blob({ speed, className }: { speed: number; className?: string }) {
   return (
     <div
       aria-hidden="true"
       data-sc-blob={speed}
       className={cn(
-        "pointer-events-none absolute -z-10 aspect-square rounded-full bg-iris opacity-35 blur-[clamp(48px,7vw,110px)] will-change-transform",
+        "pointer-events-none absolute -z-10 aspect-square rounded-full bg-iris opacity-30 blur-[clamp(48px,7vw,110px)] will-change-transform",
         className,
       )}
     />

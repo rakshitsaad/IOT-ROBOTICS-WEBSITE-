@@ -272,7 +272,7 @@ function Sticker({ kind, style }: { kind: JournalSticker; style: CSSProperties }
       style={style}
       className={cn(
         "absolute size-[16cqw] drop-shadow-md drop-shadow-black/40",
-        kind === "star" ? "text-amber" : "text-coral",
+        kind === "star" ? "text-red" : "text-maroon",
       )}
     >
       <path d={path} fill="currentColor" strokeWidth="1.6" strokeLinejoin="round" paintOrder="stroke" className="stroke-white" />

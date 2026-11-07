@@ -2,8 +2,9 @@ import { cn } from "@/lib/cn";
 import { Action, type ActionProps } from "./Action";
 
 /**
- * Primary call to action. Dark pill with a 1px --iris gradient border; on
- * hover/focus the gradient fills the pill and the text turns dark.
+ * Primary call to action. Deep red pill with warm white text; on hover/focus
+ * the fill darkens to --red-deep and a faint lighter-red rim shows (the 1px
+ * outer layer), a restrained "lit edge" instead of a glow.
  * Renders a Link / <a> with `href`, otherwise a <button>.
  *
  *   <IrisButton href="/join">Join us</IrisButton>
@@ -30,7 +31,7 @@ export function IrisButton({
       data-cursor="link"
       {...(props as ActionProps)}
       className={cn(
-        "group/iris relative inline-flex shrink-0 rounded-pill bg-iris p-px font-semibold",
+        "group/iris relative inline-flex shrink-0 rounded-pill bg-red p-px font-semibold",
         "transition-transform duration-[350ms] ease-power3 active:scale-[0.97]",
         "focus-visible:outline-offset-4",
         className,
@@ -38,9 +39,9 @@ export function IrisButton({
     >
       <span
         className={cn(
-          "inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-pill bg-bg leading-none text-text",
+          "inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-pill bg-red leading-none text-text",
           "transition-[background-color,color] duration-[350ms] ease-power3",
-          "group-hover/iris:bg-bg/0 group-hover/iris:text-bg group-focus-visible/iris:bg-bg/0 group-focus-visible/iris:text-bg",
+          "group-hover/iris:bg-red-deep group-focus-visible/iris:bg-red-deep",
           SIZE[size],
         )}
       >

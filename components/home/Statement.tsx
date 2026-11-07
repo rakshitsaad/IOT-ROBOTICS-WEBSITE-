@@ -20,28 +20,28 @@ export function Statement({ clubName }: { clubName: string }) {
           className="text-[length:clamp(2.4rem,5.5vw,5.5rem)] leading-[1.12] font-semibold tracking-[-0.035em]"
         >
           <span data-reveal className="block">
-            <Pill color="iris" reveal>
+            <Pill color="white" reveal>
               {clubName}
             </Pill>{" "}
             is where
           </span>
           <span data-reveal className="block">
-            <span aria-hidden="true" className="mr-[0.3em] inline-block size-[0.36em] rounded-full bg-amber align-[0.1em]" />
+            <span aria-hidden="true" className="mr-[0.3em] inline-block size-[0.36em] rounded-full bg-red align-[0.1em]" />
             students build things
           </span>
           <span data-reveal className="block">
             that{" "}
-            <Pill color="blue" reveal>
+            <Pill color="raised" reveal>
               move
             </Pill>
             ,{" "}
-            <Pill color="white" reveal>
+            <Pill color="raised" reveal>
               fly
             </Pill>
           </span>
           <span data-reveal className="block">
             and{" "}
-            <Pill color="coral" reveal>
+            <Pill color="red" reveal>
               think
             </Pill>
             .

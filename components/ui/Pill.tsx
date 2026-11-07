@@ -5,10 +5,10 @@ import type { Fill } from "@/lib/tokens";
 /**
  * Rounded highlight behind a word or phrase inside running text/headlines.
  * Inherits font size from its parent. Text colour is picked for contrast:
- * dark text on every light fill (all accents, white, iris), light text on
- * dark fills (dark, raised). See lib/tokens.ts → textOn().
+ * warm white on red, maroon, iris and the dark fills (dark, raised); dark
+ * text only on the warm white fill. See lib/tokens.ts → textOn().
  *
- *   <h2>We build <Pill color="coral">robots</Pill> that think.</h2>
+ *   <h2>We build robots that <Pill color="red">think</Pill>.</h2>
  *
  * `reveal`: a non-wrapping variant built from layers (background, word, and a
  * light copy of the word) so it can play a highlighter reveal with
@@ -18,11 +18,8 @@ import type { Fill } from "@/lib/tokens";
 export type PillColor = Fill;
 
 const BG: Record<PillColor, string> = {
-  blue: "bg-blue",
-  violet: "bg-violet",
-  coral: "bg-coral",
-  orange: "bg-orange",
-  amber: "bg-amber",
+  red: "bg-red",
+  maroon: "bg-maroon",
   white: "bg-text",
   iris: "bg-iris",
   dark: "bg-bg ring-1 ring-inset ring-line",
@@ -30,13 +27,10 @@ const BG: Record<PillColor, string> = {
 };
 
 const TEXT: Record<PillColor, string> = {
-  blue: "text-bg",
-  violet: "text-bg",
-  coral: "text-bg",
-  orange: "text-bg",
-  amber: "text-bg",
+  red: "text-text",
+  maroon: "text-text",
   white: "text-bg",
-  iris: "text-bg",
+  iris: "text-text",
   dark: "text-text",
   raised: "text-text",
 };

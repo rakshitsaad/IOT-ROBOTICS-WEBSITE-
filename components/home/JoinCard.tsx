@@ -1,5 +1,4 @@
 import { IrisButton, MonoLabel, Pill } from "@/components/ui";
-import { TEAM_ACCENT } from "@/lib/tokens";
 import type { Settings } from "@/lib/types";
 import { NotifyForm } from "./NotifyForm";
 
@@ -28,7 +27,7 @@ export function JoinCard({ settings }: { settings: Settings }) {
               id="join-title"
               className="mt-6 text-[length:clamp(2.6rem,6.4vw,6.25rem)] leading-[1.05] font-bold tracking-[-0.045em]"
             >
-              <Pill color="amber">Hands on</Pill> with hardware
+              <Pill color="red">Hands on</Pill> with hardware
             </h2>
           </div>
 
@@ -47,7 +46,7 @@ export function JoinCard({ settings }: { settings: Settings }) {
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {settings.open_teams.map((team) => (
                     <li key={team} className="text-[13px] font-semibold">
-                      <Pill color={TEAM_ACCENT[team]}>{team}</Pill>
+                      <Pill color="raised">{team}</Pill>
                     </li>
                   ))}
                 </ul>

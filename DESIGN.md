@@ -91,24 +91,29 @@ lib/
 
 ## 1. Colour tokens
 
-Defined as CSS variables on `:root` in `app/globals.css` and exposed to Tailwind
-via `@theme inline`. **The default Tailwind palette is removed**: only the colours
-below exist (plus `white` and `black`). Use opacity modifiers (`text-text/60`,
-`bg-text/5`) for tints. Never hard-code hex values in components.
+A black, deep red and warm white system: premium, cinematic, industrial. Defined as CSS variables on `:root` in
+`app/globals.css` and exposed to Tailwind via `@theme inline`. **The default Tailwind palette is removed**: only the
+colours below exist (plus `white` and `black`). Use opacity modifiers (`text-text/60`, `bg-text/5`) for tints. Never
+hard-code hex values in components.
 
-| Token    | Value                    | Tailwind               | Use                                   |
-| -------- | ------------------------ | ---------------------- | ------------------------------------- |
-| `--bg`     | `#08080B`                | `bg-bg`, `text-bg`     | Page background, dark text on fills   |
-| `--bg-2`   | `#101016`                | `bg-bg-2`              | Raised surfaces: cards, bars, panels  |
-| `--line`   | `rgba(255,255,255,0.08)` | `border-line`, `bg-line` | Hairlines, borders, dividers        |
-| `--text`   | `#EDEDF2`                | `text-text`, `bg-text` | Primary text, light fills             |
-| `--muted`  | `#8B8B99`                | `text-muted`           | Secondary text, labels                |
-| `--blue`   | `#4F7CFF`                | `bg-blue`, `text-blue` | Accent                                |
-| `--violet` | `#8B5CFF`                | `*-violet`             | Accent                                |
-| `--coral`  | `#FF5A5F`                | `*-coral`              | Accent                                |
-| `--orange` | `#FF9F43`                | `*-orange`             | Accent                                |
-| `--amber`  | `#FFD24D`                | `*-amber`              | Accent                                |
-| `--grid`   | `rgba(255,255,255,0.04)` | (used by GridBackground) | Grid lines, fainter than `--line`   |
+| Token        | Value                       | Tailwind                   | Use                                          |
+| ------------ | --------------------------- | -------------------------- | -------------------------------------------- |
+| `--bg`       | `#090909` matte black       | `bg-bg`, `text-bg`         | Page background, dark text on light fills    |
+| `--bg-2`     | `#171717` charcoal          | `bg-bg-2`                  | Raised surfaces: cards, bars, panels         |
+| `--line`     | `#292929` border grey       | `border-line`, `bg-line`   | Hairlines, borders, dividers                 |
+| `--text`     | `#F2F0EB` warm white        | `text-text`, `bg-text`     | Headings, primary text, light fills          |
+| `--muted`    | `#858585` muted grey        | `text-muted`               | Body copy, secondary text, labels            |
+| `--red`      | `#C62828` deep red          | `bg-red`, `text-red`       | The one signal colour: primary CTA, active states, a highlighted word |
+| `--red-deep` | `#A82222`                   | `bg-red-deep`              | Red at 85% toward black: the primary button's hover only |
+| `--maroon`   | `#5A1717` dark maroon       | `bg-maroon`                | Quiet fills (status badge), gradient partner of red |
+| `--grid`     | `rgba(242,240,235,0.035)`   | (used by GridBackground)   | Grid lines, fainter than `--line`            |
+
+**Distribution.** About 75% black and charcoal, 15% warm white, 8% red, 2% maroon. Black always dominates.
+- Red is for one thing per view: the primary CTA, an active state (current team pill, a lit timeline dot, an open
+  card's ring), or a single highlighted word. Never red body text: red on black is 3.7:1, so it is for large type,
+  small labels that repeat a heading, and shapes.
+- Maroon is barely visible on black (1.5:1), so it is a fill (with warm white text) or a gradient partner, never text.
+- No other hues. Decoration is warm white at low opacity (`text-text/45`) or red, never a new colour.
 
 The JS mirror is `lib/tokens.ts` (`COLORS`, `ACCENTS`, `IRIS_STOPS`): use it
 only where JS needs a raw value (three.js materials, canvas, GSAP colour tweens).
@@ -116,51 +121,49 @@ only where JS needs a raw value (three.js materials, canvas, GSAP colour tweens)
 ### `--iris`: the brand signature
 
 ```css
---iris: linear-gradient(110deg, #4F7CFF, #8B5CFF 30%, #FF5A5F 55%, #FF9F43 75%, #FFD24D);
+--iris: linear-gradient(110deg, #5A1717, #C62828 50%, #5A1717);
 ```
 
-Use it **sparingly**, only for:
+A restrained maroon → red → maroon sheen, like light along a machined edge. (The name is kept from the earlier
+rainbow version; it now means this sheen.) Use it **sparingly**, only for:
 - the robot bezel (the logo mark uses it),
 - active borders (`iris-border` utility),
-- the primary button hover (`IrisButton`),
-- soft blurred blobs behind content (Senior Core puts one behind every spread, §13; the /about ring, §15, is a
-  conic gradient of the iris colours shaped into a soft ring).
+- soft blurred blobs behind content (Senior Core puts one behind every spread at 30%, §13; the /about ring, §15, is a
+  conic gradient of maroon and red shaped into a soft ring).
 
 Senior Core's vertical spread also uses a small iris rectangle at 25% opacity over a
 portrait's corner; that is the only iris fill shape outside the list above.
 
-/about (§15) sets one word in `text-iris`: "machines" in the hero title.
+/about (§15) sets one word in `text-red`: "machines" in the hero title.
 
-/events (§17) marks an upcoming event's status with an `iris` Pill ("Registrations open"), beside the card's one
-`IrisButton` ("Register").
+/events (§17) marks an upcoming event's status with a `maroon` Pill ("Registrations open"), so it never competes
+with the card's red `IrisButton` ("Register").
 
 Junior Core (§13) uses `iris-border` twice: the 1px ring of each team's open card
 (one per team row) and the thin ring of the initials avatar shown for a member
 without a photo.
 
-**Never** as a page or section background, never for body text, never on more
-than one or two elements per viewport. Utilities: `bg-iris`, `text-iris`
-(gradient text, use only for a word or two), `iris-border`.
+**Never** as a page or section background, never for text, never on more
+than one or two elements per viewport. Utilities: `bg-iris`, `iris-border`.
+
+Gradients otherwise: only dark-to-darker (`from-bg/95` scrims over photos) or a faint red tint where it earns its place
+(the /events page tint, §17). No rainbow or neon gradients, and keep glows low (the open Junior Core card's glow is
+35%/45% red; the robot's bezel glow is a short flash).
 
 ### Text on colour
 
-Every accent is light enough that **dark text (`text-bg`) has the higher WCAG
-contrast** (blue 5.4:1, violet 4.8:1, coral 6.6:1, orange 9.8:1, amber 14:1;
-white text would be 3–4:1). So accents, white and iris fills always take dark
-text, and only dark fills (`bg-bg`, `bg-bg-2`) take light text. `textOn(fill)` in
-`lib/tokens.ts` encodes this rule.
+Warm white beats dark text on the accents: **warm white on red is 4.9:1** (dark text 3.5:1) and on maroon 11.7:1. So
+red, maroon, iris and the dark fills (`bg-bg`, `bg-bg-2`) take light text (`text-text`), and only the warm white fill
+(`bg-text`) takes dark text (`text-bg`, 17:1). `textOn(fill)` in `lib/tokens.ts` encodes this rule.
 
-### Team accent map
+### Accents and the team accent map
 
-| Team         | Accent |
-| ------------ | ------ |
-| Tech         | blue   |
-| Research     | violet |
-| Design       | coral  |
-| Multimedia   | orange |
-| Social Media | amber  |
-| Management   | blue   |
-| PR           | violet |
+`Accent` (`lib/types.ts`) is `red | white` (white = the warm white `--text`). Mono labels, icon circles and lab
+stations pick one: red marks the one emphasised item, warm white the rest.
+
+Every team's accent is **red**, so a team's active state (its current pill in the Junior Core bar, the highlight bar
+under its name, the open card's glow) is the same deep red everywhere. Lists of teams that are not states (the join
+card's open teams, the /about teams row) use charcoal `raised` pills instead, so red stays rare.
 
 Use `TEAM_ACCENT` / `teamAccent(name)` from `lib/tokens.ts`. The `teams.accent`
 column must match this map.
@@ -222,6 +225,7 @@ required so Tailwind treats it as a font size).
 - `pt-header` utility: `padding-top: calc(var(--nav-h) + var(--ann-h))`. Every page's first section must clear the fixed header with it (or account for it in a full-bleed hero).
 - `body` has **no background colour** on purpose (only `html` does) so the fixed `<GridBackground>` at `-z-10` shows through. Sections that set their own background cover the grid.
 - `html` has `scrollbar-gutter: stable` so locking scroll causes no layout shift.
+- Focus rings are 2px `--red` (offset 3px); text selection is `--red` with warm white text.
 
 ---
 
@@ -238,18 +242,18 @@ call is dropped. Put the size first.
 
 ### `<Pill color>`
 A rounded highlight behind a word or phrase. Inherits the parent's font size and wraps cleanly across lines.
-`color`: `blue | violet | coral | orange | amber | white | iris | dark | raised` (default `white`). Text colour follows §1 "Text on colour".
+`color`: `red | maroon | white | iris | dark | raised` (default `white`). Text colour follows §1 "Text on colour" (warm white on everything but `white`). Keep `red` to one pill per headline.
 ```tsx
-<h2>We build <Pill color="coral">robots</Pill> that think.</h2>
+<h2>We build robots that <Pill color="red">think</Pill>.</h2>
 ```
 `reveal`: a non-wrapping variant built from layers (`data-pill-bg`, `data-pill-word`, and a light copy `data-pill-ghost`) for a highlighter reveal. Animate it with `pillReveal(pill, timelineVars)` from `@/components/ui/pill-reveal`: the background grows from the left (scaleX 0 → 1, 0.9s expo.out) and the word turns from light to its on-colour text exactly where the background has reached. It renders in its final state, so skip the animation under reduced motion. The pill is 0.1em taller than the line box (negative margin, so line spacing is unchanged); use line-height ≥ 1.1 where pills stack.
 ```tsx
-<h2>Things that <Pill color="blue" reveal>move</Pill>.</h2>
+<h2>Things that <Pill color="raised" reveal>move</Pill>.</h2>
 tl.add(pillReveal(el.querySelector("[data-pill]")!), 0.15);
 ```
 
 ### `<MonoLabel>`
-The technical label style. Props: `index?: number | string` (numbers are zero-padded: `1` gives `[01]`), `tone?: muted | text | <accent>` (default `muted`), `as?` (element, default `span`), `id?`.
+The technical label style. Props: `index?: number | string` (numbers are zero-padded: `1` gives `[01]`), `tone?: muted | text | red | white` (default `muted`), `as?` (element, default `span`), `id?`.
 ```tsx
 <MonoLabel index={1}>About the club</MonoLabel>
 ```
@@ -260,7 +264,7 @@ Props: `fixed` (default `true`, so it covers the viewport and brackets sit at th
 Panning: the lines layer (`[data-grid-lines]`) offsets its background by the CSS variables `--grid-x` / `--grid-y` (px, default 0), so a page can pan the grid by tweening them (the home lab does, §12).
 
 ### `<IrisButton>`
-The primary action. Dark pill with a 1px `--iris` border. On hover/focus the gradient fills it and the text turns dark. Use **one per view**.
+The primary action. Deep red pill (`--red`) with warm white text. On hover/focus the fill darkens to `--red-deep` inside a 1px `--red` rim (a lit edge, no glow). Use **one per view**.
 Props: `href` (renders Next `Link`, or `<a target=_blank>` for external/mailto links), otherwise a `<button>`; `size: sm | md | lg`; `arrow` (adds an ↗ that nudges on hover).
 
 ### `<PillButton>`
@@ -268,7 +272,7 @@ Secondary pill. `variant: light` (light fill, dark text, e.g. the navbar "Contac
 
 ### `<Capsule>`
 Tall, fully rounded rectangle used as a decorative parallax shape. Size it with `className` (default `w-20 h-56`, `md:w-28 md:h-80`).
-Props: `tone: <accent> | iris | iris-line | raised | outline | glass | haze` (`iris-line`: raised fill with a 1px `--iris` border; `haze`: near-white at 6%, a faint light shape, cheaper than `glass` because it has no blur), `speed` (parallax factor; the shape travels `speed × 120px` each way while crossing the viewport; negative moves against scroll; `0` is static), `rotate` (deg), `children` (e.g. an image clipped to the capsule). Parallax is a scrubbed ScrollTrigger and is off under reduced motion.
+Props: `tone: red | white | maroon | iris | iris-line | raised | outline | glass | haze` (`iris-line`: raised fill with a 1px `--iris` border; `haze`: near-white at 6%, a faint light shape, cheaper than `glass` because it has no blur), `speed` (parallax factor; the shape travels `speed × 120px` each way while crossing the viewport; negative moves against scroll; `0` is static), `rotate` (deg), `children` (e.g. an image clipped to the capsule). Parallax is a scrubbed ScrollTrigger and is off under reduced motion.
 
 ### `<DotGrid rows cols>` and `<CrossMark>`
 Small decorative SVGs coloured by `currentColor` (default `text-muted`, so tint with a text class).
@@ -284,9 +288,9 @@ Motion: one turn per `period`; scrolling multiplies the speed by up to 8× (scro
 ```
 
 ### Utilities (`globals.css`)
-`mono-label`, `bg-iris`, `text-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
-`paper` (off-white `--text` with a faint grain: gallery pages, caption tags) and `paper-ruled` (the same with faint blue
-rules every `--rule`, default 2rem, and a coral margin line: note pages). Gallery only (§14).
+`mono-label`, `bg-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
+`paper` (warm white `--text` with a faint grain: gallery pages, caption tags) and `paper-ruled` (the same with faint grey
+rules every `--rule`, default 2rem, and a red margin line: note pages). Gallery only (§14).
 Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (the scroll arrow), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateX(−110%) over 0.7s expo, out to translateX(110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`; in vertical text, local x is "up", §16).
 The /events first load (§17), all `both`: `animate-wipe-in` (a left-to-right `clip-path` wipe with a fade, 0.8s expo),
 `animate-settle` (scale 1.08 → 1, 0.8s expo), `animate-pop-up` (opacity 0 and 40px down → in place, 0.8s expo) and
@@ -301,7 +305,7 @@ Order: inline no-flash script, skip link, `<Providers>` → `<Header>` → `<mai
 
 - **Announcement bar** (`components/layout/AnnouncementBar.tsx`): text, link and on/off come from `settings` (`announcement_enabled`, `announcement_text`, `announcement_link_label`, `announcement_link_url`). Dismissible: the dismissal is stored in `localStorage` against a hash of the text and link, so a new announcement shows again. An inline script in the layout sets `html[data-ann="off"]` before first paint, which hides the bar and sets `--ann-h: 0`. It collapses once the page is scrolled past 40px or the menu is open.
 - **Navbar** (`Header.tsx`): fixed and transparent. After **40px** of scroll it gains a blurred `bg-2/75` background and a bottom hairline. Logo top-left (short name below `sm`). Right side: "Join us" `IrisButton` → `/join`, "Contact" light `PillButton` → `/contact`, round menu button.
-- **Menu overlay** (`MenuOverlay.tsx`): full-screen, below the header (z-40 vs z-50) so the menu button becomes the close button. Lists Home, About, Members, Projects, Events, Achievements, Gallery, Join, Contact (`lib/nav.ts`) in large Sora with `[01]` mono indices, staggered in (0.05s apart, expo.out). Locks scroll (stops Lenis), makes `main` and the footer `inert`, focuses the first link, closes on Escape, link click or route change, and returns focus to the menu button. The current page gets an iris dot.
+- **Menu overlay** (`MenuOverlay.tsx`): full-screen, below the header (z-40 vs z-50) so the menu button becomes the close button. Lists Home, About, Members, Projects, Events, Achievements, Gallery, Join, Contact (`lib/nav.ts`) in large Sora with `[01]` mono indices, staggered in (0.05s apart, expo.out). Locks scroll (stops Lenis), makes `main` and the footer `inert`, focuses the first link, closes on Escape, link click or route change, and returns focus to the menu button. The current page gets a red dot.
 - **Custom cursor** (`Cursor.tsx`): fine pointers only (`(hover: hover) and (pointer: fine)`), never rendered on touch. A 6px dot plus a 36px ring that lags (`gsap.quickTo`, 0.5s power3.out). States via attributes:
   - `data-cursor="view"` / `"drag"`: the ring becomes a light pill labelled VIEW / DRAG (`data-cursor-label="…"` overrides the label)
   - `data-cursor="link"`: the ring grows to a 56px soft filled circle. Links and buttons get this automatically.
@@ -424,7 +428,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - `events` for /events (§17): `status` (`upcoming` | `past`), `banner_url` (16:9), `cutout_url` (optional transparent PNG
   of the banner's subject, framed by the cutout convention in §17), `banner_focal_x` (0–100, where the banner is
   anchored horizontally when the card crops it, default 50) and `accent_color` (optional; without it the page samples
-  the banner's dominant colour). The mock has 6 events (2 upcoming, 4 past) with generated placeholder banners and
+  the banner's dominant colour and snaps it to red or maroon, §17). The mock has 6 events (2 upcoming, 4 past) with generated placeholder banners and
   cutouts in `/public/events/`; replace them with real art. `projects.tags` decide which lab station a project's photo appears at (a tag equal to the station's domain, any case: `Drones`, `Robotics`, `IoT`, `Research`), and which /projects filter shows it (§16).
 - `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has 12 projects (the home lab shows up to 3 per station), with picsum photos in five shapes.
 - Mock rows in `lib/mock/*.ts`. Image URLs are `picsum.photos` placeholders (allowed in `next.config.ts` `images.remotePatterns`, along with `*.supabase.co` storage).
@@ -479,11 +483,14 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 ## 11. Robot mascot (`components/robot`)
 
 ClubBot is the club's own robot, built from three.js primitives in code:
-- a graphite head with an iris bezel around a glossy black screen;
-- cylinder ears, with an antenna and a green "online" LED on its right ear;
-- a narrower torso with the logo chest plate and three LEDs (blue, violet, coral);
+- a matte graphite head with a dark metal bezel lit by a slow maroon → red sheen, around a glossy black screen;
+- cylinder ears, with an antenna and a deep red "online" LED on its right ear;
+- a narrower torso with the matte black logo chest plate and three LEDs (one red, two dim maroon);
 - two-segment capsule arms with ball joints and mitten hands, and short legs;
-- a hexagonal dock with faint iris circuit traces, which the robot floats above.
+- dark metallic grey joints and limbs;
+- a hexagonal dock with faint maroon and red circuit traces, which the robot floats above.
+
+The face on the screen is warm white. Red is kept to details (bezel, LEDs, traces, the rim light), never the whole robot.
 
 Size: about 2.4 units tall, with the head about 45% of the height. About 14k triangles (budget: 60k).
 
@@ -500,7 +507,7 @@ botActions.setFace("happy");                  // idle | blink | happy | surprise
 botActions.setIcon("drone");                  // icon instead of eyes (null = face)
 botActions.wave(); botActions.nod(); botActions.bootUp();
 botActions.lookAt([2, 1.8, 2], 2500);         // world point, hold ms
-botActions.glow(ACCENTS.coral);               // brief bezel tint + brighten, then eases back
+botActions.glow(ACCENTS.red);                 // brief bezel tint + brighten, then eases back
 botActions.react("happy", 900);               // face for holdMs, above moods and reactions (needs useBotMood)
 botActions.hold("lab", "idle", "drone");      // a section's resting face/icon instead of random moods (needs useBotMood)
 botActions.release("lab");                    // back to random moods (only if "lab" holds it)
@@ -517,7 +524,7 @@ gsap.to(botTransform, { x: 1.2, scale: 0.8, scrollTrigger: { /* ... */ } });
   - `label`: the hit button's accessible name (default "Say hi to the robot");
   - `preloadPoster` (default: same as `fixed`): preload the poster for an above-the-fold stage.
 - **`<ClubBot />`** (`@/components/robot/ClubBot`) is the robot itself, for use inside your own R3F `<Canvas>`. It pulls in three.js, so the barrel `@/components/robot` deliberately does not export it.
-- **`<BotHeadIcon icon label? />`** (`@/components/robot/BotHeadIcon`): a flat drawing of the head (iris bezel, black screen, ears) showing a screen icon, or the eyes when `icon` is null. Plain SVG/CSS and server-compatible; use it where the 3D robot isn't shown (the stacked lab stations). Size it with `className` (default `size-11`); decorative unless you pass `label`.
+- **`<BotHeadIcon icon label? />`** (`@/components/robot/BotHeadIcon`): a flat drawing of the head (iris sheen bezel, black screen, ears) showing a screen icon, or the eyes when `icon` is null. Plain SVG/CSS and server-compatible; use it where the 3D robot isn't shown (the stacked lab stations). Size it with `className` (default `size-11`); decorative unless you pass `label`.
 
 ### State
 
@@ -549,13 +556,13 @@ gsap.to(botTransform, { x: 1.2, scale: 0.8, scrollTrigger: { /* ... */ } });
 | Eyes | shift on the screen towards the cursor, up to 12% of the screen width (7% vertically), so the robot still looks at you when the head is at its limit (screen texture offset, no redraw) |
 | Cursor leaves window | the head looks past the exit edge for 2s, then returns |
 | Asleep | the head droops and rolls slightly, tracking and float fade out, screen and bezel dim |
-| Face change | 120ms glitch (RGB split + 2 displaced scanlines) on the old face, then the new one |
-| Antenna | green pulse every 2s |
+| Face change | 120ms glitch (a red / warm white split + 2 displaced scanlines) on the old face, then the new one |
+| Antenna | deep red pulse every 2s |
 | wave | robot's right arm up, forearm waves, head tilts, about 2.6s |
 | nod | two dips, about 1.1s |
 | bootUp | about 1.9s: screen off with the head slumped, then a scan line, a flicker, the face (with glitch), the head rising (expo), and the eyes opening. It ends on the store's `face` (the mood engine sets `happy`) |
 | lookAt(point) | head turns to the world point for `holdMs`, then back |
-| glow(color) | bezel tints to the colour over 0.25s, holds 0.35s, eases back over 1.2s |
+| glow(color) | bezel tints to the colour over 0.25s, holds 0.35s, eases back over 1.2s (boost 1.6×, a flash, not neon) |
 
 **Reduced motion:** final states only.
 - **Dropped:** float, sway, ambient blinks, idle moves, cursor tracking, the sleep droop, wave/nod/bootUp, and the glitch.
@@ -599,7 +606,7 @@ The home page's stage, placement, scroll choreography and scenes are in §12.
 
 ### Face
 
-`face.ts` draws a 512×512 canvas, white on black, used as the screen's emissive map. It **redraws only when something changes**: face, icon, blink step, glance or glitch frame.
+`face.ts` draws a 512×512 canvas, white on black, used as the screen's emissive map (the material tints it warm white). It **redraws only when something changes**: face, icon, blink step, glance or glitch frame.
 
 Icons are stroked `Path2D`s from `icons.ts`, on a 24×24 grid: drone, robot-arm, wifi-chip, atom, calendar, quote, play and heart. Add an icon there and the store, renderer and lab pick it up.
 
@@ -615,18 +622,18 @@ Icons are stroked `Path2D`s from `icons.ts`, on a 24×24 grid: drone, robot-arm,
 
   When the poster is the final mode, it blinks: `/robot-poster-blink.png` (same framing, eyes closed) shows for 140ms every 2.5–5s (5–9s under reduced motion).
 
-  The current files are generated placeholders. Replace it with a real render framed the same way: front view, base at the bottom edge, antenna at the top.
+  The current files are renders of this model (re-rendered for the black + red palette; the blink frame has the eyes closed). Re-render them if the materials change, framed the same way: front view, 2.4 world units = 1000px, camera centred on y = 1.2.
 - **Rendering:** dpr `[1, 1.75]`. Rendering stops (`frameloop="never"`) when:
   - the stage is off screen,
   - the tab is hidden, or
   - `botTransform` has moved the robot out of the stage.
 - **Lighting:**
   - drei `Environment` built from `Lightformer`s at low intensity (no HDR download);
-  - key light upper left and a violet rim light from behind;
+  - key light upper left and a deep red rim light from behind (a thin red edge on the silhouette);
   - `ContactShadows` under the dock;
   - transparent background.
 
-  The dock top is a Lambert (diffuse-only) material. A PBR top seen at this grazing angle turns into one violet sheen from the rim light.
+  The dock top is a Lambert (diffuse-only) material. A PBR top seen at this grazing angle turns into one red sheen from the rim light.
 - **QA overrides:** `?bot=poster` forces the poster, and `?bot=force` skips the memory check.
 - **`useBotSupport()`** returns the mode: `webgl`, `poster:reduced-motion`, `poster:no-webgl`, `poster:low-memory`, `poster:forced`, or `pending` before hydration.
 
@@ -646,7 +653,7 @@ components/robot/
   face.ts       FaceDisplay canvas renderer
   icons.ts      screen icons
   BotHeadIcon.tsx flat head drawing with a screen icon (no three.js)
-  textures.ts   iris loop, circuit traces, chest plate
+  textures.ts   bezel sheen loop, circuit traces, chest plate
   palette.ts    robot material colours
   config.ts     camera, poster size, debug stats
 ```
@@ -666,15 +673,16 @@ These are material colours for the model, not UI tokens. Don't use them in UI.
 
 | Part | Colour |
 | --- | --- |
-| graphite (body) | `#6F6863` |
-| joint | `#2A282C` |
-| plate | `#3B3734` |
-| screen | `#050507` |
-| bezel | `#121218` |
-| dock | `#17161A` / `#2B282B` |
-| online LED | `#38FF8E` |
+| graphite (body, matte: roughness 0.62, metalness 0.18) | `#424244` |
+| joint (dark metallic grey: roughness 0.34, metalness 0.7) | `#232325` |
+| plate (matte black) | `#161616` |
+| screen | `#050505` |
+| bezel (no iridescence; emissive sheen at 0.75) | `#121212` |
+| dock | `#121212` / `#1E1E1F` |
+| face (screen emissive) | `#F2F0EB` (= `--text`) |
+| online LED | `#C62828` (= `--red`), unlit `#1A0707` |
 
-Accents come from `ACCENTS` in `lib/tokens.ts`.
+Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and the environment's ring are `--red`.
 
 ---
 
@@ -702,7 +710,7 @@ Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomin
 - Wordmark size: `clamp(4rem, min(15vw, 30svh), 14.5rem)`; phones `min(16vw, 28svh)`. "ROBOTICS" is about 5.3em wide, so 18vw cannot fit a phone and a 15rem cap overflows the 1440 shell. Re-check at 360 and 1920 if the club name changes.
 - Letters rise out of a vertical mask on load (`animate-rise`, 40ms apart from 150ms), alongside the robot's bootUp.
 - Corner labels: `{college_name} / Est. {founded_year}` top left, "IoT / Robotics / Research" bottom left, "Scroll" with a nudging arrow bottom right.
-- Decorations behind the wordmark: 4 Capsules (2 `raised`, 1 `iris-line`, 1 `haze`; phones show only `iris-line` and `haze`), 3 DotGrids, 4 CrossMarks (2 blue, 2 coral). Scroll hooks: `data-rise="speed"`, `data-drift="px"`, `data-spin`.
+- Decorations behind the wordmark: 4 Capsules (2 `raised`, 1 `iris-line`, 1 `haze`; phones show only `iris-line` and `haze`), 3 DotGrids (one red at 55%), 4 CrossMarks (2 warm white at 45%, 2 red). Scroll hooks: `data-rise="speed"`, `data-drift="px"`, `data-spin`.
 
 ### Robot stage (`HomeRobot`)
 The stage box is fixed and z-30, so the robot stands in front of the page content (the lab card and the header sit above it). `HOME_ROBOT` makes the robot 70% of the stage height with its base at 88%, turned -20°. The box decides where that lands, so the server-rendered poster is already in place:
@@ -733,24 +741,24 @@ The timeline's `onUpdate` works out which section the robot is in and holds a sc
 
 | Scene | Starts | Robot |
 | --- | --- | --- |
-| `lab` | half a screen before the lab top | the station's icon (`hold("lab", "idle", icon)`); at each station change the face glitch-switches to the new icon and `glow()` tints the bezel in the station accent. The station index goes to `useLabStore` (counter, card) |
+| `lab` | half a screen before the lab top | the station's icon (`hold("lab", "idle", icon)`); at each station change the face glitch-switches to the new icon and `glow()` flashes the bezel in the station accent (red). The station index goes to `useLabStore` (counter, card) |
 | `slider` | slider top at 60% of the viewport | `sleepy`; `surprised` for 0.9s on every slide change (FeaturedSlider) |
 | `event` | event top at 60% of the viewport | the calendar icon |
 | (none) | numbers top at 60% of the viewport | released: random moods |
 | `join` | 35% of a screen before it lands | `happy`, and a wave when it arrives scrolling down |
 
 ### Statement (`Statement`)
-- Headline: Sora 600, `clamp(2.4rem, 5.5vw, 5.5rem)`, line-height 1.12, four explicit lines of about four words; an amber dot starts line 2. Pills (`<Pill reveal>`): club name `iris`, "move" `blue`, "fly" `white`, "think" `coral`.
+- Headline: Sora 600, `clamp(2.4rem, 5.5vw, 5.5rem)`, line-height 1.12, four explicit lines of about four words; a red dot starts line 2. Pills (`<Pill reveal>`): club name `white`, "move" and "fly" `raised` (charcoal), "think" `red` (the headline's one red word).
 - Two paragraphs: max 46ch, 17px, muted, opening phrase bold in `text-text`; indented 8vw from md.
 - Each `[data-reveal]` (headline lines and paragraphs) rises 40px and fades in once at `top 80%` (0.9s power3.out). Its pills grow 150ms later (0.06s apart), and the robot shows `happy` for 0.9s as each one starts.
 - The section is `min-h-svh` with its content centred, so the robot holds beside it while it is read.
 
 ### Inside the lab (`Lab`, `LabPanel`, `lab-store`; config in `lib/home.ts`)
-- Stations: `LAB_STATIONS` (domain, title, short counter word, icon, accent, one-sentence description): Drones & Aerial Systems (drone, blue), Robotics & Mechatronics (robot-arm, coral), IoT & Embedded (wifi-chip, amber), Research & AI (atom, violet).
+- Stations: `LAB_STATIONS` (domain, title, short counter word, icon, accent, one-sentence description): Drones & Aerial Systems (drone), Robotics & Mechatronics (robot-arm), IoT & Embedded (wifi-chip), Research & AI (atom); every station's accent is red (its mono label and the robot's bezel flash).
 - Photos: up to 3 projects per station whose tags include the domain and that have a cover (`stationProjects`). "See projects" goes to `/projects?tag=<domain>` (`stationHref`).
 - **md and up, with motion:** the section is (stations + 1) × 100svh tall. Two sticky layers hold for one screen per station (sticky, not a GSAP pin, §7):
   - `[data-lab-photos]`, below the robot: three layers (`[data-lab-layer]` back / mid / front), each station's frames one pan to the right of the previous. Back frames 15vw at 40% opacity, mid 21vw at 80%, front 18.5vw at 4:5; all `rounded-image`; mid and front have a mono "Title / year" caption.
-  - `[data-lab-ui]` (z-35, above the robot): the heading top left, two `Pill`s, "What we build" (iris) and "inside the lab" (white); the counter top right (`[02/04] ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
+  - `[data-lab-ui]` (z-35, above the robot): the heading top left, two `Pill`s, "What we build" (red) and "inside the lab" (white); the counter top right (`[02/04] ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
 - **Phones and reduced motion:** four stacked blocks, photos (two-column grid) then the card, with a `BotHeadIcon` showing the station's icon beside each title. No pinning.
 
 ### Featured slider (`Featured`, `FeaturedSlider`)
@@ -771,7 +779,7 @@ The timeline's `onUpdate` works out which section the robot is in and holds a sc
 - Large Sora 800 digits (`clamp(3.4rem, 8vw, 7.5rem)`) with mono labels, 2 columns on phones, 4 from md. Each counts up once at `top 85%` (1.2s power3.out, 0.06s apart). The server HTML has the final numbers, and nothing counts under reduced motion.
 
 ### Join card (`JoinCard`, `NotifyForm`)
-- `bg-2`, hairline border, `rounded-card`. Left: "Hands on with hardware" with "Hands on" in an amber pill. Right: two sentences, `settings.open_teams` as small pills in their team accents, "Apply now" IrisButton (`join_form_url`, else `/join`).
+- `bg-2`, hairline border, `rounded-card`. Left: "Hands on with hardware" with "Hands on" in a red pill. Right: two sentences, `settings.open_teams` as small charcoal (`raised`) pills, "Apply now" IrisButton (`join_form_url`, else `/join`).
 - When `recruitment_open` is false: closed-intake copy and a "Get notified" email form (`useActionState` + the `notifyWhenRecruiting` server action).
 - md and up, with motion: 40svh of space above the card and 22svh below it, so the robot can land on it, ride and fade before the footer.
 
@@ -818,7 +826,7 @@ Shared parts (`parts.tsx`):
   So a name always fills its column without overflowing. Two-word names break between the first words and the last word; a one-word name splits in half.
 - **Kicker**: Sora 500, 11px, tracking 0.6em, uppercase ("T H E   P R E S I D E N T").
 - **Portraits**: `grayscale contrast-110`, turning to colour on hover over 600ms (§7 exception). `rounded-image`, except A's full-bleed half.
-- **Blobs**: `bg-iris` at 35%, `blur(clamp(48px, 7vw, 110px))`, behind the content (each spread is `isolate`).
+- **Blobs**: `bg-iris` (the maroon → red sheen) at 30%, `blur(clamp(48px, 7vw, 110px))`, behind the content (each spread is `isolate`): a dim red light pool on black.
 - **Body text**: 14px, muted, narrow columns.
 - **Connect**: a caps link with a long arrow line that extends on hover. It goes to the first of LinkedIn, GitHub, Instagram that the member has.
 - Links inside the track must set `data-cursor="link"` themselves, or the track's DRAG state wins.
@@ -869,7 +877,7 @@ closing button links to.
 - **Accordion, md and up** (`@container`; sizes are CSS variables in `cqw`, so a full line with one card open always fits the column):
   - **Line.** A flex row of cards 440px tall, gap `clamp(8px, 1.1cqw, 12px)`. Each line holds up to 8 cards (`JUNIOR_CORE.perLine`). More members continue on a second line of the same accordion, and the lines are fixed, so cards never jump between them.
   - **Closed card.** A pill `clamp(44px, 6.6cqw, 76px)` wide (radius half its width, so it can animate). The portrait is `object-cover` at the member's `focal_point`, dimmed with `grayscale-40 brightness-80`. The first name runs vertically at the bottom (mono 11px, `text-text/60`) over a faint bottom gradient.
-  - **Open card.** `clamp(280px, 42cqw, 460px)` wide, `rounded-card`, full colour. It has the 1px `iris-border` ring and a soft glow in `--jc-accent`.
+  - **Open card.** `clamp(280px, 42cqw, 460px)` wide, `rounded-card`, full colour. It has the 1px `iris-border` ring and a faint glow in `--jc-accent` (red at 35% / 45%).
   - **Open card's details.** A bottom gradient from transparent to `black/85`, with:
     - the name (Sora 600, 24px);
     - the role (mono 11px);
@@ -985,7 +993,7 @@ Navigation:
 - **video**: a muted loop that plays only while centred. A sound toggle sits on the centre page (outside its button). The
   poster shows otherwise, with a small play badge.
 - **collage**: 2–3 photos in white print borders, each turned 2–5° (alternating direction, seeded). Each has translucent tape
-  strips over two corners. There is one sticker: an amber star, a coral spark, or the club logo on a white disc.
+  strips over two corners. There is one sticker: a red star, a maroon spark, or the club logo on a white disc.
 - **note**: `paper-ruled`, with the caption handwritten large on the rules and the event date in mono at the top right.
 
 ### Grid view and the switch (`JournalGrid`)
@@ -1049,17 +1057,17 @@ the outer edge. The current files are generated placeholders; replace them with 
 **Layout.** Everything is placed against `--tip-y`, the line the fingertips point along: 42% of the screen on phones, 52%
 from md (the middle of the area below the header). Layers, back to front:
 - `bg-bg` and a `GridBackground` at 50% opacity;
-- the **iris ring** (`IrisRing`), 70vmin, centred on the contact point: a conic gradient of the iris colours with clear
+- the **iris ring** (`IrisRing`), 70vmin, centred on the contact point: a conic gradient of maroon and red with clear
   gaps, masked into a ring that fades over about 30px each side (the look of a 30px blur), plus a fine edge line. It turns
   once per 40s (`animate-orbit`) and breathes (`animate-breathe`). The softness comes from the mask, **not**
   `filter: blur()`: a blurred layer that rotates is re-blurred every frame, while a masked one is rasterised once and only
   turned by the compositor;
 - the **title** (the page's `h1`): `club_name` (Sora 700) over "where humans meet machines" (Sora 500, `text-text/75`,
-  "machines" in `text-iris`), `clamp(2.25rem, 4.4vw, 4.5rem)` from md, centred above the hands;
+  "machines" in `text-red`), `clamp(2.25rem, 4.4vw, 4.5rem)` from md, centred above the hands;
 - the **hands**: 54vw wide (55vw on phones), each made of four wrappers: the CSS pose (placement and the start
   translate of ±20vw, never touched by GSAP, §7), the scroll x, the cursor parallax and the float (`animate-float`, the
   robot 1.6s out of phase);
-- a **glow** at the contact point (a white radial gradient, `animate-pulse-soft`), hidden until the touch;
+- a **glow** at the contact point (a warm white radial gradient, `animate-pulse-soft`), hidden until the touch;
 - **tag pills** top right ("IoT", "Robotics", "Research"; small mono pills), fading up on load (`animate-fade-up`, 80ms apart);
 - three **copy blocks**:
   - **A**, bottom left: "01 / Who we are", "Built by students, for the real world" (Sora 600,
@@ -1078,7 +1086,7 @@ from md (the middle of the area below the header). Layers, back to front:
 | 0.35 → 0.65 | The hands close to 2vw. A rises in (60px, from 0.37), then B (30px, from 0.44) |
 | 0.65 → 0.9 | The hands drift to 1.2vw. A and B slide up 56px and fade out; C rises in (40px, from 0.74) |
 | 0.9 → 0.96 | The fingertips meet (`sine.inOut`) |
-| 0.955 → 1 | The glow appears at the contact point; the ring flashes (a white copy, 0 → 1 → 0) and expands to 1.7× while fading out |
+| 0.955 → 1 | The glow appears at the contact point; the ring flashes (a warm white copy, 0 → 1 → 0) and expands to 1.7× while fading out |
 | after the pin | The stage fades out over 0.6 of a screen as it scrolls away into the mission cards |
 
 **Cursor parallax** (md and up, fine pointers only): the hands drift up to 12px towards the cursor, and the ring up to 6px
@@ -1091,16 +1099,17 @@ The pinned layout's positions are all `motion-safe:` classes, so the default cla
 ### Below the hands (`AboutSections`, `AboutReveals`)
 Each section has a mono index label and a Sora 700 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
 - **Purpose** (`[01] Mission & vision`): two large cards side by side from md (`bg-2`, `rounded-card`, hairline, a
-  `DotGrid` in the corner): the accent mono label (Mission blue, Vision coral), a heading and a paragraph. Copy in
+  `DotGrid` in the corner): the accent mono label (Mission red, Vision warm white), a heading and a paragraph. Copy in
   `ABOUT_PURPOSE`.
 - **Pillars** (`[02] What we do`): Workshops, Projects, Competitions (`ABOUT_PILLARS`), three columns from md. Each has an
-  icon (`components/about/icons.tsx`, 24px line icons) in an accent circle with dark text, a heading and about two lines.
+  icon (`components/about/icons.tsx`, 24px line icons) in an accent circle (Projects red with warm white; Workshops and Competitions warm white with dark), a heading and about two lines.
 - **History** (`[03] Our story`): a vertical line (centred from md, at the left on phones) with a dot and a year card for each
   milestone. From md the cards alternate left and right, overlapping a little so they zig-zag. The line draws itself
-  (scaleY, scrubbed from the list's top at 70% of the viewport to its bottom at 70%). Each dot lights up in the next accent
-  (blue, violet, coral, orange, amber) as the line reaches it. Each card slides in 40px from its side (rises 30px on phones).
+  (scaleY, scrubbed from the list's top at 70% of the viewport to its bottom at 70%). Each dot lights up red as the line
+  reaches it. Each card slides in 40px from its side (rises 30px on phones).
 - **Teams** (`[04] Teams`): "Seven teams, one club" (the count is spelled from the data), a line, and a row of large team
-  `Pill`s in their accents, each linking to `/members` with a small ↗ that nudges on hover.
+  charcoal (`raised`) `Pill`s, each linking to `/members` with a small red ↗ that nudges on hover; on hover or focus the pill
+  fills red and the ↗ turns warm white.
 
 Reveals: `[data-reveal]` and `[data-reveal-group]` items rise 40px and fade in once at `top 80%` (0.06s apart). Every trigger
 uses `refreshPriority: -1`, below the hands' pin. Under reduced motion nothing animates, the line is drawn and every dot is lit.
@@ -1277,7 +1286,7 @@ A streaming-app style showcase: one big card per event, its subject popping out 
   dividers; a divider never ends a wrapped line), then:
   - **upcoming**: the countdown (`Countdown size="sm"`) and a "Register" `IrisButton`, only when `registration_url` is set;
   - **past**: a "View gallery" ghost `PillButton` to `/gallery/<slug>`, only when the event has a journal.
-- **Status badge**: "Registrations open" in an `iris` Pill, or "Completed" in a muted pill (`bg-text/10`).
+- **Status badge**: "Registrations open" in a `maroon` Pill (`raised` in lists), or "Completed" in a muted pill (`bg-text/10`).
 - **Thumbnails** (`EventThumbs`, 120 × 72, 10px radius, §2): a past event shows its photos (they open the lightbox, VIEW
   cursor); an upcoming event shows the other events (they switch to them). Hover or keyboard focus widens one to 220px over
   500ms (`ease-power3`) with its title or caption underneath, and its neighbours move aside. The row scrolls sideways with
@@ -1287,9 +1296,11 @@ A streaming-app style showcase: one big card per event, its subject popping out 
   with an `01 / 06` counter. The active segment fills over the autoplay time.
 
 ### Background tint (`EventTint`)
-A fixed layer behind the page: a radial `color-mix(in oklab, accent 18%, bg)` centred behind the card, fading to `bg`. The
-colour is a registered `@property --tint`, so it crossfades over 900ms. The colour is `accent_color`, or the banner's
-dominant colour sampled on a canvas from a 64px `/_next/image` copy (`useEventColor`, cached per banner).
+A fixed layer behind the page: a radial `color-mix(in oklab, accent 12%, bg)` centred behind the card (4% at mid-radius),
+fading to `bg`, so the page stays matte black with a faint red light. The colour is a registered `@property --tint`, so it
+crossfades over 900ms. The colour is `accent_color`, or the banner's dominant colour sampled on a canvas from a 64px
+`/_next/image` copy (`useEventColor`, cached per banner) and snapped into the palette (`paletteTint`): warm, saturated
+hues give `--red`, anything else `--maroon`. A colourful banner never brings a foreign hue onto the page.
 
 ### Switching
 - **Ways in**: the arrows, ← / → anywhere on the page (not in fields, the menu or an overlay), a touch or mouse swipe on the
@@ -1336,4 +1347,6 @@ and the thumbnails widen instantly. The tint changes instantly.
 
 ### Placeholders
 The banners and cutouts in `/public/events/` are generated placeholders (procedural scenes, the robot poster and the
-members cutout figure). Replace them with real art that follows the cutout convention above.
+members cutout figure), graded into the palette: dark areas fall to black and charcoal, and only bright, colourful light
+maps through maroon and red to warm white. Replace them with real art that follows the cutout convention above; real
+photography keeps its own colours, but event art made for the site should follow the same grade.

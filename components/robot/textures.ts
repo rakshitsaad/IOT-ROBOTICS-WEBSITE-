@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { IRIS_STOPS } from "@/lib/tokens";
+import { COLORS, IRIS_STOPS } from "@/lib/tokens";
 import { seeded } from "./face";
 
 /**
@@ -8,9 +8,9 @@ import { seeded } from "./face";
  */
 
 /**
- * The iris gradient as a seamless loop (blue → violet → coral → orange →
- * amber → back to blue), sampled along U. Used for the bezel, which maps U
- * to the angle around the screen, so the colours run around the frame.
+ * The bezel sheen as a seamless loop (maroon → red → maroon → a dark gap →
+ * maroon), sampled along U. Used for the bezel, which maps U to the angle
+ * around the screen, so a slow red highlight travels around the frame.
  */
 export function createIrisLoopTexture(): THREE.CanvasTexture {
   const w = 512;
@@ -19,7 +19,7 @@ export function createIrisLoopTexture(): THREE.CanvasTexture {
   c.height = 4;
   const g = c.getContext("2d")!;
   const grad = g.createLinearGradient(0, 0, w, 0);
-  const stops = [...IRIS_STOPS, IRIS_STOPS[0]];
+  const stops = [...IRIS_STOPS, COLORS.bg2, IRIS_STOPS[0]];
   stops.forEach((color, i) => grad.addColorStop(i / (stops.length - 1), color));
   g.fillStyle = grad;
   g.fillRect(0, 0, w, 4);
@@ -33,7 +33,7 @@ export function createIrisLoopTexture(): THREE.CanvasTexture {
 
 /**
  * Circuit-board traces for the hexagonal base: thin orthogonal/diagonal
- * lines ending in round pads, in faint iris colours on black. Used as an
+ * lines ending in round pads, in faint maroon and red on black. Used as an
  * emissive map so the traces glow softly. UVs follow CylinderGeometry caps
  * (the circle inscribed in the unit square).
  */

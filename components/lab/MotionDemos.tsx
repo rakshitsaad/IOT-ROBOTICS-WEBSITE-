@@ -26,7 +26,7 @@ function Stat({ label, value, on }: { label: string; value: string; on: boolean 
     <div className="rounded-image border border-line bg-bg-2 p-4">
       <dt className="mono-label text-muted">{label}</dt>
       <dd className="mt-2 flex items-center gap-2 text-sm font-semibold">
-        <span className={on ? "size-2 rounded-full bg-blue" : "size-2 rounded-full bg-muted"} />
+        <span className={on ? "size-2 rounded-full bg-red" : "size-2 rounded-full bg-muted"} />
         {value}
       </dd>
     </div>
@@ -109,8 +109,8 @@ export function PillRevealDemo() {
   return (
     <div ref={scope} className="mt-4 flex flex-wrap items-end justify-between gap-6">
       <p className="text-[length:clamp(1.75rem,4.5vw,3.25rem)] leading-[1.14] font-semibold tracking-[-0.035em]">
-        Things that <Pill color="blue" reveal>move</Pill>, <Pill color="white" reveal>fly</Pill> and{" "}
-        <Pill color="iris" reveal>think</Pill>.
+        Things that <Pill color="white" reveal>move</Pill>, <Pill color="raised" reveal>fly</Pill> and{" "}
+        <Pill color="red" reveal>think</Pill>.
       </p>
       <button
         type="button"

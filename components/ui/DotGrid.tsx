@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
  * Small decorative cluster of dots. Colour follows `currentColor`, so tint it
  * with a text class (default text-muted).
  *
- *   <DotGrid rows={3} cols={5} className="text-coral" />
+ *   <DotGrid rows={3} cols={5} className="text-red/60" />
  */
 interface DotGridProps {
   rows?: number;

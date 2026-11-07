@@ -47,7 +47,7 @@ export function AnnouncementBar({ text, linkLabel, linkUrl, dismissKey }: Announ
       className="relative flex h-(--ann-h) items-center justify-center border-b border-line bg-bg-2 px-12 text-center"
     >
       <p className="flex min-w-0 items-center gap-2 text-[12px] leading-tight text-text/90 md:text-[13px]">
-        <span className="size-1.5 shrink-0 rounded-full bg-amber" aria-hidden="true" />
+        <span className="size-1.5 shrink-0 rounded-full bg-red" aria-hidden="true" />
         <span className="truncate">{text}</span>
         {link && <span className="shrink-0">{link}</span>}
       </p>
@@ -67,4 +67,4 @@ export function AnnouncementBar({ text, linkLabel, linkUrl, dismissKey }: Announ
 }
 
 const LINK =
-  "font-semibold text-text underline decoration-text/30 underline-offset-[3px] transition-colors duration-[350ms] hover:decoration-amber";
+  "font-semibold text-text underline decoration-text/30 underline-offset-[3px] transition-colors duration-[350ms] hover:decoration-red";

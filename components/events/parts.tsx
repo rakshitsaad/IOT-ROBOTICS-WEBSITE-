@@ -8,12 +8,12 @@ import { eventDate, type ShowcaseEvent } from "@/lib/events";
  */
 
 /**
- * "Registrations open" (iris pill) for upcoming events, "Completed" (muted pill) for past ones. `quiet` uses a
- * white pill instead of iris, for lists (iris stays rare: one or two per screen).
+ * "Registrations open" (maroon pill) for upcoming events, "Completed" (muted pill) for past ones. Maroon, not red,
+ * so it never competes with the red Register button beside it. `quiet` uses a charcoal pill, for lists.
  */
 export function StatusBadge({ event, quiet, className }: { event: Pick<ShowcaseEvent, "status">; quiet?: boolean; className?: string }) {
   return event.status === "upcoming" ? (
-    <Pill color={quiet ? "white" : "iris"} className={cn("inline-block px-2.5 py-1 leading-none font-semibold whitespace-nowrap", className)}>
+    <Pill color={quiet ? "raised" : "maroon"} className={cn("inline-block px-2.5 py-1 leading-none font-semibold whitespace-nowrap", className)}>
       Registrations open
     </Pill>
   ) : (

@@ -26,7 +26,7 @@ export const LAB_STATIONS: readonly LabStation[] = [
     title: "Drones & Aerial Systems",
     short: "Drones",
     icon: "drone",
-    accent: "blue",
+    accent: "red",
     description:
       "Quadcopters, VTOLs and indoor swarms we design, tune and fly ourselves, from flight controllers to fully autonomous missions.",
   },
@@ -35,7 +35,7 @@ export const LAB_STATIONS: readonly LabStation[] = [
     title: "Robotics & Mechatronics",
     short: "Robotics",
     icon: "robot-arm",
-    accent: "coral",
+    accent: "red",
     description:
       "Arms, rovers and competition bots, built from CAD and custom PCBs all the way up to the control loops that make them move.",
   },
@@ -44,7 +44,7 @@ export const LAB_STATIONS: readonly LabStation[] = [
     title: "IoT & Embedded",
     short: "IoT",
     icon: "wifi-chip",
-    accent: "amber",
+    accent: "red",
     description:
       "Low-power sensor nodes, firmware and dashboards that put real data from the campus and nearby farms online.",
   },
@@ -53,7 +53,7 @@ export const LAB_STATIONS: readonly LabStation[] = [
     title: "Research & AI",
     short: "Research",
     icon: "atom",
-    accent: "violet",
+    accent: "red",
     description:
       "On-device ML, new sensors and sim-to-real experiments: we test ideas in hardware and write up what we learn.",
   },

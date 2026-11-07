@@ -62,12 +62,10 @@ export function Purpose() {
 
 /* --------------------------------------------------------------- pillars */
 
+/** Icon circles: red with warm white, or warm white with dark (lib/tokens.ts → textOn). */
 const ICON_FILL: Record<Accent, string> = {
-  blue: "bg-blue",
-  violet: "bg-violet",
-  coral: "bg-coral",
-  orange: "bg-orange",
-  amber: "bg-amber",
+  red: "bg-red text-text",
+  white: "bg-text text-bg",
 };
 
 export function Pillars() {
@@ -80,7 +78,7 @@ export function Pillars() {
         {ABOUT_PILLARS.map((pillar, i) => (
           <li key={pillar.title} data-reveal-item className="rounded-card border border-line bg-bg-2/70 p-7 md:p-8">
             <div className="flex items-start justify-between">
-              <span className={cn("grid size-14 place-items-center rounded-full text-bg", ICON_FILL[pillar.accent])}>
+              <span className={cn("grid size-14 place-items-center rounded-full", ICON_FILL[pillar.accent])}>
                 <PillarIcon name={pillar.icon} className="size-7" />
               </span>
               <MonoLabel>[{String(i + 1).padStart(2, "0")}]</MonoLabel>
@@ -96,15 +94,13 @@ export function Pillars() {
 
 /* --------------------------------------------------------------- history */
 
-const ACCENT_CYCLE: Accent[] = ["blue", "violet", "coral", "orange", "amber"];
+/** Every dot lights red: the line reaching a milestone is the timeline's one active state. */
+const ACCENT_CYCLE: Accent[] = ["red"];
 
 /** A dot lights up in its accent once the line reaches it (and always under reduced motion). */
 const DOT_LIT: Record<Accent, string> = {
-  blue: "[&.is-lit]:bg-blue motion-reduce:bg-blue",
-  violet: "[&.is-lit]:bg-violet motion-reduce:bg-violet",
-  coral: "[&.is-lit]:bg-coral motion-reduce:bg-coral",
-  orange: "[&.is-lit]:bg-orange motion-reduce:bg-orange",
-  amber: "[&.is-lit]:bg-amber motion-reduce:bg-amber",
+  red: "[&.is-lit]:bg-red motion-reduce:bg-red",
+  white: "[&.is-lit]:bg-text motion-reduce:bg-text",
 };
 
 export function History({ milestones }: { milestones: Milestone[] }) {
@@ -184,11 +180,14 @@ export function TeamsOverview({ teams }: { teams: Team[] }) {
               title={team.description}
               className="group/team inline-block rounded-pill transition-transform duration-[350ms] ease-power3 hover:-translate-y-1 focus-visible:outline-offset-4"
             >
-              <Pill color={team.accent} className="inline-flex items-center gap-[0.3em] px-[0.6em] py-[0.12em]">
+              <Pill
+                color="raised"
+                className="inline-flex items-center gap-[0.3em] px-[0.6em] py-[0.12em] transition-colors duration-[350ms] ease-power3 group-hover/team:bg-red group-focus-visible/team:bg-red"
+              >
                 {team.name}
                 <span
                   aria-hidden="true"
-                  className="text-[0.7em] transition-transform duration-[350ms] ease-power3 group-hover/team:translate-x-0.5 group-hover/team:-translate-y-0.5"
+                  className="text-[0.7em] text-red transition-[color,translate] duration-[350ms] ease-power3 group-hover/team:text-text group-focus-visible/team:text-text group-hover/team:translate-x-0.5 group-hover/team:-translate-y-0.5"
                 >
                   ↗
                 </span>

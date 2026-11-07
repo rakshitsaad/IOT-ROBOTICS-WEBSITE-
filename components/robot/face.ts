@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { BOT_ICONS, type BotIcon } from "./icons";
 import type { BotFace } from "./store";
+import { COLORS } from "@/lib/tokens";
 
 /**
  * The robot's screen. A 512 × 512 canvas drawn white-on-black and used as
@@ -78,8 +79,9 @@ export class FaceDisplay {
     if (glitch) {
       const shift = 5 + 5 * Math.sin(glitch.progress * Math.PI);
       g.globalCompositeOperation = "lighter";
-      g.drawImage(this.tinted("#ff2a55"), -shift, 0);
-      g.drawImage(this.tinted("#2ad8ff"), shift, 0);
+      // RGB-split in the palette: a red ghost one way, a warm white one the other.
+      g.drawImage(this.tinted(COLORS.red), -shift, 0);
+      g.drawImage(this.tinted(COLORS.text), shift, 0);
       g.globalAlpha = 0.7;
       g.drawImage(this.buffer, 0, 0);
       g.globalAlpha = 1;
