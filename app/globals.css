@@ -2,42 +2,39 @@
 
 /* =========================================================================
    DESIGN TOKENS — keep in sync with lib/tokens.ts and DESIGN.md
-   Industrial minimalism: dark neutral surfaces, warm white type, one deep red.
    ========================================================================= */
 
 :root {
-  /* Surfaces */
-  --bg: #0b0b0c; /* page background */
-  --bg-2: #151517; /* surface: cards, panels, the header once scrolled */
-  --bg-3: #1d1d20; /* elevated surface: hover rows, inputs, menus */
-  --line: #29292c; /* hairlines and borders */
+  /* Surfaces & text. Black and charcoal carry about 75% of every view. */
+  --bg: #090909; /* matte black */
+  --bg-2: #171717; /* charcoal: raised surfaces */
+  --line: #292929; /* border grey */
+  --text: #f2f0eb; /* warm white */
+  --muted: #858585; /* muted grey */
 
-  /* Text */
-  --text: #f1eee8; /* warm white: headings, primary text */
-  --muted: #a7a39e; /* secondary: body copy, descriptions */
-  --faint: #77736f; /* tertiary: metadata, captions, labels (11–13px, never long copy) */
+  /* Accents. Red is the only signal colour (about 8% of a view); maroon is a
+     quiet fill and gradient partner (about 2%). Never red body text. */
+  --red: #c62828; /* deep red */
+  --red-deep: #a82222; /* red at 85% toward black: the primary button's hover */
+  --maroon: #5a1717; /* dark maroon */
 
-  /* Accent. Important actions, the active state and rare emphasis only. */
-  --red: #b71932;
-  --red-deep: #97152a; /* the accent's hover */
-  --maroon: #5a1717; /* robot / dev pages only (mascot materials, the drone bench) */
+  /* Brand signature: a restrained maroon → red → maroon sheen. Use sparingly:
+     robot bezel, active borders, soft blobs. Never as a page background. */
+  --iris: linear-gradient(110deg, #5a1717, #c62828 50%, #5a1717);
 
-  /* GridBackground lines (dev pages), fainter than --line. */
-  --grid: rgba(241, 238, 232, 0.035);
-
-  /* The mascot's bezel sheen. Brand mark and robot only; never a background. */
-  --iris: linear-gradient(110deg, #5a1717, #b71932 50%, #5a1717);
+  /* Derived */
+  --grid: rgba(242, 240, 235, 0.035); /* GridBackground lines (fainter than --line) */
 
   /* Layout */
-  --gutter: 20px;
-  --nav-h: 64px;
-  --ann-h: 36px; /* set to 0 when the announcement bar is off/dismissed */
+  --gutter: 16px;
+  --nav-h: 72px;
+  --ann-h: 40px; /* set to 0 when the announcement bar is off/dismissed */
 }
 
 @media (width >= 768px) {
   :root {
     --gutter: 32px;
-    --nav-h: 72px;
+    --nav-h: 84px;
   }
 }
 
@@ -51,16 +48,16 @@ html[data-ann="off"] {
   --ann-h: 0px;
 }
 
-/* Expose tokens to Tailwind. The default palette is cleared so only brand colours exist. */
+/* Expose tokens to Tailwind. Default palette is cleared on purpose so only
+   brand colours exist: bg-bg, bg-bg-2, border-line, text-text, text-muted,
+   bg-red, hover:bg-red-deep, bg-maroon. */
 @theme inline {
   --color-*: initial;
   --color-bg: var(--bg);
   --color-bg-2: var(--bg-2);
-  --color-bg-3: var(--bg-3);
   --color-line: var(--line);
   --color-text: var(--text);
   --color-muted: var(--muted);
-  --color-faint: var(--faint);
   --color-red: var(--red);
   --color-red-deep: var(--red-deep);
   --color-maroon: var(--maroon);
@@ -70,42 +67,212 @@ html[data-ann="off"] {
   --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-bodoni-moda), "Didot", Georgia, serif;
+  --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
+  /* Anton: the /achievements slide titles only (DESIGN.md §3). */
+  --font-condensed: var(--font-anton), Impact, "Arial Narrow", sans-serif;
 
-  /* Restrained radii. */
-  --radius-pill: 999px; /* avatars, dots, icon buttons only */
-  --radius-card: 10px; /* cards, panels, media blocks */
-  --radius-image: 6px; /* images, thumbnails */
-  --radius-control: 6px; /* buttons, inputs */
-  --radius-tag: 4px; /* tags and small labels */
+  --radius-pill: 999px;
+  --radius-card: 28px;
+  --radius-image: 18px;
 
   --ease-power3: cubic-bezier(0.33, 1, 0.68, 1); /* ≈ GSAP power3.out */
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1); /* ≈ GSAP expo.out */
 }
 
-/* First-load entrances run in CSS so they play from the server HTML. Pair with motion-reduce:animate-none. */
+/* First-load entrances run in CSS so they play from the server HTML, before
+   any JS (see DESIGN.md → Motion). Pair with motion-reduce:animate-none. */
 @theme {
-  --animate-rise: rise 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-fade-up: fade-up 0.8s cubic-bezier(0.33, 1, 0.68, 1) both;
-  /* A bar filling from the left (origin-left). Set the duration inline. */
+  /* Letters rising out of an overflow-hidden mask (expo.out, 1.2s). Stagger with animation-delay. */
+  --animate-rise: rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Small "scroll down" arrow nudge. */
+  --animate-nudge: nudge 1.6s ease-in-out infinite;
+  /* A bar filling from the left (origin-left), e.g. the slider's autoplay timer.
+     Set the duration inline; it ends on scaleX(1). */
   --animate-grow-x: grow-x 5s linear both;
+  /* Small labels fading up into place on load (power3.out, 0.9s). Stagger with animation-delay. */
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.33, 1, 0.68, 1) both;
+  /* Ambient loops (/about hands, §15). Always pair with motion-reduce:animate-none. */
+  --animate-float: float 4s ease-in-out infinite; /* ±2.5px up and down */
+  --animate-breathe: breathe 6s ease-in-out infinite; /* scale 0.98 ↔ 1.02 */
+  --animate-orbit: orbit 40s linear infinite; /* one turn per 40s */
+  --animate-pulse-soft: pulse-soft 1.8s ease-in-out infinite; /* a glow swelling and settling */
+  /* The /projects vertical title (§16): letters leave towards their tops and come in from below, inside a
+     mask. The title is set vertically and turned (vertical-rl + rotate-180), so a letter's "up" is +x.
+     Stagger with animation-delay (25ms). */
+  --animate-letter-in: letter-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-letter-out: letter-out 0.45s cubic-bezier(0.7, 0, 0.84, 0) both;
+  /* The /events feature card's first appearance (§17); later switches replay the same steps in GSAP.
+     wipe-in: the banner fades in behind a left-to-right clip-path wipe; settle: its image scales 1.08 → 1;
+     pop-up: the cutout rises 40px; slide-up: thumbnails rise 20px. Stagger with animation-delay. */
+  --animate-wipe-in: wipe-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-settle: settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pop-up: pop-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-slide-up: slide-up 0.6s cubic-bezier(0.33, 1, 0.68, 1) both;
+  /* The /contact planet (§20). planet-rise: 25vh up into place on load (1.6s expo); rim: the rim's glow fades
+     in with it, then breathes (opacity 1 ↔ 0.85, 5s); streak: a light runs along the rim, left to right, every 8s;
+     twinkle: a star dims and comes back (set --o, the duration and a delay per star). */
+  --animate-planet-rise: planet-rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-rim: rim-in 1.6s cubic-bezier(0.33, 1, 0.68, 1) both, rim-breathe 5s ease-in-out 1.6s infinite;
+  --animate-streak: rim-streak 8s linear 2.2s infinite;
+  --animate-twinkle: twinkle 5s ease-in-out infinite;
+  /* The /join crowd (§21): it fades in and rises 30px as one layer, 1.2s power3.out, just after the hero's text. */
+  --animate-crowd-in: crowd-in 1.2s cubic-bezier(0.33, 1, 0.68, 1) both;
 
-  @keyframes rise {
+  @keyframes wipe-in {
     from {
-      transform: translateY(105%);
+      clip-path: inset(0 100% 0 0);
+      opacity: 0;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
     }
   }
+  @keyframes settle {
+    from {
+      transform: scale(1.08);
+    }
+  }
+  @keyframes pop-up {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
+
   @keyframes fade-up {
     from {
       opacity: 0;
       transform: translateY(12px);
     }
   }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(-2.5px);
+    }
+    50% {
+      transform: translateY(2.5px);
+    }
+  }
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(0.98);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+  @keyframes orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      transform: scale(0.85);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 1;
+    }
+  }
+
+  @keyframes letter-in {
+    from {
+      transform: translateX(-110%);
+    }
+  }
+  @keyframes letter-out {
+    to {
+      transform: translateX(110%);
+    }
+  }
+
   @keyframes grow-x {
     from {
       transform: scaleX(0);
     }
     to {
       transform: scaleX(1);
+    }
+  }
+  @keyframes rise {
+    from {
+      transform: translateY(110%);
+    }
+  }
+  @keyframes planet-rise {
+    from {
+      transform: translateY(25vh);
+    }
+  }
+  @keyframes rim-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes rim-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+  @keyframes rim-streak {
+    0% {
+      --streak: -42deg;
+      opacity: 0;
+    }
+    3% {
+      opacity: 1;
+    }
+    27% {
+      opacity: 1;
+    }
+    30% {
+      --streak: 42deg;
+      opacity: 0;
+    }
+    100% {
+      --streak: 42deg;
+      opacity: 0;
+    }
+  }
+  @keyframes crowd-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--o, 0.3);
+    }
+    50% {
+      opacity: calc(var(--o, 0.3) * 0.25);
+    }
+  }
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(-2px);
+    }
+    50% {
+      transform: translateY(3px);
     }
   }
 }
@@ -126,12 +293,10 @@ html[data-ann="off"] {
 
   body {
     min-height: 100dvh;
-    background: var(--bg);
     color: var(--text);
     font-family: var(--font-sans);
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 1.6;
+    font-weight: 500;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
@@ -143,117 +308,39 @@ html[data-ann="off"] {
   }
 
   :focus-visible {
-    outline: 2px solid var(--text);
+    outline: 2px solid var(--red);
     outline-offset: 3px;
-  }
-
-  /* Anchored sections land below the fixed header. */
-  [id] {
-    scroll-margin-top: calc(var(--nav-h) + 24px);
   }
 }
 
-/* Dismissed / disabled announcement: hidden before first paint. Unlayered so it beats `grid`. */
+/* Dismissed / disabled announcement: hidden before first paint.
+   Unlayered on purpose so it beats the `grid` utility on the same element. */
 html[data-ann="off"] [data-announcement] {
   display: none;
 }
 
 /* =========================================================================
-   TYPE SCALE — one set of sizes for every page (DESIGN.md §3)
+   UTILITIES
    ========================================================================= */
 
-/* Home hero headline only: ~76–96px on large desktops. */
-@utility type-display {
-  font-size: clamp(2.6rem, 6.2vw, 6rem);
-  line-height: 1;
-  font-weight: 650;
-  letter-spacing: -0.04em;
-}
-
-/* Inner page headings (the page's h1): ~52–68px. */
-@utility type-h1 {
-  font-size: clamp(2.4rem, 5vw, 4.25rem);
-  line-height: 1.02;
-  font-weight: 650;
-  letter-spacing: -0.035em;
-}
-
-/* Section headings: ~32–42px. */
-@utility type-h2 {
-  font-size: clamp(1.75rem, 3vw, 2.625rem);
-  line-height: 1.1;
-  font-weight: 600;
-  letter-spacing: -0.028em;
-}
-
-/* Card and item headings: ~20–26px. */
-@utility type-h3 {
-  font-size: clamp(1.2rem, 1.7vw, 1.5rem);
-  line-height: 1.25;
-  font-weight: 600;
-  letter-spacing: -0.018em;
-}
-
-/* Introductory paragraphs under a page heading. Pair with text-muted. */
-@utility type-lead {
-  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
-  line-height: 1.6;
-  font-weight: 400;
-}
-
-/* Body copy: 15–16px. Pair with text-muted. */
-@utility type-body {
-  font-size: 15px;
-  line-height: 1.7;
-  @media (width >= 768px) {
-    font-size: 16px;
-  }
-}
-
-/* Technical label: JetBrains Mono, 11px (12px ≥ md), uppercase, tracked. */
+/* Technical label: JetBrains Mono, 11px (12px ≥ md), +0.14em, uppercase. */
 @utility mono-label {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 400;
   line-height: 1.4;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   @media (width >= 768px) {
     font-size: 12px;
   }
 }
 
-/* =========================================================================
-   LAYOUT UTILITIES
-   ========================================================================= */
-
-/* Max-width page container with responsive side gutter. */
-@utility shell {
-  width: 100%;
-  max-width: calc(1320px + 2 * var(--gutter));
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-}
-
-@utility px-gutter {
-  padding-inline: var(--gutter);
-}
-
-/* Top padding that clears the fixed header (announcement + navbar). */
-@utility pt-header {
-  padding-top: calc(var(--nav-h) + var(--ann-h));
-}
-
-/* Vertical rhythm between page sections. */
-@utility section-y {
-  padding-block: clamp(4.5rem, 9vw, 8rem);
-}
-
 @utility bg-iris {
   background-image: var(--iris);
 }
 
-/* 1px --iris border that follows border-radius (dev pages only). */
+/* 1px --iris border that follows border-radius. Element needs a radius. */
 @utility iris-border {
   position: relative;
   isolation: isolate;
@@ -276,21 +363,106 @@ html[data-ann="off"] [data-announcement] {
   }
 }
 
+/* Max-width page container with responsive side gutter. */
+@utility shell {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility px-gutter {
+  padding-inline: var(--gutter);
+}
+
+/* Top padding that clears the fixed header (announcement + navbar). */
+@utility pt-header {
+  padding-top: calc(var(--nav-h) + var(--ann-h));
+}
+
+/* Off-white paper with a faint grain: gallery journal pages, caption tags, notes. */
+@utility paper {
+  background-color: var(--text);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.32 0 0 0 -0.1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Paper with notebook rules (faint grey lines every --rule, a red margin line). For note pages. */
+@utility paper-ruled {
+  --rule: 2rem;
+  background-color: var(--text);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.32 0 0 0 -0.1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    linear-gradient(to right, transparent 0 13%, color-mix(in srgb, var(--red) 45%, transparent) 13% calc(13% + 1px), transparent calc(13% + 1px)),
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--rule) - 1px), color-mix(in srgb, var(--muted) 30%, transparent) calc(var(--rule) - 1px) var(--rule));
+}
+
+/* The /events page tint (§17): a registered colour, so changing it crossfades (900ms) instead of jumping.
+   The initial value is --bg (a registered property can't start from var()). */
+@property --tint {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #090909;
+}
+
+/* The /contact planet (§20). Sizes and positions are set in the component; these are the looks. */
+@property --streak {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -42deg;
+}
+
+/* A faint dot texture over the hero, fading out towards the edges. */
+@utility contact-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--text) 7%, transparent) 1px, transparent 1.25px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, black, transparent);
+}
+
+/* The planet's surface: a circle, lit just under the rim (the accent at 15%), fading to black within ~34svh. */
+@utility contact-planet {
+  border-radius: 9999px;
+  background:
+    radial-gradient(42% 7svh at 50% 0, color-mix(in oklab, var(--red) 30%, transparent), transparent),
+    radial-gradient(80% 34svh at 50% 0, color-mix(in oklab, var(--red) 15%, var(--bg)), var(--bg));
+}
+
+/* The rim: a bright 2px edge on the circle's top, a tight glow, a wide glow above it and a glow on the surface. */
+@utility contact-rim {
+  border-radius: 9999px;
+  border-top: 2px solid color-mix(in oklab, var(--red) 72%, var(--text));
+  box-shadow:
+    0 -1px 6px 0 color-mix(in oklab, var(--red) 85%, var(--text)),
+    0 0 26px 2px color-mix(in oklab, var(--red) 70%, transparent),
+    0 0 90px 14px color-mix(in oklab, var(--red) 32%, transparent),
+    inset 0 22px 44px -22px color-mix(in oklab, var(--red) 60%, transparent);
+}
+
+/* A short light running along the rim: a conic wedge (its head at --streak, a tail behind it), masked to the edge. */
+@utility contact-streak {
+  border-radius: 9999px;
+  opacity: 0;
+  background: conic-gradient(
+    from var(--streak),
+    transparent 0deg,
+    transparent 357deg,
+    color-mix(in oklab, var(--text) 10%, transparent) 357.4deg,
+    color-mix(in oklab, var(--text) 95%, transparent) 359.85deg,
+    transparent 360deg
+  );
+  mask-image: radial-gradient(closest-side, transparent calc(100% - 3px), black calc(100% - 2px), black 100%, transparent 100%);
+}
+
 /* =========================================================================
-   SCROLL REVEALS — components/providers/Reveals.tsx
-   Content is visible without JS; once the script runs, [data-reveal] blocks below the fold wait and fade up 16px as
-   they enter. Siblings stagger with --reveal-delay. Never under reduced motion.
+   CUSTOM CURSOR — native cursor hidden only while the custom one is active
    ========================================================================= */
 
-@media (prefers-reduced-motion: no-preference) {
-  html[data-reveals] [data-reveal]:not([data-shown]) {
-    opacity: 0;
-    transform: translateY(16px);
+@media (hover: hover) and (pointer: fine) {
+  html[data-custom-cursor],
+  html[data-custom-cursor] * {
+    cursor: none !important;
   }
-  html[data-reveals] [data-reveal] {
-    transition:
-      opacity 0.8s var(--ease-power3) var(--reveal-delay, 0s),
-      transform 0.8s var(--ease-power3) var(--reveal-delay, 0s);
+  html[data-custom-cursor] :is(input, textarea, select, [contenteditable="true"]) {
+    cursor: text !important;
   }
 }
 
@@ -307,4 +479,23 @@ html[data-ann="off"] [data-announcement] {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* /projects on md+ with motion is one full-screen view (the reel, the gallery strip), so the footer
+   below it is hidden there. Phones and reduced motion get normal scrolling pages with the footer
+   (DESIGN.md §16). */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  html:not([data-projects-fallback]):has([data-projects-stage]) #site-footer {
+    display: none;
+  }
+}
+
+/* No WebGL2 (set by ProjectsStage): the plain grid replaces the stage. */
+html[data-projects-fallback] [data-projects-stage],
+html[data-projects-fallback] [data-projects-carousel] {
+  display: none !important;
+}
+html[data-projects-fallback] [data-projects-plain],
+html[data-projects-fallback] [data-projects-grid] {
+  display: block !important;
 }

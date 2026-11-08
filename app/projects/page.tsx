@@ -1,28 +1,20 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ProjectsBrowser, ProjectsBrowserWithParams } from "@/components/projects/ProjectsBrowser";
-import { PageHeader } from "@/components/ui";
-import { getProjectsWithTeam } from "@/lib/data";
+import { GridBackground } from "@/components/ui";
+import { ProjectsIndex } from "@/components/projects/ProjectsIndex";
+import { getProjectsWithTeam, getSettings } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Projects",
   description: "Drones, robots, connected devices and research the club has built.",
 };
 
-/** /projects (DESIGN.md §16): the engineering portfolio. */
+/** The plain list (phones: carousel; reduced motion: grid). md+ with motion shows the layout's reel. */
 export default async function ProjectsPage() {
-  const projects = await getProjectsWithTeam();
-  const years = projects.map((p) => p.year);
+  const [projects, settings] = await Promise.all([getProjectsWithTeam(), getSettings()]);
   return (
     <>
-      <PageHeader
-        label="Projects"
-        title="An engineering portfolio, built by students."
-        intro={`Drones, robots, connected devices and research: ${projects.length} projects from ${Math.min(...years)} to ${Math.max(...years)}, each with the people and the parts behind it.`}
-      />
-      <Suspense fallback={<ProjectsBrowser projects={projects} filter="All" />}>
-        <ProjectsBrowserWithParams projects={projects} />
-      </Suspense>
+      <GridBackground />
+      <ProjectsIndex projects={projects} clubName={settings.club_name} />
     </>
   );
 }

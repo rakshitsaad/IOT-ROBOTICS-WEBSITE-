@@ -41,8 +41,8 @@ export type MemberYear = 1 | 2 | 3 | 4;
 
 /**
  * Where a member sits on the /members page.
- * - senior: Senior Core (full profiles at the top of /members)
- * - junior: Junior Core (grouped by team)
+ * - senior: Senior Core (the editorial spreads, Bodoni Moda)
+ * - junior: Junior Core (the team accordions, grouped by team)
  * - member: everyone else
  */
 export type MemberTier = "senior" | "junior" | "member";
@@ -73,11 +73,15 @@ export interface Member {
    * Core crops the same photo to a 76px pill and a 460px card, so it matters there.
    */
   focal_point: string;
-  /** Transparent PNG of the person, cut out from the background. Optional; not shown on the site at the moment. */
+  /**
+   * Transparent PNG of the person, cut out from the background. Senior Core's
+   * cutout spread (layout C) stands it in front of the name; without one that
+   * spread falls back to the split layout.
+   */
   cutout_url: string | null;
   /** Max 300 characters (seniors) or 160 (juniors): MEMBER_LIMITS. */
   bio: string | null;
-  /** Max 140 characters. Senior Core profiles show it as a pull quote. */
+  /** Max 140 characters. Senior Core shows it in Bodoni Moda italic. */
   quote: string | null;
   socials: MemberSocials;
   is_active: boolean;
@@ -115,7 +119,7 @@ export interface Project {
   id: UUID;
   slug: string;
   title: string;
-  /** The one-line "short description" (project cards and page intros). */
+  /** The one-line "short description" (reel cards, home slider). */
   summary: string;
   description: string;
   cover_url: string | null;
@@ -231,7 +235,7 @@ export interface GalleryItem {
   url: string | null;
   /** Still frame shown before a video plays. Videos only. */
   poster_url: string | null;
-  /** Short caption shown under the photo; a note's whole text. */
+  /** Short handwritten caption, rendered in Caveat. A note's whole text. */
   caption: string | null;
   /** Describes the photo or video for screen readers. */
   alt: string;

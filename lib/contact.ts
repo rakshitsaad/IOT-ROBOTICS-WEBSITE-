@@ -78,5 +78,21 @@ export const CONTACT_FAQ: { q: string; a: string }[] = [
   },
 ];
 
-/** How long a copy button shows "Copied" (ms). */
-export const CONTACT_MOTION = { copied: 1500 };
+/** Seconds (and fractions of the hero for scroll). */
+export const CONTACT_MOTION = {
+  /** The planet rising on load (expo.out), and when the text starts after it. */
+  rise: 1.6,
+  textDelay: 0.3,
+  wordStagger: 0.06,
+  /** The cursor pulls the glow's brightest spot this far (vw) at the screen's edges. */
+  glowFollow: 10,
+  /** The planet moves at this share of the scroll (parallax), and the hero text is gone by this share of the hero. */
+  parallax: 0.6,
+  fadeBy: 0.5,
+  /** The panel standing up as it scrolls in (scrubbed): rise in px, tilt in degrees, perspective in px. */
+  panelRise: 80,
+  panelTilt: 18,
+  panelPerspective: 1400,
+  /** "Copied" shows this long (ms). */
+  copied: 1500,
+};

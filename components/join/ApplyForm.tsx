@@ -8,7 +8,7 @@ import { useState, type DragEvent, type ReactNode } from "react";
 import { useForm, useWatch, type UseFormRegisterReturn } from "react-hook-form";
 import { z } from "zod";
 import { Field, SentCheck, inputClass } from "@/components/forms/fields";
-import { Button, MonoLabel } from "@/components/ui";
+import { IrisButton, MonoLabel, PillButton } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { submitApplication } from "@/lib/actions";
 import { cn } from "@/lib/cn";
@@ -132,10 +132,10 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
         inert={sent}
         animate={{ x: sent ? -56 : 0, opacity: sent ? 0 : 1 }}
         transition={ease}
-        className="rounded-card border border-line bg-bg-2 p-5 [grid-area:1/1] sm:p-8 md:p-10"
+        className="rounded-card bg-bg-2 p-5 ring-1 ring-line [grid-area:1/1] sm:p-8 md:p-10"
       >
         {closedWanted && (
-          <p className="mb-6 rounded-control bg-text/[0.05] px-4 py-3 text-[14px] text-text/85 ring-1 ring-line">
+          <p className="mb-6 rounded-[14px] bg-text/[0.05] px-4 py-3 text-[14px] text-text/85 ring-1 ring-line">
             {closedWanted} opens next round. Pick one of the teams that&apos;s hiring now.
           </p>
         )}
@@ -260,8 +260,9 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
                 }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={drop}
+                data-cursor="link"
                 className={cn(
-                  "flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-2 rounded-control border border-dashed px-4 py-5 transition-[border-color,background-color] duration-300",
+                  "flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-2 rounded-[14px] border border-dashed px-4 py-5 transition-[border-color,background-color] duration-[350ms]",
                   dragging ? "border-red bg-red/[0.06]" : p["aria-invalid"] ? "border-red/70" : "border-line hover:border-text/30",
                 )}
               >
@@ -296,22 +297,23 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
         </fieldset>
 
         {status === "error" && (
-          <div role="alert" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-control bg-bg px-4 py-3 ring-1 ring-red/60">
+          <div role="alert" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[14px] bg-red/10 px-4 py-3 ring-1 ring-red/40">
             <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-bold text-text">
               !
             </span>
             <p className="min-w-0 flex-1 text-[14px] text-text/90">{error}</p>
             <button
               type="button"
+              data-cursor="link"
               onClick={() => submit()}
-              className="rounded-control px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-300 hover:bg-text/10"
+              className="rounded-pill px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
             >
               Try again
             </button>
           </div>
         )}
 
-        <Button type="submit" size="lg" disabled={status === "sending"} className="mt-8 w-full disabled:pointer-events-none">
+        <IrisButton type="submit" size="lg" disabled={status === "sending"} className="mt-8 w-full disabled:pointer-events-none">
           {status === "sending" ? (
             <>
               <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-text/30 border-t-text" />
@@ -320,7 +322,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
           ) : (
             "Send application"
           )}
-        </Button>
+        </IrisButton>
         <p className="mt-3 text-center text-[12px] text-muted">We only use your details for this recruitment round.</p>
       </motion.form>
 
@@ -331,7 +333,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
         initial={false}
         animate={{ opacity: sent ? 1 : 0, y: sent ? 0 : 20 }}
         transition={{ ...ease, delay: sent && !reduced ? 0.25 : 0 }}
-        className="self-start rounded-card border border-line bg-bg-2 p-6 text-center [grid-area:1/1] sm:p-10"
+        className="self-start rounded-card bg-bg-2 p-6 text-center ring-1 ring-line [grid-area:1/1] sm:p-10"
       >
         <div className="flex flex-col items-center">
           <SentCheck play={sent} reduced={reduced} />
@@ -344,7 +346,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
         </div>
         <ol className="mx-auto mt-8 grid max-w-md gap-3 text-left">
           {JOIN_STEPS.slice(1).map((s, i) => (
-            <li key={s.title} className="flex gap-3 rounded-control bg-bg/60 p-4 ring-1 ring-line">
+            <li key={s.title} className="flex gap-3 rounded-[14px] bg-bg/60 p-4 ring-1 ring-line">
               <span className="font-mono text-[12px] text-muted">{String(i + 2).padStart(2, "0")}</span>
               <span>
                 <span className="block text-[15px] font-semibold">{s.title}</span>
@@ -354,17 +356,18 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
           ))}
         </ol>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button href="/join" variant="secondary">
+          <PillButton href="/join" variant="ghost">
             Back to Join
-          </Button>
+          </PillButton>
           <button
             type="button"
+            data-cursor="link"
             onClick={() => {
               reset({ ...emptyValues(), team: "" });
               setStatus("idle");
               window.setTimeout(() => setFocus("name"), 50);
             }}
-            className="h-11 rounded-control px-5 text-[14px] font-semibold text-text underline decoration-text/30 underline-offset-4 hover:decoration-text"
+            className="h-10 rounded-pill px-5 text-[13px] font-semibold text-text underline decoration-text/30 underline-offset-4 hover:decoration-text md:h-11 md:text-sm"
           >
             Apply for someone else
           </button>

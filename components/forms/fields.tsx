@@ -38,7 +38,7 @@ export function Field({
   return (
     <div className={className}>
       <div className="mb-2 flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-[13px] font-medium text-text/90">
+        <label htmlFor={id} className="text-[13px] font-semibold text-text/85">
           {label}
         </label>
         {aside}
@@ -54,13 +54,13 @@ export function Field({
   );
 }
 
-/** Dark fields with a hairline; focus brightens the hairline to warm white; an error turns it red. */
+/** Dark fields with a hairline; focus lights the border in the accent with a soft glow; an error keeps it red. */
 export const inputClass = (p: FieldA11y) =>
   cn(
-    "block h-12 w-full rounded-control bg-bg px-4 text-[15px] text-text ring-1 ring-line outline-none placeholder:text-faint",
-    "transition-[box-shadow] duration-300 ease-power3",
-    "hover:ring-text/25 focus:ring-text/70",
-    p["aria-invalid"] && "ring-red/80 focus:ring-red",
+    "block h-12 w-full rounded-[14px] bg-bg/70 px-4 text-[15px] text-text ring-1 ring-line outline-none placeholder:text-muted",
+    "transition-[box-shadow] duration-[350ms] ease-power3",
+    "hover:ring-text/20 focus:ring-red/80 focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--red)_16%,transparent),0_0_26px_-6px_var(--red)]",
+    p["aria-invalid"] && "ring-red/70",
   );
 
 /** A circle that draws itself, then the tick. */
@@ -74,7 +74,8 @@ export function SentCheck({ play, reduced }: { play: boolean; reduced: boolean }
           transition: { duration: play ? 0.7 : 0, delay: play ? delay : 0, ease: BEZIER.out },
         };
   return (
-    <span className="relative grid size-20 place-items-center rounded-full text-red">
+    <span className="relative grid size-20 place-items-center rounded-full bg-red/10 text-red">
+      <span aria-hidden="true" className="absolute inset-0 rounded-full shadow-[0_0_44px_-8px_var(--red)]" />
       <svg aria-hidden="true" viewBox="0 0 64 64" className="size-20" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
         <motion.circle cx="32" cy="32" r="29" strokeWidth="2" {...draw(0.35)} />
         <motion.path d="M20 33l8 8 16-17" strokeWidth="3" className="text-text" stroke="var(--text)" {...draw(0.85)} />

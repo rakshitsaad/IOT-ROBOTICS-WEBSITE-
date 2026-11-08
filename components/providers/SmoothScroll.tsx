@@ -24,11 +24,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (reduced || prefersReducedMotion()) return;
 
-    // Restrained: a short glide, never a long drift. Anchor links land below the fixed header.
-    const nav = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 72;
     const lenis = new Lenis({
-      lerp: 0.14,
-      anchors: { offset: -(nav + 24) },
+      lerp: 0.1,
+      anchors: true,
       stopInertiaOnNavigate: true,
     });
 

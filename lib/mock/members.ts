@@ -62,7 +62,7 @@ const GH = "https://github.com/";
 const IG = "https://www.instagram.com/";
 
 export const members: Member[] = [
-  // Senior Core (tier "senior"), in display order.
+  // Senior Core (tier "senior"), in display order. The spreads cycle layouts A, B, C, D by position.
   member(1, {
     full_name: "Aarav Mehta",
     role: "President",
@@ -143,6 +143,7 @@ export const members: Member[] = [
     year: 3,
     branch: "B.Tech Electrical",
     photo_url: portrait("yash"),
+    // No cutout on purpose: this C-slot spread falls back to the split layout.
     quote: "Logistics wins competitions. The robot only has to show up working.",
     bio: "Yash handles everything between the idea and the arena: travel, shipping crates, spare batteries and the checklist that gets read twice before every match.",
     socials: { linkedin: LI, instagram: IG },
@@ -161,7 +162,7 @@ export const members: Member[] = [
   }),
 
   // Junior Core (tier "junior"), grouped by team on the page; each team's first row is its lead.
-  // Tech has 10 members. Manav Arora and Aditya Rawat have no photo (initials placeholder).
+  // Tech has 10 so its accordion wraps past 8. Manav Arora and Aditya Rawat have no photo (initials avatar).
   member(6, {
     full_name: "Ananya Gupta", tier: "junior", role: "Tech Lead", team_id: T.tech, year: 3, branch: "B.Tech ECE",
     photo_url: portrait("ananya"),

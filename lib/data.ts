@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife } from "next/cache";
 import * as mock from "./mock";
-import { isMedia, isNote, journalYear, type Journal, type JournalSummary } from "./gallery";
+import { buildJournalPages, isMedia, journalYear, type Journal, type JournalSummary } from "./gallery";
 import { sortShowcase, type EventPhoto, type ShowcaseEvent } from "./events";
 import type { ProjectWithTeam } from "./projects";
 import { LAB_STATIONS } from "./home";
@@ -48,7 +48,7 @@ export async function getMembers(): Promise<Member[]> {
     .sort((a, b) => a.sort_order - b.sort_order);
 }
 
-/** Senior Core (tier "senior"), in display order: the /members profiles. */
+/** Senior Core (tier "senior"), in display order: the /members spreads. */
 export async function getSeniorCore(): Promise<Member[]> {
   "use cache";
   return (await getMembers()).filter((m) => m.tier === "senior");
@@ -60,7 +60,7 @@ export async function getJuniorCore(): Promise<Member[]> {
   return (await getMembers()).filter((m) => m.tier === "junior");
 }
 
-/** One team's Junior Core members, for its group on /members. */
+/** One team's Junior Core members, for the /members accordions. */
 export interface JuniorCoreTeam {
   team: Team;
   members: Member[];
@@ -85,7 +85,7 @@ export async function getProjects(): Promise<Project[]> {
 
 /**
  * Every project with its team's names (from `member_ids`, in that order;
- * unknown or inactive members are left out): /projects and the project pages.
+ * unknown or inactive members are left out): the /projects reel and gallery.
  */
 export async function getProjectsWithTeam(): Promise<ProjectWithTeam[]> {
   "use cache";
@@ -133,8 +133,8 @@ export async function getPartners(): Promise<Partner[]> {
 }
 
 /**
- * The /gallery index: every published event that has gallery items, newest first, with its photo, video and note
- * counts.
+ * The /gallery shelf: every published event that has gallery items, newest
+ * first, with its page, photo and video counts.
  */
 export async function getJournals(): Promise<JournalSummary[]> {
   "use cache";
@@ -148,11 +148,10 @@ export async function getJournals(): Promise<JournalSummary[]> {
         title: event.title,
         date: event.starts_at,
         year: journalYear(event.starts_at),
-        venue: event.venue,
         cover_url: event.cover_url,
+        pages: buildJournalPages(own).length,
         photos: own.filter((i) => i.type === "photo" && isMedia(i)).length,
         videos: own.filter((i) => i.type === "video").length,
-        notes: own.filter(isNote).length,
       },
     ];
   });
@@ -166,7 +165,7 @@ export async function getJournal(slug: string): Promise<Journal | null> {
   if (!event) return null;
   const own = items.filter((i) => i.event_id === event.id);
   if (own.length === 0) return null;
-  return { event, items: own };
+  return { event, items: own, pages: buildJournalPages(own) };
 }
 
 /**
@@ -186,34 +185,6 @@ export async function getEventShowcase(): Promise<ShowcaseEvent[]> {
       };
     }),
   );
-}
-
-/** One event with its photos (/events/[slug]), or null. */
-export async function getEvent(slug: string): Promise<ShowcaseEvent | null> {
-  "use cache";
-  return (await getEventShowcase()).find((e) => e.slug === slug) ?? null;
-}
-
-/**
- * Landscape photos from the event journals, newest event first, each with its event's title and slug: the photo slots
- * on the home and /about pages. Photos only come from the gallery; nothing is added here.
- */
-export async function getGalleryHighlights(limit = 6): Promise<(EventPhoto & { event_title: string; event_slug: string })[]> {
-  "use cache";
-  const [events, items] = await Promise.all([getEvents(), getGalleryItems()]);
-  const groups = events
-    .map((event) =>
-      items
-        .filter((i): i is EventPhoto => i.event_id === event.id && i.type === "photo" && isMedia(i) && (i.width ?? 0) > (i.height ?? 0))
-        .map((i) => ({ ...i, event_title: event.title, event_slug: event.slug })),
-    )
-    .filter((g) => g.length > 0);
-  // Round-robin across events, so the selection isn't all from one day.
-  const out: (EventPhoto & { event_title: string; event_slug: string })[] = [];
-  for (let i = 0; out.length < limit && groups.some((g) => i < g.length); i++) {
-    for (const g of groups) if (g[i] && out.length < limit) out.push(g[i]);
-  }
-  return out;
 }
 
 /* ------------------------------------------------------------- derived */
