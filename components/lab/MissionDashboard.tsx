@@ -8,10 +8,11 @@ import { gsap } from "@/lib/gsap";
 import { DURATION, EASE } from "@/lib/motion";
 import { MISSION, type MissionCardId, type MissionStats } from "@/lib/mission";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
-import { Countdown } from "./Countdown";
+import { Countdown } from "@/components/home/Countdown";
 
 /**
- * The Mission Control dashboard (DESIGN.md §12): six cards of club stats in HTML/CSS, with small SVG charts.
+ * The drone test bench's dashboard (/lab/drone, DESIGN.md §18): six cards of club stats in HTML/CSS, with small SVG
+ * charts, for the drone to fly to and scan.
  * The drone (a canvas layered above) scans them: the scanned card lifts in 3D (translateZ 40px, rotateX 8deg),
  * gets a red border, and its numbers and charts re-count from 0.
  *

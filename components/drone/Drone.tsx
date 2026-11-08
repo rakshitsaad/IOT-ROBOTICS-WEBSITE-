@@ -39,7 +39,16 @@ export interface DroneParts {
   sample: (n: number) => Float32Array;
 }
 
-export function Drone({ parts, spin = true }: { parts?: Ref<DroneParts | null>; spin?: boolean }) {
+export function Drone({
+  parts,
+  spin = true,
+  power,
+}: {
+  parts?: Ref<DroneParts | null>;
+  spin?: boolean;
+  /** 0–1, read every frame: rotor speed and ring brightness (the sidekick powers down when it naps). Default 1. */
+  power?: { current: number };
+}) {
   const root = useRef<THREE.Group>(null);
   const rotors = useRef<(THREE.Group | null)[]>([]);
   const assets = useMemo(() => buildAssets(), []);
@@ -56,7 +65,9 @@ export function Drone({ parts, spin = true }: { parts?: Ref<DroneParts | null>; 
   // Rotors: very fast, opposite directions on the diagonals (the blur disc does the reading; the blades strobe).
   useFrame((_, dt) => {
     if (!spin) return;
-    const step = Math.min(dt, 0.05) * 62;
+    const p = power ? power.current : 1;
+    if (power) assets.setGlow(p);
+    const step = Math.min(dt, 0.05) * 62 * p;
     rotors.current.forEach((r, i) => {
       if (r) r.rotation.y += i % 2 ? -step : step;
     });
@@ -163,7 +174,22 @@ function buildAssets() {
     lens: new THREE.MeshBasicMaterial({ color: hdr(DRONE_COLORS.light, GLOW.lens), toneMapped: false }),
     led: new THREE.MeshBasicMaterial({ map: led, color: new THREE.Color(1, 1, 1).multiplyScalar(GLOW.led), toneMapped: false }),
   };
-  return { geo, mat, textures: [led] };
+  const ringBase = mat.ring.color.clone();
+  const lensBase = mat.lens.color.clone();
+  let glow = 1;
+  return {
+    geo,
+    mat,
+    textures: [led],
+    /** Scale the rings and lens (0–1 → 25–100% of their glow). */
+    setGlow(p: number) {
+      if (p === glow) return;
+      glow = p;
+      const k = 0.25 + 0.75 * p;
+      mat.ring.color.copy(ringBase).multiplyScalar(k);
+      mat.lens.color.copy(lensBase).multiplyScalar(k);
+    },
+  };
 }
 
 function disposeAssets({ geo, mat, textures }: Assets) {

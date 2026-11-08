@@ -1,7 +1,7 @@
 import { COLORS } from "@/lib/tokens";
 
 /**
- * Drone constants (DESIGN.md §12 "Mission Control"). Colours follow the site palette: the reference's cyan lights
+ * Drone constants (DESIGN.md §18). Colours follow the site palette: the reference's cyan lights
  * are deep red here, its violet is maroon. The body is the one light material (a cool light grey, like brushed
  * aluminium), so the drone reads against the black dashboard.
  */

@@ -307,6 +307,7 @@ function startMoodEngine() {
         react([["happy", 1.8]], PRIORITY.wake);
       }
     }
+    if (s.nudgeKey !== prev.nudgeKey) activity();
     if (s.hovered !== prev.hovered) {
       if (s.hovered && !s.booting) {
         activity();

@@ -8,11 +8,10 @@ import { DRONE_CAMERA, DRONE_COLORS, GLOW } from "./config";
 /**
  * The particle trail: ONE Points object with a ring buffer of `max` particles (1500, half on phones). A particle
  * is written once when it is emitted (start, velocity, birth time, seed); the vertex shader does the rest, so the
- * CPU never touches live particles. Each one drifts down, slows, shrinks and fades over LIFE seconds.
+ * CPU never touches live particles. Each one drifts down, slows, shrinks and fades over `life` seconds (1.4 by default).
  * Colours: deep red, with about a quarter warm white. Additive, and pushed past 1.0 so they bloom.
  */
 
-const LIFE = 1.4;
 
 export interface TrailApi {
   /** Emit `n` particles at `at` (world), moving with `vel` plus a random spread. */
@@ -21,9 +20,21 @@ export interface TrailApi {
   alive: () => number;
 }
 
-export function Trail({ max, api }: { max: number; api: Ref<TrailApi> }) {
+export function Trail({
+  max,
+  api,
+  life = 1.4,
+  size = 0.05,
+}: {
+  max: number;
+  api: Ref<TrailApi>;
+  /** Seconds a particle lives (1.4 on the lab bench, 0.8 for the home sidekick). */
+  life?: number;
+  /** Particle size, world units. */
+  size?: number;
+}) {
   const gl = useThree((s) => s.gl);
-  const system = useMemo(() => createTrail(max), [max]);
+  const system = useMemo(() => createTrail(max, life, size), [max, life, size]);
 
   useEffect(() => () => system.dispose(), [system]);
 
@@ -37,7 +48,7 @@ export function Trail({ max, api }: { max: number; api: Ref<TrailApi> }) {
   return <primitive object={system.points} />;
 }
 
-function createTrail(max: number) {
+function createTrail(max: number, life: number, size: number) {
   const geometry = new THREE.BufferGeometry();
   const start = new Float32Array(max * 3);
   const vel = new Float32Array(max * 3);
@@ -59,8 +70,8 @@ function createTrail(max: number) {
     toneMapped: false,
     uniforms: {
       uTime: { value: 0 },
-      uLife: { value: LIFE },
-      uSize: { value: 0.05 },
+      uLife: { value: life },
+      uSize: { value: size },
       uPx: { value: 1000 },
       uRed: { value: new THREE.Color(DRONE_COLORS.light).multiplyScalar(GLOW.trail) },
       uWhite: { value: new THREE.Color(DRONE_COLORS.white).multiplyScalar(GLOW.trail * 0.8) },
@@ -134,7 +145,7 @@ function createTrail(max: number) {
     alive() {
       const now = material.uniforms.uTime.value;
       let c = 0;
-      for (let i = 0; i < max; i++) if (now - birth[i] < LIFE) c++;
+      for (let i = 0; i < max; i++) if (now - birth[i] < life) c++;
       return c;
     },
     dispose() {

@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { MonoLabel } from "@/components/ui";
 import { DroneStage, droneActions, droneState, useDroneStore } from "@/components/drone";
-import { MissionDashboard } from "@/components/home/MissionDashboard";
+import { MissionDashboard } from "./MissionDashboard";
 import { cn } from "@/lib/cn";
 import { gsap } from "@/lib/gsap";
 import type { MissionCardId, MissionStats } from "@/lib/mission";
 
 /**
- * /lab/drone: the Mission Control dashboard and drone on a test bench, with a button for each effect so they can be
- * checked in isolation (the drone is in manual mode here; the home section drives it by scroll).
+ * /lab/drone: a dashboard of club stats and the drone on a test bench, with a button for each effect so they can be
+ * checked in isolation. (On the home page the drone is the robot's sidekick instead, §12: a separate component.)
  */
 
 const CARDS: { id: MissionCardId; label: string }[] = [
@@ -103,7 +103,7 @@ export function DroneLab({ stats }: { stats: MissionStats }) {
         <div className="flex h-full flex-col p-[clamp(0.75rem,3svh,2rem)] pt-[clamp(4rem,14svh,8rem)]">
           <MissionDashboard stats={stats} className="flex-1 grid-rows-3 md:grid-rows-2" />
         </div>
-        <DroneStage root={bench} mode="manual" posterClassName="top-4 right-4 h-32 w-48" />
+        <DroneStage root={bench} posterClassName="top-4 right-4 h-32 w-48" />
       </div>
     </div>
   );

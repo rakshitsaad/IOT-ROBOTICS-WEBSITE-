@@ -8,7 +8,7 @@ import { gsap } from "@/lib/gsap";
 import { MISSION } from "@/lib/mission";
 import { FINE_POINTER, useMediaQuery } from "@/hooks/use-media-query";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { droneActions, droneState, useDroneStore, type DroneMode } from "./store";
+import { droneActions, droneState, useDroneStore } from "./store";
 
 const DroneCanvas = dynamic(() => import("./DroneCanvas"), { ssr: false });
 
@@ -36,12 +36,10 @@ function bloomAllowed() {
  */
 export function DroneStage({
   root,
-  mode,
   className,
   posterClassName,
 }: {
   root: RefObject<HTMLElement | null>;
-  mode: DroneMode;
   className?: string;
   posterClassName?: string;
 }) {
@@ -65,20 +63,18 @@ export function DroneStage({
     droneState.finePointer = fine;
   }, [mobile, fine]);
 
-  // Mode + root for the rig; reset when leaving.
+  // The root for the rig; reset when leaving.
   useEffect(() => {
-    droneState.mode = mode;
     droneState.root = root.current;
     return () => {
       droneState.root = null;
       droneState.dissolve = 0;
       droneState.interest = { card: null, until: 0 };
-      if (mode === "manual") droneActions.home();
-      droneState.mode = "scroll";
+      droneActions.home();
       useDroneStore.getState().setScanning(null);
       useDroneStore.getState().setGlobe(false);
     };
-  }, [mode, root]);
+  }, [root]);
 
   // Near (mount) and visible (render).
   useEffect(() => {

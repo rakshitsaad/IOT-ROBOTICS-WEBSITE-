@@ -109,6 +109,8 @@ interface BotState {
   hovered: boolean;
   /** Increments when the robot is clicked or tapped (BotStage's hit area). */
   pokeKey: number;
+  /** Increments on nudge(): counts as visitor activity for the mood engine (wakes the robot, restarts its sleep timer). */
+  nudgeKey: number;
   /** Last reaction requested with react() (played by useBotMood). */
   reaction: BotReaction | null;
   /** Resting state held by a page section, or null (random moods). */
@@ -125,6 +127,7 @@ interface BotState {
   setAsleep: (asleep: boolean) => void;
   setHovered: (hovered: boolean) => void;
   poke: () => void;
+  nudge: () => void;
   react: (face: Exclude<BotFace, "blink">, holdMs?: number) => void;
   setScene: (scene: BotScene | null) => void;
 }
@@ -144,6 +147,7 @@ export const useBotStore = create<BotState>((set) => ({
   booting: false,
   hovered: false,
   pokeKey: 0,
+  nudgeKey: 0,
   reaction: null,
   scene: null,
 
@@ -162,6 +166,7 @@ export const useBotStore = create<BotState>((set) => ({
   setAsleep: (asleep) => set({ asleep }),
   setHovered: (hovered) => set({ hovered }),
   poke: () => set((s) => ({ pokeKey: s.pokeKey + 1 })),
+  nudge: () => set((s) => ({ nudgeKey: s.nudgeKey + 1 })),
   react: (face, holdMs = 1200) => set((s) => ({ reaction: { face, holdMs, key: (s.reaction?.key ?? 0) + 1 } })),
   setScene: (scene) => set({ scene }),
 }));
@@ -197,6 +202,24 @@ export const botInput = {
    * only the eyes go further. `slow` uses lazy damping for looking around.
    */
   gaze: { x: 0, y: 0, active: false, slow: false },
+  /**
+   * A world point the head follows while `active`, above the cursor (below an explicit lookAt). The home sidekick
+   * drone sets it during stunts near the robot, so the robot watches it instead of the cursor.
+   */
+  look: { x: 0, y: 0, z: 0, active: false },
+};
+
+/**
+ * Where the robot's head is, in world units, written by the robot every rendered frame (so it follows botTransform,
+ * the cursor turn and the sleep droop): the head's centre, the screen's front face, and the top of the head (between
+ * the ears). `scale` is botTransform.scale. The home sidekick drone orbits, boops and lands on these.
+ */
+export const botAnchors = {
+  head: { x: 0, y: 0, z: 0 },
+  face: { x: 0, y: 0, z: 0 },
+  top: { x: 0, y: 0, z: 0 },
+  scale: 1,
+  valid: false,
 };
 
 /**
@@ -222,6 +245,8 @@ export const botActions = {
   sleep: (asleep: boolean) => useBotStore.getState().setAsleep(asleep),
   idleMove: (kind: BotIdleMoveKind, dir: -1 | 1) => useBotStore.getState().setIdleMove(kind, dir),
   poke: () => useBotStore.getState().poke(),
+  /** Wake the robot as if the visitor had moved (needs useBotMood); the home sidekick does this before its robot stunts. */
+  nudge: () => useBotStore.getState().nudge(),
   /** Show a face for holdMs, above moods and the engine's own reactions (needs useBotMood). */
   react: (face: Exclude<BotFace, "blink">, holdMs = 1200) => useBotStore.getState().react(face, holdMs),
   /**

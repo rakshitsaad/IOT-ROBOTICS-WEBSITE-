@@ -5,20 +5,18 @@ import { HomeRobot } from "@/components/home/HomeRobot";
 import { HomeScroll } from "@/components/home/HomeScroll";
 import { JoinCard } from "@/components/home/JoinCard";
 import { Lab } from "@/components/home/Lab";
-import { MissionControl } from "@/components/home/MissionControl";
 import { Numbers } from "@/components/home/Numbers";
 import { Statement } from "@/components/home/Statement";
 import { UpcomingEvent } from "@/components/home/UpcomingEvent";
-import { getFeaturedProjects, getHomeStats, getMissionStats, getProjects, getSettings, getUpcomingEvent } from "@/lib/data";
+import { getFeaturedProjects, getHomeStats, getProjects, getSettings, getUpcomingEvent } from "@/lib/data";
 
 export default async function HomePage() {
-  const [settings, projects, featured, event, stats, mission] = await Promise.all([
+  const [settings, projects, featured, event, stats] = await Promise.all([
     getSettings(),
     getProjects(),
     getFeaturedProjects(),
     getUpcomingEvent(),
     getHomeStats(),
-    getMissionStats(),
   ]);
 
   return (
@@ -31,7 +29,6 @@ export default async function HomePage() {
         <HomeRobot />
         <Statement clubName={settings.club_name} />
         <Lab projects={projects} />
-        <MissionControl stats={mission} />
         <Featured projects={featured} />
         {event && <UpcomingEvent event={event} />}
         <Numbers stats={stats} />

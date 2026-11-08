@@ -197,7 +197,7 @@ export function FeaturedSlider({ projects }: { projects: SliderProject[] }) {
         })}
       </motion.div>
 
-      <MonoLabel index={4} tone="text" className="pointer-events-none absolute top-6 left-6 md:top-10 md:left-12">
+      <MonoLabel index={3} tone="text" className="pointer-events-none absolute top-6 left-6 md:top-10 md:left-12">
         Featured projects
       </MonoLabel>
 

@@ -229,7 +229,7 @@ export async function getHomeStats(): Promise<HomeStats> {
 }
 
 /**
- * The home "Mission Control" dashboard (DESIGN.md §12). Time-dependent (this year's events, the next event,
+ * The /lab/drone bench's dashboard (DESIGN.md §18). Time-dependent (this year's events, the next event,
  * workshops that have run), so it is cached for hours like getHomeStats().
  */
 export async function getMissionStats(): Promise<MissionStats> {

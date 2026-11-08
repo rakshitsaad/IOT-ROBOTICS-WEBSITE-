@@ -51,6 +51,8 @@ export interface BotStageProps {
   label?: string;
   /** Preload the poster image (default: same as `fixed`). Turn on for an above-the-fold stage. */
   preloadPoster?: boolean;
+  /** The home page's sidekick drone flies in this canvas (3D only; no drone with the poster). */
+  sidekick?: boolean;
 }
 
 export function BotStage({
@@ -62,6 +64,7 @@ export function BotStage({
   interactive = true,
   label = "Say hi to the robot",
   preloadPoster = fixed,
+  sidekick = false,
 }: BotStageProps) {
   const support = useBotSupport();
   const stage = useRef<HTMLDivElement>(null);
@@ -231,6 +234,7 @@ export function BotStage({
             frameloop={onScreen ? "always" : "never"}
             logoUrl={logoUrl}
             bootOnMount={bootOnMount}
+            sidekick={sidekick}
             onReady={() => setReady(true)}
             onFail={() => setFailed(true)}
           />

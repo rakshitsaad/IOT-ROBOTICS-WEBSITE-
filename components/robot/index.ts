@@ -13,6 +13,7 @@ export {
   botTransform,
   botInput,
   botScreen,
+  botAnchors,
   botActions,
   BOT_FACES,
   BOT_TRANSFORM_DEFAULT,

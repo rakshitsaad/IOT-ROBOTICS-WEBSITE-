@@ -101,6 +101,7 @@ export function HomeHero({ settings }: { settings: Settings }) {
               {lines.map((line, i) => (
                 <span
                   key={i}
+                  data-hero-line
                   // Vertical-only mask, padded so glyph edges outside the 0.85 line box are not clipped.
                   className={cn(
                     "-my-[0.06em] block overflow-y-clip py-[0.06em] whitespace-nowrap",
@@ -113,6 +114,7 @@ export function HomeHero({ settings }: { settings: Settings }) {
                     ) : (
                       <span
                         key={j}
+                        data-letter
                         className="inline-block animate-rise motion-reduce:animate-none"
                         style={{ animationDelay: `${LETTER_DELAY_MS + letter++ * LETTER_STAGGER_MS}ms` }}
                       >

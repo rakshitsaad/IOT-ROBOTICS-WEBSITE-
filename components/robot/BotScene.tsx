@@ -6,6 +6,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { useRef } from "react";
 import { COLORS } from "@/lib/tokens";
 import { ClubBot } from "./ClubBot";
+import { Sidekick } from "@/components/drone/Sidekick";
 import { botDebug } from "./config";
 
 /**
@@ -15,10 +16,13 @@ import { botDebug } from "./config";
 export function BotScene({
   logoUrl,
   bootOnMount,
+  sidekick,
   onReady,
 }: {
   logoUrl?: string;
   bootOnMount?: boolean;
+  /** Add the home page's sidekick drone to this scene (same canvas, §12). */
+  sidekick?: boolean;
   onReady?: () => void;
 }) {
   return (
@@ -41,6 +45,7 @@ export function BotScene({
       </Environment>
 
       <ClubBot logoUrl={logoUrl} bootOnMount={bootOnMount} />
+      {sidekick && <Sidekick />}
       <FrameProbe onReady={onReady} />
     </>
   );

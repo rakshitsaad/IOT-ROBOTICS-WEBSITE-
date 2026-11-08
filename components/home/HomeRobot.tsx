@@ -43,7 +43,8 @@ export function HomeRobot() {
       data-home-robot
       className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-[71.4svh] md:left-[32%] md:h-[min(100svh,95vw)] motion-reduce:absolute motion-reduce:bottom-auto motion-reduce:top-[28.6svh] md:motion-reduce:top-[calc(100svh_-_min(100svh,95vw))]"
     >
-      <BotStage fixed={false} transform={HOME_ROBOT} preloadPoster label="Say hi to the club robot" />
+      {/* The sidekick drone flies around the hero in this same canvas (§12). */}
+      <BotStage fixed={false} transform={HOME_ROBOT} preloadPoster label="Say hi to the club robot" sidekick />
     </div>
   );
 }

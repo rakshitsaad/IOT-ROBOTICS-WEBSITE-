@@ -10,6 +10,7 @@ import { FaceDisplay, seeded, type FaceFrame } from "./face";
 import { PrimitiveRobot } from "./geometry";
 import type { BotRig } from "./rig";
 import {
+  botAnchors,
   botInput,
   botScreen,
   botTransform,
@@ -204,7 +205,7 @@ export function ClubBot({ logoUrl, bootOnMount = false }: ClubBotProps) {
     }
 
     // Look target as a fraction of the head's range (±1 = 25° / 15°):
-    // explicit lookAt > cursor (or the edge it left by) > gaze input > idle glance.
+    // explicit lookAt > botInput.look (a world point) > cursor (or the edge it left by) > gaze input > idle glance.
     let nx = 0;
     let ny = 0;
     let slow = false;
@@ -216,6 +217,11 @@ export function ClubBot({ logoUrl, bootOnMount = false }: ClubBotProps) {
     const headPos = rig.head.localToWorld(S.tmp.a.set(0, 0.5, 0.45));
     if (S.look.target && now < S.look.until) {
       const d = S.tmp.b.copy(S.look.target).sub(headPos);
+      nx = (Math.atan2(d.x, d.z) - botTransform.rotY) / MAX_YAW;
+      ny = -Math.atan2(d.y, Math.hypot(d.x, d.z)) / MAX_PITCH;
+    } else if (botInput.look.active && !still) {
+      S.look.target = null;
+      const d = S.tmp.b.set(botInput.look.x, botInput.look.y, botInput.look.z).sub(headPos);
       nx = (Math.atan2(d.x, d.z) - botTransform.rotY) / MAX_YAW;
       ny = -Math.atan2(d.y, Math.hypot(d.x, d.z)) / MAX_PITCH;
     } else {
@@ -297,6 +303,7 @@ export function ClubBot({ logoUrl, bootOnMount = false }: ClubBotProps) {
 
     updateFace(S, store, now);
     writeScreenBox(rig, camera, state.size, S.tmp.a);
+    writeAnchors(rig, S.tmp.a);
   });
 
   return (
@@ -374,6 +381,22 @@ function isBusy(S: Runtime, tracking: boolean) {
 }
 
 /** Projects head + body corners and writes the robot's on-screen box (stage px). */
+/** botAnchors: the head's centre, screen front and top, in world units (after this frame's pose). */
+function writeAnchors(rig: BotRig, v: THREE.Vector3) {
+  rig.head.updateWorldMatrix(true, false);
+  const put = (o: { x: number; y: number; z: number }, x: number, y: number, z: number) => {
+    rig.head.localToWorld(v.set(x, y, z));
+    o.x = v.x;
+    o.y = v.y;
+    o.z = v.z;
+  };
+  put(botAnchors.head, 0, 0.5, 0);
+  put(botAnchors.face, 0, 0.5, 0.45);
+  put(botAnchors.top, 0, 1.0, 0);
+  botAnchors.scale = botTransform.scale;
+  botAnchors.valid = true;
+}
+
 function writeScreenBox(rig: BotRig, camera: THREE.Camera, size: { width: number; height: number }, v: THREE.Vector3) {
   let x0 = Infinity;
   let y0 = Infinity;

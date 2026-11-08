@@ -13,12 +13,14 @@ export interface BotCanvasProps {
   frameloop: "always" | "never";
   logoUrl?: string;
   bootOnMount?: boolean;
+  /** Render the sidekick drone in this canvas (home hero). */
+  sidekick?: boolean;
   onReady?: () => void;
   /** WebGL failed at runtime (context lost / could not be created). */
   onFail?: () => void;
 }
 
-export default function BotCanvas({ frameloop, logoUrl, bootOnMount, onReady, onFail }: BotCanvasProps) {
+export default function BotCanvas({ frameloop, logoUrl, bootOnMount, sidekick, onReady, onFail }: BotCanvasProps) {
   return (
     <Canvas
       frameloop={frameloop}
@@ -33,7 +35,7 @@ export default function BotCanvas({ frameloop, logoUrl, bootOnMount, onReady, on
         gl.domElement.addEventListener("webglcontextlost", () => onFail?.(), { once: true });
       }}
     >
-      <BotScene logoUrl={logoUrl} bootOnMount={bootOnMount} onReady={onReady} />
+      <BotScene logoUrl={logoUrl} bootOnMount={bootOnMount} sidekick={sidekick} onReady={onReady} />
     </Canvas>
   );
 }

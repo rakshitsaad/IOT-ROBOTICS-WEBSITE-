@@ -1,7 +1,7 @@
 import type { LabDomain } from "./home";
 
 /**
- * Home "Mission Control" section (DESIGN.md §12): the drone flies over a dashboard of club stats.
+ * The /lab/drone bench (DESIGN.md §18): the drone flies over a dashboard of club stats.
  * Client-safe config and types; the numbers come from getMissionStats() in lib/data.ts.
  */
 
@@ -27,33 +27,8 @@ export interface MissionStats {
 /** Achievement positions that count as a competition won (a podium). "Best Paper" or a grant don't. */
 export const PODIUM = /winner|1st|2nd|3rd|first|second|third|runner/i;
 
-type Phase = { id: MissionPhase; from: number; to: number };
-export type MissionPhase = "arrive" | "scan" | "globe" | "free" | "dissolve";
-
+/** The /lab/drone bench's drone settings. */
 export const MISSION = {
-  /** Extra scroll the section holds for (CSS sticky), in screens. */
-  hold: { desktop: 2.5, mobile: 1.5 },
-  /** Seconds the scrubbed progress takes to catch up with the scroll. */
-  scrub: 1,
-  /** Scroll phases, as fractions of the hold. Phones skip the globe and free flight. */
-  phases: {
-    desktop: [
-      { id: "arrive", from: 0, to: 0.15 },
-      { id: "scan", from: 0.15, to: 0.4 },
-      { id: "globe", from: 0.4, to: 0.65 },
-      { id: "free", from: 0.65, to: 0.85 },
-      { id: "dissolve", from: 0.85, to: 1 },
-    ] as Phase[],
-    mobile: [
-      { id: "arrive", from: 0, to: 0.15 },
-      { id: "scan", from: 0.15, to: 0.8 },
-      { id: "dissolve", from: 0.8, to: 1 },
-    ] as Phase[],
-  },
-  /** The scan phase visits these cards in order, each for an equal share of the phase. */
-  scanOrder: ["members", "projects"] as MissionCardId[],
-  /** Within a card's share: fly over it first, then switch the beam on at this fraction. */
-  beamAt: 0.3,
   /** Drone scale on phones (relative to desktop). */
   mobileScale: 0.6,
   /** Trail particle budget (halved on phones). */
@@ -63,21 +38,3 @@ export const MISSION = {
   /** A tapped / hovered card holds the drone this long (ms) after the pointer leaves. */
   linger: 1200,
 } as const;
-
-/** Which phase scroll progress `p` (0–1) falls in, and how far through it (0–1). */
-export function phaseAt(p: number, mobile: boolean): { id: MissionPhase; u: number } {
-  const list = mobile ? MISSION.phases.mobile : MISSION.phases.desktop;
-  const clamped = Math.min(1, Math.max(0, p));
-  for (const ph of list) {
-    if (clamped < ph.to || ph === list[list.length - 1]) {
-      return { id: ph.id, u: Math.min(1, Math.max(0, (clamped - ph.from) / (ph.to - ph.from))) };
-    }
-  }
-  return { id: "arrive", u: 0 };
-}
-
-/** Mono caption under the hologram globe. */
-export function globeCaption(stats: MissionStats) {
-  const since = stats.foundedYear ? ` since ${stats.foundedYear}` : "";
-  return `${stats.clubName} / ${stats.members.total} members connected${since}`;
-}

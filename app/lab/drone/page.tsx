@@ -16,7 +16,7 @@ export default async function DroneLabPage() {
 
       <header className="shell pb-8 pt-12 md:pb-10 md:pt-16">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <MonoLabel index="LAB">Drone · Mission Control</MonoLabel>
+          <MonoLabel index="LAB">Drone · test bench</MonoLabel>
           <PillButton href="/lab" variant="ghost" size="sm">
             ← Design system
           </PillButton>
@@ -25,8 +25,8 @@ export default async function DroneLabPage() {
           Meet the <Pill color="raised">drone</Pill>.
         </h1>
         <p className="mt-6 max-w-xl text-muted">
-          Every effect from the home page&apos;s Mission Control section, one button each. The drone here ignores the
-          scroll; the home page drives the same drone through its scroll phases.
+          Every drone effect, one button each, over a dashboard of club stats. On the home page the same drone model
+          flies as the robot&apos;s sidekick (add <code className="font-mono text-[0.9em] text-text">?sidekick=debug</code> there for its event log).
         </p>
       </header>
 

@@ -9,12 +9,6 @@ import type { MissionCardId } from "@/lib/mission";
  * `droneActions` drive both and are safe to call before the canvas mounts.
  */
 
-export type DroneMode =
-  /** The home section: the scroll progress picks the phase (lib/mission.ts). */
-  | "scroll"
-  /** /lab/drone: buttons set `manual`. */
-  | "manual";
-
 /** Where the drone should be, in "screen" terms: px inside the stage, plus depth (world z). */
 export type ScreenPoint = { x: number; y: number; z: number };
 
@@ -26,9 +20,6 @@ export type ManualGoal =
   | { kind: "patrol" };
 
 export const droneState = {
-  mode: "scroll" as DroneMode,
-  /** Scroll progress through the hold (0–1), scrubbed. */
-  progress: 0,
   /** Phones: smaller drone, no globe, no free flight. */
   mobile: false,
   /** Fine pointer (mouse / trackpad): free flight follows the cursor. Touch: patrol + taps. */
@@ -39,9 +30,9 @@ export const droneState = {
   pointer: { x: 0, y: 0, moved: 0, inside: false },
   /** A card the visitor is pointing at (hover) or tapped, and until when it holds the drone (ms). */
   interest: { card: null as MissionCardId | null, until: 0 },
-  /** Manual mode (/lab/drone). */
+  /** What the bench's buttons ask for (/lab/drone). */
   manual: { goal: { kind: "home" } as ManualGoal, globe: false },
-  /** Dissolve amount, 0 (whole) – 1 (gone). Scroll mode derives it from the progress; manual mode tweens it. */
+  /** Dissolve amount, 0 (whole) – 1 (gone); the bench tweens it. */
   dissolve: 0,
   /** Bumped by flip(); the rig plays one flip + burst per bump. */
   flipKey: 0,
@@ -83,39 +74,33 @@ export const useDroneStore = create<DroneStore>((set) => ({
 }));
 
 export const droneActions = {
-  /** Fly over a card (no beam). Switches to manual mode. */
+  /** Fly over a card (no beam). */
   flyTo(card: MissionCardId) {
-    droneState.mode = "manual";
     droneState.manual.goal = { kind: "card", card, scan: false };
   },
   /** Fly over a card and scan it: beam on once it arrives, the card lifts and its numbers re-count. */
   scan(card: MissionCardId) {
-    droneState.mode = "manual";
     droneState.manual.goal = { kind: "card", card, scan: true };
   },
   /** Rise to the centre and project the hologram globe (or put it away). */
   globe(on: boolean) {
-    droneState.mode = "manual";
     droneState.manual.globe = on;
     if (on) droneState.manual.goal = { kind: "center" };
   },
   follow() {
-    droneState.mode = "manual";
     droneState.manual.goal = { kind: "follow" };
   },
   patrol() {
-    droneState.mode = "manual";
     droneState.manual.goal = { kind: "patrol" };
   },
   home() {
-    droneState.mode = "manual";
     droneState.manual = { goal: { kind: "home" }, globe: false };
   },
-  /** A quick 360° roll with a particle burst (also on click). Works in every mode. */
+  /** A quick 360° roll with a particle burst (also on click). */
   flip() {
     droneState.flipKey++;
   },
-  /** The pointer is over a card: the drone goes and scans it while the director allows (free flight). */
+  /** The pointer is over a card: the drone goes and scans it (in Follow mode). */
   hoverCard(card: MissionCardId) {
     droneState.interest = { card, until: Number.POSITIVE_INFINITY };
   },

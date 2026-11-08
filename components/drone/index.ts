@@ -1,8 +1,9 @@
 /**
- * The drone (DESIGN.md §12 "Mission Control"). Public API, without three.js: the canvas, the model and the
- * effects load lazily through DroneStage. `Drone` (the model) is at "@/components/drone/Drone" for use inside your
- * own R3F canvas.
+ * The drone (DESIGN.md §18). Public API, without three.js. Two uses:
+ * - the home hero's sidekick: `<Sidekick />` inside the robot's canvas (BotScene renders it when <BotStage sidekick>);
+ * - the /lab/drone bench: <DroneStage> (its own lazy canvas) driven by droneActions.
+ * `Drone` (the model) is at "@/components/drone/Drone" for use inside your own R3F canvas.
  */
 export { DroneStage } from "./DroneStage";
-export { droneActions, droneState, useDroneStore, type DroneMode, type ManualGoal } from "./store";
+export { droneActions, droneState, useDroneStore, type ManualGoal } from "./store";
 export { DRONE_COLORS, FLIGHT } from "./config";
