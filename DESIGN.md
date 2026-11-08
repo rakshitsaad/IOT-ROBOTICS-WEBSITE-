@@ -22,7 +22,7 @@ Check everything visually at **`/lab`**. The robot mascot's developer test page 
 ```
 app/
   globals.css        tokens, Tailwind theme, utilities, base, reduced-motion CSS
-  fonts.ts           next/font setup (4 families)
+  fonts.ts           next/font setup (5 families)
   layout.tsx         root layout: providers, header, footer, cursor
   template.tsx       route transition wrapper
   page.tsx           home: hero, statement, lab, featured, event, numbers, join; the robot travels through them (§12)
@@ -34,6 +34,7 @@ app/
   projects/page.tsx  /projects plain list: phone carousel, reduced-motion grid (§16)
   projects/[slug]/   the plain project page: info + photo stack + full-screen viewer (§16)
   events/page.tsx    /events: the feature card showcase, the All events grid (§17)
+  achievements/page.tsx /achievements: the card-expansion slider, the All achievements list (§19)
   lab/page.tsx       primitive showcase (noindex)
   lab/robot/page.tsx robot mascot controls (noindex, dev only, not linked)
   lab/drone/page.tsx drone test bench: a button per effect (noindex, dev only, not linked)
@@ -66,6 +67,9 @@ components/
   events/            /events (§17): EventsExperience (state, autoplay, keys, overlays), EventShowcase (the card,
                      banners, cutout, entrance, swipe, progress), EventThumbs, EventDetail (full-screen overlay),
                      AllEvents (grid by year), EventTint (+ useEventColor), parts (status badge, details line, title)
+  achievements/      /achievements (§19): AchievementsExperience (filters, crossfade, list → slide), AchievementsSlider
+                     (background layers, cards, expansion, autoplay, keys, swipe), AchievementsList (rows by year),
+                     parts (ResultBadge, Odometer, icons)
   drone/             the drone (§18): Drone (model), Trail; the home sidekick: Sidekick (+ sidekick-plan.ts: zones,
                      stops, routes, stunts) (§12); the /lab/drone bench: DroneRig, director, ScanBeam, HoloGlobe,
                      Dissolve, DroneCanvas (bloom), DroneStage (lazy mount, poster), store
@@ -84,6 +88,7 @@ lib/
   projects.ts        /projects config: filters, REEL constants and curve maths, Sora capital widths, the split title,
                      STRIP sizes and buildStrip(); client-safe
   events.ts          /events config: showcase order, filters, IST dates, EVENTS_MOTION, EVENT_BANNER; client-safe
+  achievements.ts    /achievements config: filters, ACH_MOTION, ACH_CARD, isWin, link label, IST dates; client-safe
   mission.ts         /lab/drone bench: MissionStats type, PODIUM, MISSION (bench drone settings); client-safe
   tokens.ts          JS mirror of tokens, team accent map, textOn()
   motion.ts          EASE / BEZIER / DURATION / STAGGER constants
@@ -146,6 +151,10 @@ portrait's corner; that is the only iris fill shape outside the list above.
 /events (§17) marks an upcoming event's status with a `maroon` Pill ("Registrations open"), so it never competes
 with the card's red `IrisButton` ("Register").
 
+/achievements (§19) has more red than one thing per view, because the design asks for it: a short dash before the event
+line, the autoplay line under the header, the round share button and the result badge of a win ("Winner"). They are
+small shapes; every other result's badge is muted (`bg-text/10`).
+
 Junior Core (§13) uses `iris-border` twice: the 1px ring of each team's open card
 (one per team row) and the thin ring of the initials avatar shown for a member
 without a photo.
@@ -185,15 +194,16 @@ column must match this map.
 | `--radius-card`  | 28px  | `rounded-card`  | Cards, panels, sections     |
 | `--radius-image` | 18px  | `rounded-image` | Images, thumbnails, swatches |
 
-One exception: the /events thumbnail row (§17) uses **10px** (`rounded-[10px]`), because 18px on a 72px-tall thumbnail
-reads as a pill.
+Exceptions: the /events thumbnail row (§17) uses **10px** (`rounded-[10px]`), because 18px on a 72px-tall thumbnail
+reads as a pill; the /achievements waiting cards (§19) use **16px** (`ACH_CARD.radius`), the spec's value, animating to
+0 as a card grows into the background.
 
 ---
 
 ## 3. Typography
 
 Loaded in `app/fonts.ts` with `next/font/google` and exposed as Tailwind font
-families. All four are variable fonts, so the weight ranges below are **design
+families. All but Anton are variable fonts, so the weight ranges below are **design
 rules**, not loading limits.
 
 | Family         | Tailwind                  | Weights               | Use |
@@ -202,6 +212,7 @@ rules**, not loading limits.
 | JetBrains Mono | `font-mono`, `mono-label` | **400–500**           | Small uppercase technical labels only: 11px (12px ≥ md), `letter-spacing: 0.14em`. Use the `mono-label` utility or `<MonoLabel>`. |
 | Bodoni Moda    | `font-serif`              | 400–700 + *italic*    | **Senior Core section only.** Nowhere else. |
 | Caveat         | `font-hand`               | default               | **Handwritten gallery captions only** (caption tags, note pages, lightbox captions, §14). Nowhere else. |
+| Anton          | `font-condensed`          | 400 (its only weight) | **/achievements slide titles only** (§19): huge, condensed, uppercase. Nowhere else. |
 
 **One exception to the mono rule:** the home event countdown (`components/home/Countdown.tsx`)
 sets its digits in large JetBrains Mono 500, because the design calls for it. Its `size="sm"`
@@ -215,7 +226,7 @@ The /projects title (§16) is Sora 800, uppercase, set vertically (reading upwar
 about 20% of the screen height per letter. It is sized from measured Sora 800 capital
 widths (`SORA_CAPS` in `lib/projects.ts`), so re-measure them if the weight changes.
 
-Bodoni Moda and Caveat have `preload: false`, so they download only on pages
+Bodoni Moda, Caveat and Anton have `preload: false`, so they download only on pages
 that render them.
 
 Fluid display sizes: use `text-[length:clamp(min,vw,max)]` (the `length:` hint is
@@ -370,6 +381,9 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
   expo, cutout at +150ms, title letters at +300ms (**30ms** apart), details at +550ms, thumbnails at +650ms (**40ms**
   apart). The old event leaves in **250ms**. The thumbnails widen over 500ms, and the background tint crossfades over
   900ms (linear).
+- Exception: the **/achievements slider** (§19, `ACH_MOTION` in `lib/achievements.ts`): a card grows into the background
+  over **1.1s `expo.inOut`**, the other cards slide one slot over 0.9s `expo.inOut` (**60ms** apart), the old text leaves in
+  **300ms**, the new title lines rise **80ms** apart and the details fade up **50ms** apart.
 - Stagger siblings by **0.06s** (`STAGGER`); long lists (menu) use 0.05s.
 - Scrubbed tweens use `ease: "none"`. Exception: the **/about hands** (§15) close in on `1 − (1 − t)^2.5` over the first 65% of their
   pin, so they are fast at first and settle into the close-up without a sudden change of speed; the touch uses `sine.inOut`.
@@ -444,7 +458,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has 12 projects (the home lab shows up to 3 per station), with picsum photos in five shapes.
 - Mock rows in `lib/mock/*.ts`. Image URLs are `picsum.photos` placeholders (allowed in `next.config.ts` `images.remotePatterns`, along with `*.supabase.co` storage).
 - **Pages and components read data only through `lib/data.ts`** (`getSettings`, `getTeams`, `getMembers`, `getSeniorCore`, `getJuniorCore`, `getProjects`, `getEvents`, `getAchievements`, `getGalleryItems`, `getMilestones`). Switching to Supabase means changing those function bodies only.
-- Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) `getHomeStats()` (members, projects, events that have started, years since `founded_year`) and `getMissionStats()` (the /lab/drone bench's dashboard, §18: members and their running total by joining year, from `year` of study and the Senior Core term; projects per lab domain; this year's events, done and coming; the next event; workshops that have run (type `workshop`, started) and the next one; competitions won = achievements whose `position` is a podium, `PODIUM` in `lib/mission.ts`). The last three depend on the current time, so they use `cacheLife("hours")`.
+- Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) `getHomeStats()` (members, projects, events that have started, years since `founded_year`) and `getMissionStats()` (the /lab/drone bench's dashboard, §18: members and their running total by joining year, from `year` of study and the Senior Core term; projects per lab domain; this year's events, done and coming; the next event; workshops that have run (type `workshop`, started) and the next one; competitions won = achievements whose `result` is a podium, `PODIUM` in `lib/mission.ts`). The last three depend on the current time, so they use `cacheLife("hours")`.
 - `gallery_items`: `event_id`, `type` (`photo` | `video`), `url` (null for a note), `poster_url` (videos), `caption`,
   `alt`, `width` / `height` (null for notes), `layout_group`, `sort_order` (the spec's "order"; every table here uses
   `sort_order`), `taken_at`. How they become journal pages is in §14. The mock has four journals (Tech Expo 2025, Hack the
@@ -455,6 +469,13 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
   `getJournal(slug)` (`{ event, items, pages }`, or null).
 - Event reads: `getEventShowcase()` (every event with `photos`, its photo gallery items that have a file, and
   `has_gallery`; upcoming first, soonest first, then past, newest first).
+- `achievements` (§19): `slug`, `title` (short: it is set huge, in two lines), `result` ("Winner", "1st Runner-up",
+  "Best Paper"; `isWin()` in `lib/achievements.ts` picks the red badge), `category` (`competition` | `research` | `other`;
+  the page filters on the first two), `event_name`, `location`, `date` (`YYYY-MM-DD`), `description` (max **200**
+  characters, `ACHIEVEMENT_DESCRIPTION_MAX`; the mock throws past it), `team` (member names, as text), `image_url` (a
+  landscape photo, required: it becomes the full-screen background), `link` (optional: certificate or paper) and
+  `sort_order` (newest first). The mock has 6 rows with generated placeholder photos in `/public/achievements/`
+  (1920×1080, graded into the palette); replace them with real photos.
 - `milestones`: `year`, `title`, `description` (one line), `sort_order` (oldest first). The /about timeline (§15) reads them
   with `getMilestones()`. The mock's seven rows are placeholders (2019–2026); replace them with the club's real history.
 - Writes: `addRecruitmentSubscriber(email)` (a mock no-op for now), called only from the server action `notifyWhenRecruiting` in `lib/actions.ts`, which validates the email.
@@ -1451,3 +1472,96 @@ units while slow, and wobbles slightly. Phones: 60% scale. (The home sidekick, �
   cursor (hover or tap a card to scan it; patrols after 4s still), Patrol, Home. Live speed, tilt, particles and fps.
 - `window.__drone` (state, actions, store) exists on this page only, for scripted checks.
 - Reduced motion or no WebGL: `/drone-poster.png` (a render of the model, 884×508, transparent) instead of the canvas.
+
+---
+
+## 19. Achievements (`app/achievements/page.tsx`, `components/achievements`)
+
+```tsx
+<GridBackground />
+<AchievementsExperience items={getAchievements()}>   // client: filter, crossfade, list → slide
+  <section h-svh>                                     // the slider (100svh, under the transparent header)
+    <AchievementsSlider key={filter} />               // remounts per filter
+    heading + filters                                 // top left, under the header
+  </section>
+  <AchievementsList />                                // [02] Record: every achievement, grouped by year
+</AchievementsExperience>
+```
+
+A full-screen card-expansion slider: the current achievement fills the screen, the next ones wait as a row of cards on
+the right, and the first card grows into the next background.
+
+### Layout
+- **Background**: the active photo (`object-cover`) under a gradient from `black/75` at the left to `black/20` at the
+  right (phones 60% → 25%), a light radial vignette, and soft scrims at the top (under the header) and the bottom.
+- **Heading and filters** (top left, under the header, 6vw in from md): the page's `h1` is the mono label
+  `Achievements / [06] Total`; under it the filter `Pill` buttons All, Competitions, Research (`aria-pressed`; the current
+  one `white`, the rest `raised` with a blur).
+- **Text** (left, max 520px, 6vw in; centred in the band between the filters and the controls from md):
+  - a short red dash and "event / location" (13px);
+  - the title in **Anton** (§3), uppercase, two lines split at the space nearest the middle (`titleLines`), each line in
+    its own mask: `clamp(3rem, min(7vw, 11svh), 6.5rem)`, line-height 0.95 (phones `clamp(2.2rem, 10vw, 3.2rem)`);
+  - the result badge (`ResultBadge`: a win in red, anything else `bg-text/10`) and the date in mono (IST, "12 DEC 2025");
+  - the description (15px, muted, at most 3 lines) and the team (small, after a mono "Team");
+  - a round red share button (system share sheet, else it copies `/achievements?a=<slug>` and says "Link copied"), and
+    a ghost `PillButton` "View certificate" / "Read paper" (research), only when `link` is set.
+- **Waiting cards** (`ACH_CARD`): the next achievements in order, from 52vw to past the right edge (one card always starts
+  off screen), 170 × 260, 18px apart, 16px radius, a soft shadow, the photo with a dark bottom gradient, the title (12px
+  bold caps, two lines) and the result (10px mono). `data-cursor="view"`.
+- **Bottom**: round frosted prev/next buttons at the left, a hairline track whose fill shows the position, and the slide
+  number at the bottom right (Sora 700, 64px, an `Odometer` that rolls each digit as a 0–9 column, with `/ 06` in mono).
+- **Autoplay line**: a 2px red line just under the header that fills over the autoplay interval.
+
+### Motion (`AchievementsSlider`; numbers in `ACH_MOTION`)
+Every achievement near the current one (the current one, the previous one, the next two, and a far card while it is
+being opened; the outgoing one stays until a change ends) has a full-screen background **layer**, mounted with its photo
+loaded and hidden until needed. A change waits for the target photo to decode (at most 900ms), so a card never grows
+empty.
+- **Next / a card click**: the target's layer starts exactly on its card (same box, 16px radius, the same card face) above
+  the old background, and grows to cover the section over 1.1s `expo.inOut` (the radius goes to 0, the card face fades
+  out, the background shade fades in). It **is** the new background when it lands: nothing is swapped, so there is no blank
+  frame.
+- **Prev**: the reverse: the previous achievement waits underneath, and the current background shrinks into the first card
+  slot (the shade fades out, the card face fades in), where the card takes over.
+- **Cards**: keyed by slug and laid out per slot, so a change FLIP-slides each card to its new slot (0.9s `expo.inOut`,
+  60ms apart). A card new to the row fades in at the far end; one that a card click passed over fades out where it was
+  first; one that leaves the row while on screen fades out (a copy of it does).
+- **Text**: the old title lines slide up out of their masks and the rest fades (300ms) as the card starts growing; at 90%
+  of the growth the new title lines rise (0.9s expo, 80ms apart), then the event line, badge, description, team and
+  buttons fade up (50ms apart). The first load plays the same entrance as CSS keyframes (`animate-rise`,
+  `animate-fade-up`) from the server HTML.
+- **Number**: the odometer rolls to the new number (900ms expo) as the change starts.
+- **Filters**: the slider fades out (0.3s), remounts for the filtered list, and fades in (0.6s) once its first photo is
+  decoded.
+
+### Behaviour
+- **Autoplay**: the next achievement every 6s (the red line fills, then the change plays). Paused while the pointer is over
+  the slider or focus is inside it, while less than 35% of it is on screen, while the tab is hidden or the menu is open, and
+  for 10s after any action. It loops.
+- **Ways in**: the arrows, ← / → while the slider is on screen (not in fields or with the menu open), a touch swipe (past
+  min(80px, 12% of the width); a swipe never counts as a click), a card click (that card grows), and the list below.
+- **`?a=<slug>`** opens on that achievement (the share link).
+- **Loading**: the first photo is preloaded; the other layers and the cards load eagerly at low priority (no preload in the
+  head competing with the first photo).
+- **Accessibility**: the slider is a carousel (`aria-roledescription`); a polite live region announces "2 of 6: Swarm Map
+  Merging, Best Paper"; the cards are buttons ("Show <title>, <result>").
+
+### All achievements (`AchievementsList`)
+`[02] Record`, "All achievements", then one block per year (newest first, with a `[03]` count): a row per achievement with
+the date (mono), the title (Sora 600), the event / location (muted) and the result badge, on hairlines. The showing one has
+a red dot. Clicking a row scrolls back up (Lenis, 1.2s) and then opens that slide (its card grows); a row outside the
+current filter switches to All first and the rebuilt slider starts on it.
+
+### Phones (< 768px)
+The cards are a small strip along the bottom (110 × 160, 10px apart, from 16px in), above the controls, with the text
+above them; the title is `clamp(2.2rem, 10vw, 3.2rem)`. The expansion works the same. On phones the text, the strip and
+the controls are laid out in flow (the slider is at least a screen tall, its text bottom-aligned above the strip), so a
+short phone makes the section taller instead of overlapping the filters.
+
+### Reduced motion
+No expansion and no sliding: the new background crossfades in (0.45s); the cards switch at once and the text when it ends. No
+autoplay, and the first-load keyframes don't run.
+
+### Placeholders
+The photos in `/public/achievements/` are generated placeholder scenes graded into the palette, and the links point to
+`example.com`; replace both with the real ones.

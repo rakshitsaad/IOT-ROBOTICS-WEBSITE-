@@ -123,6 +123,14 @@ export default function LabPage() {
               <MonoLabel tone="white">Caveat · handwritten gallery captions only</MonoLabel>
               <p className="mt-3 -rotate-2 font-hand text-3xl text-text/90">3am, 14th attempt, it finally moved</p>
             </div>
+            <div>
+              <MonoLabel tone="white">Anton · /achievements slide titles only</MonoLabel>
+              <p className="mt-3 font-condensed text-5xl leading-[0.95] uppercase md:text-6xl">
+                Smart India
+                <br />
+                Hackathon
+              </p>
+            </div>
           </div>
         </Section>
 

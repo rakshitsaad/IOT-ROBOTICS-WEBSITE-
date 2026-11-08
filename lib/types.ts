@@ -186,18 +186,33 @@ export interface ClubEvent {
 }
 
 /* ----------------------------------------------------------- achievements */
+export type AchievementCategory = "competition" | "research" | "other";
+
+/** Longest allowed achievement description (the /achievements slide shows it in at most 3 lines). */
+export const ACHIEVEMENT_DESCRIPTION_MAX = 200;
+
+/** One win, award or published result, shown on /achievements (DESIGN.md §19). */
 export interface Achievement {
   id: UUID;
+  slug: string;
+  /** Short name, set huge on the slide in two lines, e.g. "Smart India Hackathon". */
   title: string;
-  description: string;
-  /** Competition / event where it was won. */
+  /** "Winner", "1st Runner-up", "Best Paper", "Grant Awarded"… */
+  result: string;
+  category: AchievementCategory;
+  /** The competition, conference or programme, e.g. "Smart India Hackathon 2025". */
   event_name: string;
-  /** e.g. "Winner", "1st Runner-up", "Top 10". */
-  position: string;
+  /** Where it happened, e.g. "IIT Delhi, New Delhi". */
+  location: string;
   date: DateString;
-  image_url: string | null;
-  member_ids: UUID[];
-  project_id: UUID | null;
+  /** At most ACHIEVEMENT_DESCRIPTION_MAX characters. */
+  description: string;
+  /** Team members' names, as shown. */
+  team: string[];
+  /** A landscape photo of the team or the event (the slide's full-screen background). */
+  image_url: string;
+  /** Optional proof: a certificate, a paper or a news story. */
+  link: string | null;
   sort_order: number;
   created_at: Timestamp;
 }

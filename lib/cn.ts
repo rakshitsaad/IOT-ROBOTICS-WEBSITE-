@@ -10,7 +10,7 @@ const twMerge = extendTailwindMerge({
     theme: {
       color: ["bg", "bg-2", "line", "text", "muted", "red", "red-deep", "maroon", "white", "black"],
       radius: ["pill", "card", "image"],
-      font: ["sans", "display", "mono", "serif", "hand"],
+      font: ["sans", "display", "mono", "serif", "hand", "condensed"],
       ease: ["power3", "expo"],
     },
     classGroups: {

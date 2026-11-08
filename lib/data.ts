@@ -267,7 +267,7 @@ export async function getMissionStats(): Promise<MissionStats> {
   const workshops = events.filter((e) => e.type === "workshop");
   const nextWorkshop = future.find((e) => e.type === "workshop") ?? null;
   const podiums = achievements
-    .filter((a) => PODIUM.test(a.position))
+    .filter((a) => PODIUM.test(a.result))
     .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
   return {
@@ -290,7 +290,7 @@ export async function getMissionStats(): Promise<MissionStats> {
     },
     competitions: {
       won: podiums.length,
-      latest: podiums[0] ? { event: podiums[0].event_name, position: podiums[0].position } : null,
+      latest: podiums[0] ? { event: podiums[0].event_name, position: podiums[0].result } : null,
     },
   };
 }

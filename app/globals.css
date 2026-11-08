@@ -69,6 +69,8 @@ html[data-ann="off"] {
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-serif: var(--font-bodoni-moda), "Didot", Georgia, serif;
   --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
+  /* Anton: the /achievements slide titles only (DESIGN.md §3). */
+  --font-condensed: var(--font-anton), Impact, "Arial Narrow", sans-serif;
 
   --radius-pill: 999px;
   --radius-card: 28px;
