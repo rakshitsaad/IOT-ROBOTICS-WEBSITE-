@@ -174,7 +174,6 @@ export function DroneStage({
           <button
             ref={hit}
             type="button"
-            data-cursor="link"
             aria-label="Flip the drone"
             onClick={() => droneActions.flip()}
             className="pointer-events-auto absolute top-0 left-0 rounded-full outline-offset-4 [visibility:hidden]"

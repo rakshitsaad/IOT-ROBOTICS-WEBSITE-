@@ -1,197 +1,153 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { pad2 } from "@/lib/gallery";
-import { projectImages, type ProjectWithTeam } from "@/lib/projects";
-import { useUIStore } from "@/lib/store";
-import type { ProjectImage } from "@/lib/types";
-import { ProjectInfo } from "./parts";
+import { MediaGrid } from "@/components/gallery/MediaGrid";
+import { ProjectCard } from "@/components/shared/ProjectCard";
+import { Button, MonoLabel, Photo, Tag, TagList } from "@/components/ui";
+import { STATUS_LABEL, projectCategory, type ProjectWithTeam } from "@/lib/projects";
+import type { GalleryItem } from "@/lib/types";
 
 /**
- * /projects/[slug] for phones and reduced motion (DESIGN.md §16): the info
- * panel, then every photo stacked (two columns from md). A photo opens the
- * full-screen viewer, which swipes between photos (native scroll-snap).
- * md+ with motion shows the stage's gallery strip instead.
+ * /projects/[slug] (DESIGN.md §16): a project page in the shape of a short case study, using only what the data holds.
+ * The overview (summary and description) sits beside a fact sheet (year, status, area, team, links); then the
+ * hardware and software used, the photos (opening in the lightbox) and more projects from the same area.
  */
-export function ProjectDetail({ project }: { project: ProjectWithTeam }) {
-  const images = projectImages(project);
-  const [viewer, setViewer] = useState<number | null>(null);
+export function ProjectDetail({ project, related }: { project: ProjectWithTeam; related: ProjectWithTeam[] }) {
+  const category = projectCategory(project);
+  const photos: GalleryItem[] = project.images.map((img, i) => ({
+    id: `${project.id}-${i}`,
+    event_id: project.id,
+    type: "photo",
+    url: img.url,
+    poster_url: null,
+    caption: null,
+    alt: img.alt,
+    width: img.width,
+    height: img.height,
+    layout_group: null,
+    sort_order: i,
+    taken_at: null,
+    created_at: project.created_at,
+  }));
 
   return (
-    <article className="shell pt-header pb-16">
-      <div className="pt-6">
-        <Link
-          href="/projects"
-          className="mono-label inline-flex items-center gap-2 text-text underline-offset-4 hover:underline"
-        >
-          <span aria-hidden="true">←</span> Back to projects
-        </Link>
+    <article className="pt-header">
+      <div className="shell">
+        <nav aria-label="Breadcrumb" className="pt-8 md:pt-12">
+          <ol className="flex items-center gap-2 text-[13px] text-faint">
+            <li>
+              <Link href="/projects" className="transition-colors duration-300 hover:text-text">
+                Projects
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" className="text-muted">
+              {project.title}
+            </li>
+          </ol>
+        </nav>
+
+        <header className="grid gap-8 pt-10 pb-10 md:pt-14 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-8">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              {category && <Tag>{category}</Tag>}
+              <span className="font-mono text-[11px] text-faint">
+                {project.year} · {STATUS_LABEL[project.status]}
+              </span>
+            </div>
+            <h1 className="type-h1 mt-6">{project.title}</h1>
+            <p className="type-lead mt-6 max-w-[52ch] text-muted">{project.summary}</p>
+          </div>
+        </header>
+
+        <Photo src={project.cover_url} alt={`${project.title}, cover photo`} sizes="(min-width: 1400px) 1320px, 100vw" ratio="aspect-[16/9]" priority />
+
+        <div className="grid gap-12 border-b border-line py-14 md:py-20 lg:grid-cols-12 lg:gap-8">
+          <section aria-labelledby="overview-title" className="lg:col-span-7">
+            <MonoLabel as="h2" id="overview-title">
+              Overview
+            </MonoLabel>
+            <p className="mt-5 text-[clamp(1.125rem,1.6vw,1.375rem)] leading-[1.6] text-text/90">{project.description}</p>
+
+            {project.tech_stack.length > 0 && (
+              <div className="mt-12">
+                <MonoLabel as="h2">Hardware &amp; software</MonoLabel>
+                <TagList items={project.tech_stack} className="mt-4" />
+              </div>
+            )}
+          </section>
+
+          <aside aria-label="Project facts" className="lg:col-span-4 lg:col-start-9">
+            <dl className="divide-y divide-line border-y border-line text-[14px]">
+              <Fact label="Year">{project.year}</Fact>
+              <Fact label="Status">{STATUS_LABEL[project.status]}</Fact>
+              {project.tags.length > 0 && <Fact label="Tags">{project.tags.join(", ")}</Fact>}
+              {project.team.length > 0 && (
+                <Fact label="Team">
+                  <ul>
+                    {project.team.map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                </Fact>
+              )}
+            </dl>
+            {(project.repo_url || project.demo_url) && (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {project.repo_url && (
+                  <Button href={project.repo_url} variant="secondary" arrow>
+                    Source code
+                  </Button>
+                )}
+                {project.demo_url && (
+                  <Button href={project.demo_url} variant="secondary" arrow>
+                    Live demo
+                  </Button>
+                )}
+              </div>
+            )}
+          </aside>
+        </div>
+
+        {photos.length > 0 && (
+          <section aria-labelledby="photos-title" className="border-b border-line py-14 md:py-20">
+            <div className="flex items-baseline justify-between gap-4">
+              <MonoLabel as="h2" id="photos-title">
+                Photos
+              </MonoLabel>
+              <span className="font-mono text-[12px] text-faint">{photos.length}</span>
+            </div>
+            <MediaGrid items={photos} title={project.title} slug={project.slug} layout="grid" className="mt-8" />
+          </section>
+        )}
+
+        {related.length > 0 && (
+          <section aria-labelledby="related-title" className="py-14 md:py-20">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 id="related-title" className="type-h2">
+                More {category ? category.toLowerCase() : ""} projects
+              </h2>
+              <Link href="/projects" className="text-[14px] font-semibold text-muted transition-colors duration-300 hover:text-text">
+                All projects →
+              </Link>
+            </div>
+            <ul className="mt-10 grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+              {related.map((p) => (
+                <li key={p.id}>
+                  <ProjectCard project={p} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw" />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
-      <ProjectInfo project={project} headingAs="h1" className="mt-5 md:max-w-xl" />
-      <ul aria-label={`${project.title}: photos`} className="mt-6 flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4">
-        {images.map((img, i) => (
-          <li key={`${i}-${img.url}`}>
-            <button
-              type="button"
-              onClick={() => setViewer(i)}
-              data-cursor="view"
-              aria-label={`View photo ${i + 1} of ${images.length}: ${img.alt}`}
-              className="relative block w-full overflow-hidden rounded-image bg-bg-2"
-              style={{ aspectRatio: `${img.width} / ${img.height}` }}
-            >
-              {/* The first photo is the page's largest image on phones, so it loads at once. */}
-              <Image
-                src={img.url}
-                alt=""
-                fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                loading={i === 0 ? "eager" : undefined}
-                className="object-cover"
-              />
-            </button>
-          </li>
-        ))}
-      </ul>
-      {viewer !== null && (
-        <PhotoViewer images={images} index={viewer} title={project.title} onClose={() => setViewer(null)} />
-      )}
     </article>
   );
 }
 
-/** Only mounted after a tap, so `document` exists. */
-function PhotoViewer(props: { images: ProjectImage[]; index: number; title: string; onClose(): void }) {
-  return createPortal(<ViewerPanel {...props} />, document.body);
-}
-
-function ViewerPanel({
-  images,
-  index,
-  title,
-  onClose,
-}: {
-  images: ProjectImage[];
-  index: number;
-  title: string;
-  onClose(): void;
-}) {
-  const lenis = useUIStore((s) => s.lenis);
-  const reduced = useReducedMotion();
-  const scroller = useRef<HTMLDivElement>(null);
-  const closeButton = useRef<HTMLButtonElement>(null);
-  const [current, setCurrent] = useState(index);
-  const count = images.length;
-
-  // Open on the tapped photo.
-  useLayoutEffect(() => {
-    const el = scroller.current;
-    if (el) el.scrollLeft = index * el.clientWidth;
-    // Only on open.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // The page behind: inert, no scroll; focus in, and back out on close.
-  useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
-    const html = document.documentElement;
-    const overflow = html.style.overflow;
-    const behind = [document.getElementById("main"), document.getElementById("site-footer"), document.querySelector("header")].filter(
-      (el): el is HTMLElement => el instanceof HTMLElement,
-    );
-    behind.forEach((el) => (el.inert = true));
-    lenis?.stop();
-    html.style.overflow = "hidden";
-    closeButton.current?.focus();
-    return () => {
-      behind.forEach((el) => (el.inert = false));
-      lenis?.start();
-      html.style.overflow = overflow;
-      opener?.focus?.({ preventScroll: true });
-    };
-  }, [lenis]);
-
-  const go = (i: number) => {
-    const el = scroller.current;
-    if (!el) return;
-    const next = (i + count) % count;
-    el.scrollTo({ left: next * el.clientWidth, behavior: reduced ? "auto" : "smooth" });
-  };
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowLeft") go(current - 1);
-      else if (e.key === "ArrowRight") go(current + 1);
-      else return;
-      e.preventDefault();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
-
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div role="dialog" aria-modal="true" aria-label={`${title}: photos`} className="fixed inset-0 z-[90] bg-bg">
-      <div
-        ref={scroller}
-        data-lenis-prevent
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          setCurrent(Math.round(el.scrollLeft / Math.max(el.clientWidth, 1)));
-        }}
-        className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {images.map((img, i) => (
-          <div key={`${i}-${img.url}`} className="relative h-full w-full shrink-0 snap-center snap-always">
-            <Image
-              src={img.url}
-              alt={img.alt}
-              fill
-              sizes="100vw"
-              className="object-contain px-4 py-20"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
-        <p className="mono-label text-muted" aria-live="polite">
-          <span className="text-text">{pad2(current + 1)}</span> / {pad2(count)}
-          <span className="sr-only">: {images[current]?.alt}</span>
-        </p>
-        <button
-          ref={closeButton}
-          type="button"
-          onClick={onClose}
-          className="mono-label pointer-events-auto rounded-pill border border-line px-4 py-2 text-text"
-        >
-          Close image
-        </button>
-      </div>
-
-      {count > 1 && (
-        <div className="absolute inset-x-0 bottom-0 flex justify-between p-4">
-          <button
-            type="button"
-            onClick={() => go(current - 1)}
-            aria-label="Previous photo"
-            className="grid size-12 place-items-center rounded-full border border-line bg-bg/60 text-lg text-text"
-          >
-            <span aria-hidden="true">←</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => go(current + 1)}
-            aria-label="Next photo"
-            className="grid size-12 place-items-center rounded-full border border-line bg-bg/60 text-lg text-text"
-          >
-            <span aria-hidden="true">→</span>
-          </button>
-        </div>
-      )}
+    <div className="grid grid-cols-[6rem_1fr] gap-4 py-4">
+      <dt className="mono-label pt-0.5 text-faint">{label}</dt>
+      <dd className="text-text/90">{children}</dd>
     </div>
   );
 }

@@ -70,7 +70,7 @@ export function MissionDashboard({ stats, className }: { stats: MissionStats; cl
             <p className="mono-label text-muted">
               {DATE_LONG.format(new Date(next.starts_at))} IST · {next.venue}
             </p>
-            <Countdown to={next.starts_at} size="sm" className="mt-auto [&_.mono-label]:text-[10px] md:[&_.mono-label]:text-[11px]" />
+            <Countdown to={next.starts_at} className="mt-auto [&_.mono-label]:text-[10px] md:[&_.mono-label]:text-[11px]" />
           </>
         ) : (
           <p className="text-muted">Nothing scheduled yet.</p>

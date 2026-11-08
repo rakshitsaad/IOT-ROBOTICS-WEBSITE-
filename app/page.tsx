@@ -1,39 +1,43 @@
-import { GridBackground } from "@/components/ui";
-import { Featured } from "@/components/home/Featured";
+import { FeaturedProjects } from "@/components/home/FeaturedProjects";
+import { HomeAchievements } from "@/components/home/HomeAchievements";
+import { HomeEvents } from "@/components/home/HomeEvents";
 import { HomeHero } from "@/components/home/HomeHero";
-import { HomeRobot } from "@/components/home/HomeRobot";
-import { HomeScroll } from "@/components/home/HomeScroll";
-import { JoinCard } from "@/components/home/JoinCard";
-import { Lab } from "@/components/home/Lab";
-import { Numbers } from "@/components/home/Numbers";
-import { Statement } from "@/components/home/Statement";
-import { UpcomingEvent } from "@/components/home/UpcomingEvent";
-import { getFeaturedProjects, getHomeStats, getProjects, getSettings, getUpcomingEvent } from "@/lib/data";
+import { HomeIntro } from "@/components/home/HomeIntro";
+import { FocusAreas } from "@/components/shared/FocusAreas";
+import { JoinCta } from "@/components/shared/JoinCta";
+import {
+  getAchievements,
+  getEvents,
+  getFeaturedProjects,
+  getGalleryHighlights,
+  getHomeStats,
+  getProjects,
+  getSettings,
+  getUpcomingEvent,
+} from "@/lib/data";
 
+/** Home (DESIGN.md §12): what the club is, what it works on, what it has built, what's next, and how to join. */
 export default async function HomePage() {
-  const [settings, projects, featured, event, stats] = await Promise.all([
+  const [settings, projects, featured, next, events, achievements, stats, photos] = await Promise.all([
     getSettings(),
     getProjects(),
     getFeaturedProjects(),
     getUpcomingEvent(),
+    getEvents(),
+    getAchievements(),
     getHomeStats(),
+    getGalleryHighlights(1),
   ]);
 
   return (
     <>
-      <GridBackground />
-
-      {/* One scroll sequence (DESIGN.md §12): the robot travels through every section below. */}
-      <HomeScroll>
-        <HomeHero settings={settings} />
-        <HomeRobot />
-        <Statement clubName={settings.club_name} />
-        <Lab projects={projects} />
-        <Featured projects={featured} />
-        {event && <UpcomingEvent event={event} />}
-        <Numbers stats={stats} />
-        <JoinCard settings={settings} />
-      </HomeScroll>
+      <HomeHero settings={settings} stats={stats} />
+      <HomeIntro tagline={settings.tagline} photo={photos[0] ?? null} />
+      <FocusAreas projects={projects} index={2} />
+      <FeaturedProjects projects={featured} index={3} />
+      <HomeEvents next={next} events={events} index={4} />
+      <HomeAchievements items={achievements.slice(0, 4)} index={5} />
+      <JoinCta settings={settings} index={6} />
     </>
   );
 }

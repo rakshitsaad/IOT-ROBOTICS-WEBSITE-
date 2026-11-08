@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GridBackground, MonoLabel, Pill, PillButton } from "@/components/ui";
+import { Button, GridBackground, MonoLabel } from "@/components/ui";
 import { RobotLab } from "@/components/lab/RobotLab";
 
 export const metadata: Metadata = {
@@ -15,12 +15,12 @@ export default function RobotLabPage() {
       <header className="shell pb-8 pt-12 md:pb-12 md:pt-20">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <MonoLabel index="LAB">Robot mascot</MonoLabel>
-          <PillButton href="/lab" variant="ghost" size="sm">
+          <Button href="/lab" variant="secondary" size="sm">
             ← Design system
-          </PillButton>
+          </Button>
         </div>
         <h1 className="mt-5 max-w-4xl text-[length:clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
-          Meet <Pill color="raised">ClubBot</Pill>.
+          Meet ClubBot.
         </h1>
         <p className="mt-6 max-w-xl text-muted">
           Every expression, icon and gesture of the club robot, driven through the same store the site uses. Add{" "}

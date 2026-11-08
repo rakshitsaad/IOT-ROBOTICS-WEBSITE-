@@ -1,277 +1,142 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Accordion, IrisButton, MonoLabel, PillButton } from "@/components/ui";
-import { cn } from "@/lib/cn";
-import { JOIN_BENEFITS, JOIN_CHARACTERS, JOIN_FAQ, JOIN_STEPS, characterBySlug } from "@/lib/join";
+import { CharacterAvatar } from "@/components/join/CharacterAvatar";
+import { Accordion, Button, MonoLabel, SectionHeader, Tag } from "@/components/ui";
+import { JOIN_BENEFITS, JOIN_CHARACTERS, JOIN_FAQ, JOIN_STEPS } from "@/lib/join";
 import type { Team } from "@/lib/types";
-import { CharacterAvatar } from "./CharacterAvatar";
 
 /**
- * The /join sections under the hero (DESIGN.md §21): why join, the teams, how it works, the FAQ and the closing card.
- * Calm on purpose, like the hero: generous space, cards without borders (`bg-2`, `rounded-card`), no hover tricks, and
- * only subtle fade-up reveals (JoinReveals: [data-reveal], [data-reveal-group]).
+ * /join below its header (DESIGN.md §21): why join, the teams and who is hiring, how the process works, the FAQ and a
+ * last call. Calm and plain: hairlines and numbers instead of icons and cards.
  */
-
-const HEADING = "mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]";
-const SECTION = "shell pt-[clamp(6.5rem,18svh,12rem)]";
-
-/* ------------------------------------------------------------------ why join */
 
 export function WhyJoin() {
   return (
-    <section aria-labelledby="why-title" className={SECTION}>
-      <div data-reveal>
-        <MonoLabel as="p" index={1}>
-          Why join
-        </MonoLabel>
-        <h2 id="why-title" className={HEADING}>
-          More than a club
-        </h2>
-      </div>
-      <ul data-reveal-group className="mt-12 grid gap-4 sm:grid-cols-2 md:mt-16 md:gap-5 lg:grid-cols-4">
-        {JOIN_BENEFITS.map((b) => (
-          <li key={b.title} data-reveal-item className="flex flex-col rounded-card bg-bg-2 p-7 md:p-8">
-            <span className="grid size-12 place-items-center rounded-full bg-text/[0.06] text-text">
-              <BenefitIcon name={b.icon} />
-            </span>
-            <h3 className="mt-8 text-xl leading-tight font-semibold tracking-[-0.02em]">{b.title}</h3>
-            <p className="mt-3 text-[15px] leading-relaxed text-muted">{b.text}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function BenefitIcon({ name }: { name: (typeof JOIN_BENEFITS)[number]["icon"] }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="size-6">
-      {name === "chip" && (
-        <>
-          <rect x="7" y="7" width="10" height="10" rx="2" />
-          <path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" />
-        </>
-      )}
-      {name === "build" && (
-        <path d="M14.5 5.5a4 4 0 0 0-5.3 5L4 15.7a1.8 1.8 0 0 0 2.6 2.6L11.8 13a4 4 0 0 0 5-5.3l-2.4 2.4-2.2-.4-.4-2.2 2.7-2z" />
-      )}
-      {name === "trophy" && (
-        <>
-          <path d="M8 4h8v5a4 4 0 0 1-8 0V4z" />
-          <path d="M8 6H5a2 2 0 0 0 0 4h3M16 6h3a2 2 0 0 1 0 4h-3M12 13v4M8.5 20h7M10 17h4v3h-4z" />
-        </>
-      )}
-      {name === "people" && (
-        <>
-          <circle cx="9" cy="8" r="3.2" />
-          <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
-          <circle cx="17" cy="9" r="2.5" />
-          <path d="M15.5 14.3a4.5 4.5 0 0 1 5 4.7" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-/* ---------------------------------------------------------------------- teams */
-
-export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<string, boolean> }) {
-  const open = Object.values(hiring).filter(Boolean).length;
-  // In the teams' own order (lib/data), each with its character.
-  const rows = teams
-    .map((t) => ({ team: t, character: characterBySlug(t.slug) }))
-    .filter((r): r is { team: Team; character: NonNullable<ReturnType<typeof characterBySlug>> } => Boolean(r.character));
-  return (
-    <section id="teams" aria-labelledby="teams-title" className={cn(SECTION, "scroll-mt-24")}>
-      <div data-reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-        <div>
-          <MonoLabel as="p" index={2}>
-            Teams
-          </MonoLabel>
-          <h2 id="teams-title" className={HEADING}>
-            Seven teams, one crew
-          </h2>
-        </div>
-        <MonoLabel as="p" tone="text">
-          [{String(open).padStart(2, "0")}] hiring now
-        </MonoLabel>
-      </div>
-      <ul data-reveal-group className="mt-12 grid gap-4 sm:grid-cols-2 md:mt-16 md:gap-5 lg:grid-cols-3">
-        {rows.map(({ team, character }) => {
-          const isOpen = hiring[character.slug];
-          return (
+    <section aria-labelledby="why-title" className="section-y">
+      <div className="shell">
+        <SectionHeader index={1} label="Why join" titleId="why-title" title="What you get out of it." />
+        <ul className="mt-12 grid border-t border-line md:mt-16 md:grid-cols-2">
+          {JOIN_BENEFITS.map((b, i) => (
             <li
-              key={team.slug}
-              data-reveal-item
-              className="flex flex-col rounded-card bg-bg-2 p-7 md:p-8"
+              key={b.title}
+              data-reveal
+              className="grid gap-3 border-b border-line py-8 sm:grid-cols-[3.5rem_1fr] md:py-10 md:odd:border-r md:odd:pr-10 md:even:pl-10"
             >
-              <div className="flex items-start justify-between gap-4">
-                <CharacterAvatar
-                  character={character}
-                  sizes="128px"
-                  className="size-16 md:size-[4.5rem]"
-                />
-                <StatusPill open={isOpen} />
-              </div>
-              <h3 className="mt-7 text-2xl leading-tight font-semibold tracking-[-0.02em]">{team.name}</h3>
-              <p className="mt-2.5 text-[15px] leading-relaxed text-muted">{team.description}</p>
-              <ul aria-label="Skills" className="mt-5 flex flex-wrap gap-1.5">
-                {character.skills.map((s) => (
-                  <li key={s} className="rounded-pill bg-text/[0.06] px-2.5 py-1.5 text-[12px] leading-none text-text/75">
-                    {s}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto pt-8">
-                {isOpen ? (
-                  <PillButton href={`/join/apply?team=${character.slug}`} variant="ghost" size="sm" arrow>
-                    Apply to {team.name}
-                  </PillButton>
-                ) : (
-                  <span
-                    aria-disabled="true"
-                    className="inline-flex h-9 cursor-not-allowed items-center rounded-pill bg-text/[0.04] px-4 text-[13px] font-semibold text-text/40"
-                  >
-                    Opens next round
-                  </span>
-                )}
+              <span className="font-mono text-[12px] text-faint">{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <h3 className="type-h3">{b.title}</h3>
+                <p className="type-body mt-3 max-w-[44ch] text-muted">{b.text}</p>
               </div>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
 
-export function StatusPill({ open, className }: { open: boolean; className?: string }) {
+export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<string, boolean> }) {
+  const open = teams.filter((t) => hiring[t.slug]).length;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-[0.12em] uppercase",
-        open ? "bg-maroon text-text" : "bg-text/[0.07] text-text/55",
-        className,
-      )}
-    >
-      {open ? "Hiring" : "Closed"}
-    </span>
+    <section id="teams" aria-labelledby="teams-title" className="section-y border-t border-line">
+      <div className="shell">
+        <SectionHeader
+          index={2}
+          label="Teams"
+          titleId="teams-title"
+          title="Pick the work you want to do."
+          intro={open > 0 ? `${open} of ${teams.length} teams are taking applications this round.` : "No team is taking applications right now."}
+        />
+        <ul className="mt-12 border-b border-line md:mt-16">
+          {teams.map((team) => {
+            const character = JOIN_CHARACTERS.find((c) => c.slug === team.slug);
+            const isOpen = hiring[team.slug];
+            return (
+              <li key={team.id} data-reveal className="grid gap-x-8 gap-y-4 border-t border-line py-7 md:grid-cols-12 md:items-center">
+                <div className="flex items-center gap-4 md:col-span-4">
+                  {character && <CharacterAvatar character={character} sizes="96px" className="size-12 border border-line" />}
+                  <div>
+                    <h3 className="text-[18px] font-semibold tracking-[-0.015em]">{team.name}</h3>
+                    <p className="mt-1 text-[14px] leading-relaxed text-muted md:hidden">{team.description}</p>
+                  </div>
+                </div>
+                <div className="md:col-span-5">
+                  <p className="hidden text-[15px] leading-relaxed text-muted md:block">{team.description}</p>
+                  {character && (
+                    <p className="font-mono text-[11px] tracking-[0.04em] text-faint md:mt-2">{character.skills.join(" / ")}</p>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-3 md:col-span-3 md:justify-end">
+                  {isOpen ? <Tag tone="accent">Hiring</Tag> : <Tag tone="solid">Closed</Tag>}
+                  {isOpen ? (
+                    <Button href={`/join/apply?team=${team.slug}`} variant="secondary" size="sm" arrow>
+                      Apply
+                    </Button>
+                  ) : (
+                    <span className="text-[13px] text-faint">Opens next round</span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
   );
 }
-
-/* --------------------------------------------------------------- how it works */
 
 export function HowItWorks() {
   return (
-    <section aria-labelledby="steps-title" className={SECTION}>
-      <div data-reveal>
-        <MonoLabel as="p" index={3}>
-          How it works
-        </MonoLabel>
-        <h2 id="steps-title" className={HEADING}>
-          Four steps in
-        </h2>
+    <section aria-labelledby="steps-title" className="section-y border-t border-line">
+      <div className="shell">
+        <SectionHeader index={3} label="How it works" titleId="steps-title" title="Four steps, from application to your first project." />
+        <ol className="mt-12 grid gap-10 md:mt-16 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          {JOIN_STEPS.map((s, i) => (
+            <li key={s.title} data-reveal style={{ "--reveal-delay": `${i * 70}ms` } as React.CSSProperties} className="border-t border-line pt-6">
+              <span className="flex items-center gap-3">
+                <span className={i === 0 ? "size-2 rounded-pill bg-red" : "size-2 rounded-pill border border-text/40"} aria-hidden="true" />
+                <span className="font-mono text-[12px] text-faint">Step {i + 1}</span>
+              </span>
+              <h3 className="mt-4 text-[19px] font-semibold tracking-[-0.015em]">{s.title}</h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted">{s.text}</p>
+            </li>
+          ))}
+        </ol>
       </div>
-      {/* A hairline joins the dots: each step draws the segment to the next (across from md, down on phones). */}
-      <ol data-reveal-group className="mt-14 grid gap-12 md:mt-20 md:grid-cols-4 md:gap-6">
-        {JOIN_STEPS.map((s, i) => (
-          <li key={s.title} data-reveal-item className="relative pl-12 md:pt-14 md:pl-0">
-            {i < JOIN_STEPS.length - 1 && (
-              <span
-                aria-hidden="true"
-                className="absolute top-3 left-3 h-[calc(100%+3rem)] w-px bg-line md:h-px md:w-[calc(100%+1.5rem)]"
-              />
-            )}
-            <span aria-hidden="true" className="absolute top-0 left-0 grid size-6 place-items-center rounded-full bg-bg-2">
-              <span className="size-1.5 rounded-full bg-text/60" />
-            </span>
-            <MonoLabel as="p">Step {String(i + 1).padStart(2, "0")}</MonoLabel>
-            <h3 className="mt-3 text-xl leading-tight font-semibold tracking-[-0.02em] md:text-2xl">{s.title}</h3>
-            <p className="mt-3 max-w-[30ch] text-[15px] leading-relaxed text-muted">{s.text}</p>
-          </li>
-        ))}
-      </ol>
     </section>
   );
 }
-
-/* ------------------------------------------------------------------------ FAQ */
 
 export function JoinFaq() {
   return (
-    <section aria-labelledby="join-faq-title" className={cn(SECTION, "grid gap-10 md:grid-cols-12 md:gap-8")}>
-      <div data-reveal className="md:col-span-4">
-        <MonoLabel as="p" index={4}>
-          FAQ
-        </MonoLabel>
-        <h2 id="join-faq-title" className={HEADING}>
-          Before you apply
-        </h2>
-        <p className="mt-5 max-w-[30ch] text-[15px] leading-relaxed text-muted">
-          Something else on your mind?{" "}
-          <Link
-            href="/contact"
-            data-cursor="link"
-            className="font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
-          >
-            Ask us
-          </Link>
-          .
-        </p>
-      </div>
-      <div data-reveal className="md:col-span-8">
-        <Accordion items={JOIN_FAQ} />
+    <section aria-labelledby="join-faq-title" className="section-y border-t border-line">
+      <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <div data-reveal className="lg:col-span-4">
+          <MonoLabel index={4}>FAQ</MonoLabel>
+          <h2 id="join-faq-title" className="type-h2 mt-5">
+            Before you apply.
+          </h2>
+        </div>
+        <Accordion items={JOIN_FAQ} className="lg:col-span-7 lg:col-start-6" />
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------- the last call */
-
-const PEEKERS = [
-  { slug: "design", left: "4%", size: "clamp(11rem, 26vw, 19rem)", r: -7 },
-  { slug: "tech", left: "50%", size: "clamp(13rem, 31vw, 23rem)", r: 1 },
-  { slug: "pr", left: "96%", size: "clamp(11rem, 26vw, 19rem)", r: 7 },
-];
-
-export function JoinCta({ open }: { open: boolean }) {
+export function LastCall({ open, applyHref }: { open: boolean; applyHref: string }) {
   return (
-    <section aria-labelledby="cta-title" className={cn(SECTION, "pb-4")}>
-      <div
-        data-reveal
-        className="relative isolate flex min-h-[32rem] flex-col items-center overflow-hidden rounded-card bg-bg-2 px-6 pt-16 text-center md:min-h-[36rem] md:pt-24"
-      >
-        <span aria-hidden="true" className="absolute inset-0 -z-10 bg-radial-[70%_70%_at_50%_100%] from-red/12 via-red/[0.04] via-45% to-transparent to-75%" />
-        <h2 id="cta-title" className="max-w-[16ch] text-[length:clamp(2.2rem,5vw,4.25rem)] leading-[1.04] font-bold tracking-[-0.04em]">
+    <section aria-labelledby="last-call-title" className="border-t border-line py-[clamp(4rem,8vw,6.5rem)]">
+      <div data-reveal className="shell flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <h2 id="last-call-title" className="max-w-[16ch] text-[clamp(2.25rem,5vw,4rem)] leading-[1.04] font-semibold tracking-[-0.035em]">
           Ready to build with us?
         </h2>
-        <p className="mt-5 max-w-[38ch] text-[15px] leading-relaxed text-muted md:text-[17px]">
-          {open ? "Applications take five minutes. Pick a team, tell us what you want to build." : "Applications open soon. Ask us anything until then."}
-        </p>
-        <div className="relative z-10 mt-10">
-          {open ? (
-            <IrisButton href="/join/apply" size="lg" arrow>
+        <div className="flex flex-wrap gap-3">
+          {open && (
+            <Button href={applyHref} size="lg" arrow>
               Apply now
-            </IrisButton>
-          ) : (
-            <PillButton href="/contact" variant="ghost" size="lg">
-              Ask us anything
-            </PillButton>
+            </Button>
           )}
-        </div>
-        {/* Three of the crew peeking up from the bottom edge (cut off by it). */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-0">
-          {PEEKERS.map((p) => {
-            const c = characterBySlug(p.slug) ?? JOIN_CHARACTERS[0];
-            return (
-              <div
-                key={p.slug}
-                className="absolute bottom-0 aspect-square -translate-x-1/2 translate-y-[48%]"
-                style={{ left: p.left, width: p.size }}
-              >
-                <Image src={c.image} alt="" fill sizes="(max-width: 767px) 50vw, 24rem" className="object-contain" style={{ rotate: `${p.r}deg` }} />
-              </div>
-            );
-          })}
+          <Button href="/contact" variant="secondary" size="lg">
+            Ask us anything
+          </Button>
         </div>
       </div>
     </section>

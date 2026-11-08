@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { IrisButton } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { sendContactMessage } from "@/lib/actions";
 import { cn } from "@/lib/cn";
@@ -135,23 +135,22 @@ export function ContactForm() {
         </div>
 
         {status === "error" && (
-          <div role="alert" className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[14px] bg-red/10 px-4 py-3 ring-1 ring-red/40">
+          <div role="alert" className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-control bg-bg px-4 py-3 ring-1 ring-red/60">
             <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-bold text-text">
               !
             </span>
             <p className="min-w-0 flex-1 text-[14px] text-text/90">{error}</p>
             <button
               type="button"
-              data-cursor="link"
               onClick={() => submit()}
-              className="rounded-pill px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
+              className="rounded-control px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-300 hover:bg-text/10"
             >
               Try again
             </button>
           </div>
         )}
 
-        <IrisButton type="submit" size="lg" disabled={status === "sending"} className="mt-6 w-full disabled:pointer-events-none">
+        <Button type="submit" size="lg" disabled={status === "sending"} className="mt-6 w-full disabled:pointer-events-none">
           {status === "sending" ? (
             <>
               <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-text/30 border-t-text" />
@@ -163,7 +162,7 @@ export function ContactForm() {
               <ContactIcon name="send" className="size-[15px]" />
             </>
           )}
-        </IrisButton>
+        </Button>
         <p className="mt-3 text-center text-[12px] text-muted">We only use your email to reply to you.</p>
       </motion.form>
 
@@ -182,9 +181,8 @@ export function ContactForm() {
         </h3>
         <button
           type="button"
-          data-cursor="link"
           onClick={again}
-          className="mt-6 text-[14px] font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
+          className="mt-6 text-[14px] font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-300 hover:decoration-text"
         >
           Send another
         </button>

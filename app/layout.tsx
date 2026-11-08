@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { fontVariables } from "./fonts";
 import { getSettings } from "@/lib/data";
@@ -6,7 +7,7 @@ import { announcementKey, announcementScript } from "@/lib/announcement";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/layout/Header";
 import { Footer, socialLinks } from "@/components/layout/Footer";
-import { Cursor } from "@/components/layout/Cursor";
+import { Reveals } from "@/components/providers/Reveals";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#090909",
+  themeColor: "#0B0B0C",
   colorScheme: "dark",
 };
 
@@ -41,8 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       data-ann={announcement ? "on" : "off"}
       className={fontVariables}
-      // The inline script below may flip data-ann before hydration, and the
-      // cursor adds data-custom-cursor; both are intentional.
+      // The inline script below may flip data-ann before hydration, and Reveals adds data-reveals; both are intentional.
       suppressHydrationWarning
     >
       <body>
@@ -51,21 +51,24 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         )}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-pill focus:bg-text focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-bg"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-control focus:bg-text focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-bg"
         >
           Skip to content
         </a>
         <Providers>
           <Header
             clubName={settings.club_name}
-            clubShortName={settings.club_short_name}
+            collegeName={settings.college_name}
+            joinHref={settings.join_form_url ?? "/join"}
             announcement={announcement}
             email={settings.contact_email}
             socials={socialLinks(settings)}
           />
           <main id="main">{children}</main>
           <Footer settings={settings} />
-          <Cursor />
+          <Suspense fallback={null}>
+            <Reveals />
+          </Suspense>
         </Providers>
       </body>
     </html>

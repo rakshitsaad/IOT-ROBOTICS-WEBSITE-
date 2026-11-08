@@ -1,10 +1,10 @@
-export { Pill, type PillColor } from "./Pill";
+export { Button, type ButtonProps } from "./Button";
+export { ArrowLink } from "./ArrowLink";
+export { Tag, TagList } from "./Tag";
 export { MonoLabel, formatIndex } from "./MonoLabel";
-export { GridBackground } from "./GridBackground";
-export { IrisButton } from "./IrisButton";
-export { PillButton } from "./PillButton";
-export { Capsule, type CapsuleTone } from "./Capsule";
-export { DotGrid } from "./DotGrid";
-export { CrossMark } from "./CrossMark";
-export { RotatingBadge } from "./RotatingBadge";
+export { SectionHeader } from "./SectionHeader";
+export { PageHeader, FactList } from "./PageHeader";
+export { Photo, PhotoPlaceholder } from "./Photo";
 export { Accordion, type AccordionItem } from "./Accordion";
+export { GridBackground } from "./GridBackground";
+export { CrossMark } from "./CrossMark";

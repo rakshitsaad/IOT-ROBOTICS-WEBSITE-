@@ -4,8 +4,8 @@ import { useId, useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Questions on hairlines that open one by one (DESIGN.md §5). A question is a button (`aria-expanded`); its answer
- * opens by its grid row going from 0fr to 1fr while it fades in (500ms power3), and the round + turns into a red ×.
+ * Questions on hairlines (DESIGN.md §5). A question is a button (`aria-expanded`); its answer opens by its grid row
+ * going from 0fr to 1fr while it fades in (450ms power3), and the + turns into a ×.
  * Any number can be open; `defaultOpen` lists the ones open at first. Closed answers are `inert`. Instant under reduced
  * motion (the global CSS cuts transitions).
  *
@@ -53,15 +53,14 @@ function AccordionRow({ item, open, onToggle }: { item: AccordionItem; open: boo
           aria-expanded={open}
           aria-controls={`${id}-a`}
           onClick={onToggle}
-          data-cursor="link"
           className="group/acc flex w-full items-center justify-between gap-6 py-5 text-left md:py-6"
         >
-          <span className="text-[17px] leading-snug font-semibold tracking-[-0.01em] md:text-xl">{item.q}</span>
+          <span className="text-[16px] leading-snug font-semibold tracking-[-0.01em] md:text-[18px]">{item.q}</span>
           <span
             aria-hidden="true"
             className={cn(
-              "grid size-9 shrink-0 place-items-center rounded-full ring-1 transition-[background-color,color,box-shadow] duration-[350ms]",
-              open ? "bg-red text-text ring-red" : "text-text/80 ring-line group-hover/acc:ring-text/30",
+              "grid size-8 shrink-0 place-items-center rounded-control border transition-colors duration-300",
+              open ? "border-text/40 text-text" : "border-line text-muted group-hover/acc:border-text/30 group-hover/acc:text-text",
             )}
           >
             <svg
@@ -70,7 +69,7 @@ function AccordionRow({ item, open, onToggle }: { item: AccordionItem; open: boo
               stroke="currentColor"
               strokeWidth="1.6"
               strokeLinecap="round"
-              className={cn("size-4 transition-transform duration-500 ease-power3", open && "rotate-45")}
+              className={cn("size-4 transition-transform duration-[450ms] ease-power3", open && "rotate-45")}
             >
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -83,12 +82,12 @@ function AccordionRow({ item, open, onToggle }: { item: AccordionItem; open: boo
         aria-labelledby={`${id}-q`}
         inert={!open}
         className={cn(
-          "grid transition-[grid-template-rows,opacity] duration-500 ease-power3",
+          "grid transition-[grid-template-rows,opacity] duration-[450ms] ease-power3",
           open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
       >
         <div className="overflow-hidden">
-          <div className="max-w-[62ch] pr-12 pb-6 text-[15px] leading-relaxed text-muted md:pb-7">{item.a}</div>
+          <div className="max-w-[62ch] pr-12 pb-6 text-[15px] leading-[1.7] text-muted md:pb-7">{item.a}</div>
         </div>
       </div>
     </li>

@@ -5,7 +5,7 @@ import { gsap } from "@/lib/gsap";
 import { cn } from "@/lib/cn";
 import { ACCENTS, COLORS } from "@/lib/tokens";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
-import { CrossMark, GridBackground, MonoLabel, PillButton } from "@/components/ui";
+import { Button, CrossMark, GridBackground, MonoLabel } from "@/components/ui";
 import {
   BOT_FACES,
   BOT_ICONS,
@@ -184,18 +184,18 @@ function Group({ index, title, children }: { index: number; title: string; child
   );
 }
 
-/** Pill button; pass `active` for toggles (sets aria-pressed), omit it for one-shot actions. */
+/** Toggle button; pass `active` for toggles (sets aria-pressed), omit it for one-shot actions. */
 function Toggle({ active, onClick, children }: { active?: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <PillButton
+    <Button
       size="sm"
-      variant={active ? "light" : "ghost"}
+      variant={active ? "primary" : "secondary"}
       aria-pressed={active}
       onClick={onClick}
       className="gap-1.5 capitalize"
     >
       {children}
-    </PillButton>
+    </Button>
   );
 }
 

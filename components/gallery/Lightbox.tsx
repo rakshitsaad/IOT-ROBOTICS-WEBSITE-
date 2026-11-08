@@ -9,24 +9,25 @@ import { pad2 } from "@/lib/gallery";
 import { BEZIER, DURATION } from "@/lib/motion";
 import { useUIStore } from "@/lib/store";
 import type { GalleryItem } from "@/lib/types";
-import { clamp } from "./fan";
 import { JournalIcon } from "./icons";
 
 /**
- * The journal lightbox (DESIGN.md §14): one photo or video full screen, with
- * prev/next, the caption, download and close.
+ * The site's lightbox (DESIGN.md §14): one photo or video full screen, with prev/next, the caption, download and close.
+ * Used by the gallery journals, event pages and project pages.
  *
  * - Zoom (photos): the wheel or a trackpad pinch zooms around the pointer, a
  *   two-finger pinch on touch, double click toggles 2.5×, and the +/− buttons
  *   and keys. Zoomed in, dragging pans; at 1×, a sideways swipe changes photo.
  * - Keys: ← → change item, Esc closes, + − zoom.
- * - It is portalled to <body> above the header (below the custom cursor), makes
+ * - It is portalled to <body> above the header, makes
  *   the page behind inert, stops Lenis and locks the scroll, focuses Close, and
  *   gives focus back to what opened it.
  * - Reduced motion: no fades and zoom jumps instead of easing.
  */
 
 const MAX_ZOOM = 5;
+
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 interface LightboxProps {
   items: GalleryItem[];
@@ -244,7 +245,7 @@ function LightboxPanel({ items, index, onIndex, onClose, onDownload, title, redu
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={fade}
-      className="fixed inset-0 z-[90] flex flex-col bg-bg/95 backdrop-blur-xl"
+      className="fixed inset-0 z-[90] flex flex-col bg-bg"
     >
       {/* Top: counter and title, zoom, download, close. */}
       <div className="flex items-center justify-between gap-3 px-gutter py-4">
@@ -268,13 +269,12 @@ function LightboxPanel({ items, index, onIndex, onClose, onDownload, title, redu
       <div
         ref={frame}
         data-lenis-prevent
-        data-cursor={zoomed ? "drag" : undefined}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onDoubleClick={onDoubleClick}
-        className="relative min-h-0 flex-1 touch-none overflow-hidden select-none"
+        className={cn("relative min-h-0 flex-1 touch-none overflow-hidden select-none", zoomed && "cursor-grab active:cursor-grabbing")}
       >
         {/* Keyed, so each item fades in; no exit fade, so the zoom layer ref stays on the shown item. */}
         <motion.div
@@ -329,7 +329,7 @@ function LightboxPanel({ items, index, onIndex, onClose, onDownload, title, redu
       {/* Bottom: caption, and prev/next on phones. */}
       <div className="flex min-h-20 items-center justify-between gap-4 px-gutter py-4">
         <RoundButton label="Previous" icon="prev" onClick={prev} className="md:hidden" />
-        <p className="flex-1 text-center font-hand text-2xl leading-tight text-text md:text-3xl" aria-live="polite">
+        <p className="flex-1 text-center text-[15px] leading-snug text-muted" aria-live="polite">
           {item.caption ?? <span className="sr-only">{item.alt}</span>}
         </p>
         <RoundButton label="Next" icon="next" onClick={next} className="md:hidden" />
@@ -367,10 +367,9 @@ function RoundButton({
       title={label}
       onClick={onClick}
       disabled={disabled}
-      data-cursor="link"
       className={cn(
-        "grid size-11 shrink-0 place-items-center rounded-full transition-[background-color,opacity,transform] duration-[350ms] ease-power3 active:scale-95",
-        light ? "bg-text text-bg hover:bg-white" : "border border-line bg-bg-2/80 text-text hover:bg-text/10",
+        "grid size-11 shrink-0 place-items-center rounded-control transition-[background-color,border-color,opacity] duration-300 ease-power3",
+        light ? "bg-text text-bg hover:bg-white" : "border border-line bg-bg-2 text-text hover:border-text/40",
         "disabled:pointer-events-none disabled:opacity-35",
         className,
       )}

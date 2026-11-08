@@ -5,25 +5,24 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
-import { BEZIER, DURATION } from "@/lib/motion";
-import { NAV_ITEMS } from "@/lib/nav";
+import { BEZIER } from "@/lib/motion";
+import { NAV_ITEMS, isActive } from "@/lib/nav";
 import { useUIStore } from "@/lib/store";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { GridBackground } from "@/components/ui/GridBackground";
+import { Button } from "@/components/ui/Button";
 import { formatIndex } from "@/components/ui/MonoLabel";
 
 /**
- * Full-screen menu. Sits under the fixed header (z-40 vs z-50) so the logo
- * and the menu button (now a close button) stay usable.
- * Locks scroll (stops Lenis), makes the page inert, closes on Escape, link
- * click or route change.
+ * The menu for screens below lg (DESIGN.md §6). Full screen, under the fixed header (z-40 vs z-50) so the menu button
+ * becomes its close button. Locks scroll (stops Lenis), makes the page inert, focuses the first link, closes on
+ * Escape, a link click or a route change, and returns focus to the menu button.
  */
 export interface MenuOverlayProps {
   email: string;
   socials: { label: string; href: string }[];
 }
 
-export function MenuOverlay(props: MenuOverlayProps) {
+export function MenuOverlay(props: MenuOverlayProps & { joinHref: string }) {
   const open = useUIStore((s) => s.menuOpen);
   const setOpen = useUIStore((s) => s.setMenuOpen);
   const lenis = useUIStore((s) => s.lenis);
@@ -65,7 +64,7 @@ export function MenuOverlay(props: MenuOverlayProps) {
   );
 }
 
-function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: () => void }) {
+function MenuPanel({ onClose, email, socials, joinHref }: MenuOverlayProps & { joinHref: string; onClose: () => void }) {
   const pathname = usePathname();
   const openedAt = useRef(pathname);
   const firstLink = useRef<HTMLAnchorElement>(null);
@@ -86,81 +85,72 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
       aria-modal="true"
       aria-label="Site menu"
       data-lenis-prevent
-      className="fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-bg pt-(--nav-h)"
+      className="fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-bg pt-(--nav-h) lg:hidden"
       initial={reduced ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={reduced ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0 }}
-      transition={{ duration: DURATION.fast, ease: BEZIER.out }}
+      exit={reduced ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.35, ease: BEZIER.out }}
     >
-      <GridBackground fixed={false} brackets={false} fade />
-
-      <nav aria-label="Site" className="shell flex flex-1 flex-col justify-center py-6 md:py-10">
-        <ul className="group/list">
+      <nav aria-label="Site" className="shell flex-1 border-t border-line pt-4 pb-6">
+        <ul>
           {NAV_ITEMS.map((item, i) => {
-            const active = pathname === item.href;
+            const active = isActive(pathname, item.href);
             return (
-              <li key={item.href} className="overflow-hidden border-b border-line first:border-t">
-                <motion.div
-                  initial={reduced ? false : { y: "110%" }}
-                  animate={{ y: "0%" }}
-                  transition={{ duration: DURATION.base, ease: BEZIER.expo, delay: 0.1 + i * 0.05 }}
+              <motion.li
+                key={item.href}
+                className="border-b border-line"
+                initial={reduced ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: BEZIER.out, delay: 0.04 + i * 0.03 }}
+              >
+                <Link
+                  ref={i === 0 ? firstLink : undefined}
+                  href={item.href}
+                  onClick={onClose}
+                  aria-current={active ? "page" : undefined}
+                  className="flex items-center gap-4 py-3.5"
                 >
-                  <Link
-                    ref={i === 0 ? firstLink : undefined}
-                    href={item.href}
-                    onClick={onClose}
-                    aria-current={active ? "page" : undefined}
-                    data-cursor="link"
+                  <span className="w-6 font-mono text-[11px] text-faint">{formatIndex(i + 1)}</span>
+                  <span
                     className={cn(
-                      "group/item flex items-center gap-4 py-2 md:gap-8 md:py-2.5",
-                      "transition-opacity duration-[350ms] ease-power3 group-hover/list:opacity-40 hover:opacity-100! focus-visible:opacity-100!",
+                      "text-[clamp(1.5rem,6.5vw,2rem)] leading-tight font-semibold tracking-[-0.03em]",
+                      active ? "text-text" : "text-text/80",
                     )}
                   >
-                    <span className="mono-label w-9 shrink-0 text-muted transition-colors duration-[350ms] group-hover/item:text-text md:w-12">
-                      [{formatIndex(i + 1)}]
-                    </span>
-                    <span
-                      className="font-bold leading-[1.04] tracking-[-0.035em] transition-transform duration-600 ease-expo group-hover/item:translate-x-3"
-                      style={{ fontSize: "clamp(2rem, min(9vw, 6.6vh), 6.5rem)" }}
-                    >
-                      {item.label}
-                    </span>
-                    {active && (
-                      <span className="ml-auto size-2.5 shrink-0 rounded-full bg-red md:size-3" aria-hidden="true" />
-                    )}
-                  </Link>
-                </motion.div>
-              </li>
+                    {item.label}
+                  </span>
+                  {active && <span className="ml-auto h-[2px] w-5 bg-red" aria-hidden="true" />}
+                </Link>
+              </motion.li>
             );
           })}
         </ul>
       </nav>
 
-      <motion.div
-        className="shell flex flex-col gap-3 pb-6 sm:flex-row sm:items-center sm:justify-between md:pb-8"
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: DURATION.fast, delay: 0.5 }}
-      >
-        <a href={`mailto:${email}`} data-cursor="link" className="mono-label text-text transition-colors duration-[350ms] hover:text-red">
-          {email}
-        </a>
-        <ul className="flex flex-wrap gap-x-5 gap-y-2">
-          {socials.map((s) => (
-            <li key={s.label}>
-              <a
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor="link"
-                className="mono-label text-muted transition-colors duration-[350ms] hover:text-text"
-              >
-                {s.label} ↗
-              </a>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
+      <div className="shell flex flex-col gap-5 pb-8">
+        <Button href={joinHref} size="lg" arrow className="w-full">
+          Join the club
+        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <a href={`mailto:${email}`} className="text-[14px] text-muted transition-colors duration-300 hover:text-text">
+            {email}
+          </a>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {socials.map((s) => (
+              <li key={s.label}>
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] text-muted transition-colors duration-300 hover:text-text"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </motion.div>
   );
 }

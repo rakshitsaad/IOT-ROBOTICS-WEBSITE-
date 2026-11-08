@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { IrisButton } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
 import { notifyWhenRecruiting, type NotifyState } from "@/lib/actions";
 import { cn } from "@/lib/cn";
 
@@ -14,7 +14,7 @@ export function NotifyForm({ className }: { className?: string }) {
 
   if (state.status === "ok") {
     return (
-      <p role="status" className={cn("text-[17px] text-text", className)}>
+      <p role="status" className={cn("text-[16px] text-text", className)}>
         {state.message}
       </p>
     );
@@ -34,13 +34,14 @@ export function NotifyForm({ className }: { className?: string }) {
         placeholder="you@bennett.edu.in"
         aria-invalid={state.status === "error" || undefined}
         aria-describedby={state.status === "error" ? "notify-error" : undefined}
-        className="h-12 min-w-0 flex-1 rounded-pill border border-line bg-bg px-5 text-[15px] text-text placeholder:text-muted focus-visible:border-text/40 focus-visible:outline-none md:h-14"
+        className="h-12 min-w-0 flex-1 rounded-control border border-line bg-bg-2 px-4 text-[15px] text-text placeholder:text-faint focus-visible:border-text/50 focus-visible:outline-none"
       />
-      <IrisButton type="submit" size="lg" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Sending…" : "Get notified"}
-      </IrisButton>
+      </Button>
       {state.status === "error" && (
-        <p id="notify-error" role="alert" className="text-[14px] text-red sm:basis-full">
+        <p id="notify-error" role="alert" className="flex items-center gap-2 text-[14px] text-text sm:basis-full">
+          <span aria-hidden="true" className="size-1.5 rounded-pill bg-red" />
           {state.message}
         </p>
       )}

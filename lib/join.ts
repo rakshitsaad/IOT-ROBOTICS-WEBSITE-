@@ -2,10 +2,9 @@ import { z } from "zod";
 import type { TeamName } from "./types";
 
 /**
- * /join config (DESIGN.md §21): one cartoon character per team (image, a one-line pitch, skills, its face for the
- * avatars), the hero's motion numbers, the page's copy (benefits, steps, FAQ) and the application form's schema.
- * Client-safe. Whether a team is hiring comes from settings (`recruitment_open` and `open_teams`), not from here.
- * The hero's crowd is lib/crowd.ts.
+ * /join config (DESIGN.md §21): one character per team (image, a one-line pitch, skills, its face for the avatars),
+ * the page's copy (benefits, steps, FAQ) and the application form's schema. Client-safe. Whether a team is hiring
+ * comes from settings (`recruitment_open` and `open_teams`), not from here.
  */
 
 /** A box in fractions of the character's square image: [left, top, right, bottom]. */
@@ -93,37 +92,22 @@ export const characterBySlug = (slug: string) => JOIN_CHARACTERS.find((c) => c.s
 export const isHiring = (team: TeamName, settings: { recruitment_open: boolean; open_teams: TeamName[] }) =>
   settings.recruitment_open && settings.open_teams.includes(team);
 
-/** The hero's motion (ms, and the crowd's scroll speed as a share of the page's). The crowd itself is lib/crowd.ts. */
-export const JOIN_HERO = {
-  /** The label, headline, line and button fade up 12px, this far apart, from `textDelay`. */
-  textDelay: 120,
-  textStagger: 60,
-  /** The crowd fades in and rises 30px (1.2s) from here, just after the text. */
-  crowdDelay: 360,
-  /** Parallax: the crowd moves at 0.85× the page while the hero scrolls away, and fades. */
-  parallax: 0.85,
-};
-
 /* ------------------------------------------------------------------ copy */
 
-export const JOIN_BENEFITS: { icon: "chip" | "build" | "trophy" | "people"; title: string; text: string }[] = [
+export const JOIN_BENEFITS: { title: string; text: string }[] = [
   {
-    icon: "chip",
     title: "Hands-on hardware",
     text: "Our lab, our parts drawer and our tools are yours: microcontrollers, sensors, 3D printers and a soldering bench.",
   },
   {
-    icon: "build",
     title: "Real projects",
     text: "Build things people use, from campus air sensors to competition robots, with a team that ships them.",
   },
   {
-    icon: "trophy",
     title: "Competitions and travel",
     text: "Represent the club at hackathons and robotics events across India, with travel and entry covered.",
   },
   {
-    icon: "people",
     title: "Mentors and alumni",
     text: "Seniors who have built it before review your work, and alumni at labs and startups answer your questions.",
   },

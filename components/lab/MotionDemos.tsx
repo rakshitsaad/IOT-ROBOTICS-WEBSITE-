@@ -6,8 +6,6 @@ import { DURATION, EASE, STAGGER } from "@/lib/motion";
 import { useUIStore } from "@/lib/store";
 import { prefersReducedMotion, useReducedMotion } from "@/hooks/use-reduced-motion";
 import { MonoLabel } from "@/components/ui/MonoLabel";
-import { Pill } from "@/components/ui/Pill";
-import { pillReveal } from "@/components/ui/pill-reveal";
 
 /** Live readout of the motion environment. */
 export function MotionStatus() {
@@ -87,38 +85,3 @@ export function RevealDemo() {
   );
 }
 
-/**
- * <Pill reveal> + pillReveal(): the background grows from the left and the
- * word turns dark where it has passed. Plays once in view; Replay restarts it.
- */
-export function PillRevealDemo() {
-  const scope = useRef<HTMLDivElement>(null);
-  const tl = useRef<gsap.core.Timeline | null>(null);
-  const reduced = useReducedMotion();
-
-  useGSAP(
-    () => {
-      if (prefersReducedMotion() || !scope.current) return;
-      const t = gsap.timeline({ scrollTrigger: { trigger: scope.current, start: "top 80%", once: true } });
-      scope.current.querySelectorAll("[data-pill]").forEach((pill, i) => t.add(pillReveal(pill), i * STAGGER * 2));
-      tl.current = t;
-    },
-    { scope, dependencies: [reduced] },
-  );
-
-  return (
-    <div ref={scope} className="mt-4 flex flex-wrap items-end justify-between gap-6">
-      <p className="text-[length:clamp(1.75rem,4.5vw,3.25rem)] leading-[1.14] font-semibold tracking-[-0.035em]">
-        Things that <Pill color="white" reveal>move</Pill>, <Pill color="raised" reveal>fly</Pill> and{" "}
-        <Pill color="red" reveal>think</Pill>.
-      </p>
-      <button
-        type="button"
-        onClick={() => tl.current?.restart()}
-        className="mono-label rounded-pill border border-line px-4 py-2 text-muted transition-colors duration-[350ms] hover:text-text"
-      >
-        Replay
-      </button>
-    </div>
-  );
-}
