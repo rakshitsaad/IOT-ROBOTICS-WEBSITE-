@@ -35,6 +35,7 @@ app/
   projects/[slug]/   the plain project page: info + photo stack + full-screen viewer (§16)
   events/page.tsx    /events: the feature card showcase, the All events grid (§17)
   achievements/page.tsx /achievements: the card-expansion slider, the All achievements list (§19)
+  contact/page.tsx   /contact: the planet-horizon hero, the contact panel (details, form, map), the FAQ (§20)
   lab/page.tsx       primitive showcase (noindex)
   lab/robot/page.tsx robot mascot controls (noindex, dev only, not linked)
   lab/drone/page.tsx drone test bench: a button per effect (noindex, dev only, not linked)
@@ -70,6 +71,9 @@ components/
   achievements/      /achievements (§19): AchievementsExperience (filters, crossfade, list → slide), AchievementsSlider
                      (background layers, cards, expansion, autoplay, keys, swipe), AchievementsList (rows by year),
                      parts (ResultBadge, Odometer, icons)
+  contact/           /contact (§20): ContactHero (planet, badge, headline, partners, motion), ContactPanel (window,
+                     stand-up scroll, map) with ContactDetails (rows + copy) and ContactForm (react-hook-form + zod,
+                     sending / sent / error), ContactFaq (accordion), scroll.ts (to the form), icons
   drone/             the drone (§18): Drone (model), Trail; the home sidekick: Sidekick (+ sidekick-plan.ts: zones,
                      stops, routes, stunts) (§12); the /lab/drone bench: DroneRig, director, ScanBeam, HoloGlobe,
                      Dissolve, DroneCanvas (bloom), DroneStage (lazy mount, poster), store
@@ -89,6 +93,8 @@ lib/
                      STRIP sizes and buildStrip(); client-safe
   events.ts          /events config: showcase order, filters, IST dates, EVENTS_MOTION, EVENT_BANNER; client-safe
   achievements.ts    /achievements config: filters, ACH_MOTION, ACH_CARD, isWin, link label, IST dates; client-safe
+  contact.ts         /contact config: subjects, limits, the zod schema (form + server action), FAQ, map URLs,
+                     CONTACT_MOTION; client-safe
   mission.ts         /lab/drone bench: MissionStats type, PODIUM, MISSION (bench drone settings); client-safe
   tokens.ts          JS mirror of tokens, team accent map, textOn()
   motion.ts          EASE / BEZIER / DURATION / STAGGER constants
@@ -155,6 +161,10 @@ with the card's red `IrisButton` ("Register").
 line, the autoplay line under the header, the round share button and the result badge of a win ("Winner"). They are
 small shapes; every other result's badge is muted (`bg-text/10`).
 
+/contact (§20) is lit by its accent: the planet's rim and glow are red, as are the badge's arrow dot, the "Send a message"
+and "Send message" buttons, focused fields, the panel's top-edge glow and the sent check. The rim is a light source, not
+a fill; text stays warm white or muted (form errors are warm white beside a red dot).
+
 Junior Core (§13) uses `iris-border` twice: the 1px ring of each team's open card
 (one per team row) and the thin ring of the initials avatar shown for a member
 without a photo.
@@ -196,7 +206,8 @@ column must match this map.
 
 Exceptions: the /events thumbnail row (§17) uses **10px** (`rounded-[10px]`), because 18px on a 72px-tall thumbnail
 reads as a pill; the /achievements waiting cards (§19) use **16px** (`ACH_CARD.radius`), the spec's value, animating to
-0 as a card grows into the background.
+0 as a card grows into the background; the /contact panel (§20) uses **24px** (the spec's app-window radius) and its
+fields **14px**.
 
 ---
 
@@ -314,6 +325,11 @@ The /events first load (§17), all `both`: `animate-wipe-in` (a left-to-right `c
 `animate-settle` (scale 1.08 → 1, 0.8s expo), `animate-pop-up` (opacity 0 and 40px down → in place, 0.8s expo) and
 `animate-slide-up` (opacity 0 and 20px down → in place, 0.6s power3).
 Ambient loops (always with `motion-reduce:animate-none`): `animate-float` (±2.5px up and down, 4s), `animate-breathe` (scale 0.98 ↔ 1.02, 6s), `animate-orbit` (one turn per 40s, linear) and `animate-pulse-soft` (scale 0.85 ↔ 1.15 with opacity, 1.8s). The /about hands use all four (§15).
+/contact (§20): `animate-planet-rise` (25vh up into place, 1.6s expo, `both`), `animate-rim` (fades in over 1.6s, then
+breathes 1 ↔ 0.85 every 5s), `animate-streak` (a light along the rim every 8s, from the registered `--streak` angle) and
+`animate-twinkle` (a star dims to a quarter of its `--o` and back). The looks are utilities: `contact-dots` (faint dot
+texture), `contact-planet` (the surface), `contact-rim` (the 2px edge and its glows) and `contact-streak` (the masked
+conic light).
 
 ---
 
@@ -384,6 +400,9 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
 - Exception: the **/achievements slider** (§19, `ACH_MOTION` in `lib/achievements.ts`): a card grows into the background
   over **1.1s `expo.inOut`**, the other cards slide one slot over 0.9s `expo.inOut` (**60ms** apart), the old text leaves in
   **300ms**, the new title lines rise **80ms** apart and the details fade up **50ms** apart.
+- Exception: the **/contact hero** (§20, `CONTACT_MOTION` in `lib/contact.ts`): the planet rises over **1.6s** expo and its
+  text starts at **300ms** (the headline's words **60ms** apart); the rim breathes over **5s** and a streak runs along it
+  every **8s**; the glow follows the cursor on a 1.4s `quickTo`. The FAQ answers open over **500ms** power3.
 - Stagger siblings by **0.06s** (`STAGGER`); long lists (menu) use 0.05s.
 - Scrubbed tweens use `ease: "none"`. Exception: the **/about hands** (§15) close in on `1 − (1 − t)^2.5` over the first 65% of their
   pin, so they are fast at first and settle into the close-up without a sudden change of speed; the touch uses `sine.inOut`.
@@ -443,12 +462,14 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 
 ## 8. Data
 
-- Row types for every table in `lib/types.ts`: `members`, `teams`, `projects`, `events` (`ClubEvent`), `achievements`, `gallery_items` (`GalleryItem`), `milestones`, `settings` (single row). Columns are snake_case so generated Supabase types can replace them.
+- Row types for every table in `lib/types.ts`: `members`, `teams`, `projects`, `events` (`ClubEvent`), `achievements`, `gallery_items` (`GalleryItem`), `milestones`, `partners`, `contact_messages` (`ContactMessage`), `settings` (single row). Columns are snake_case so generated Supabase types can replace them.
 - `members`: `tier` (`senior` = Senior Core, `junior` = Junior Core, shown grouped by team, `member`), `sort_order` (display order within the tier), `kicker` (short role line, "The President"), `quote` (max 140 characters), `bio`, `photo_url`, `focal_point` (where a cropped portrait is anchored: a CSS `object-position` value, default `DEFAULT_FOCAL_POINT` = `"50% 30%"`), `cutout_url` (optional transparent PNG of the person, for Senior Core's cutout spread), `socials` (jsonb: `{ linkedin, github, instagram }`, each a URL or null).
   - Limits are per tier in `MEMBER_LIMITS` (`lib/types.ts`): quote 140 for every tier; bio **300** for seniors (and `member`), **160** for juniors. The mock throws if a row breaks its tier's limit.
   - The mock has 8 seniors with placeholder portraits; `/members/cutout-1.png` is a generated placeholder figure, not a real cutout. It also has 33 juniors across all 7 teams: Tech has 10 (so its accordion wraps onto a second line), Manav Arora (Tech) and Aditya Rawat (PR) have no photo (initials avatar), and a few set a non-default `focal_point`. Replace the photos with real ones.
 - `settings.founded_year` feeds the hero's "Est. 2019" label and the "years running" count (the mock value is a placeholder).
 - `settings.recruitment_open` switches the home join card between "Apply now" and "Get notified"; `settings.open_teams` (team names) lists the teams taking applications.
+- `settings.contact_phone` (null hides the row), `settings.lab_address` and `settings.map_query` (what the map searches
+  for: a place name or "lat,lng") feed /contact (§20). The mock phone and lab room are placeholders.
 - `events.tags` (string array) are shown as pills on the home event section and in the /events details line.
 - `events` for /events (§17): `status` (`upcoming` | `past`), `banner_url` (16:9), `cutout_url` (optional transparent PNG
   of the banner's subject, framed by the cutout convention in §17), `banner_focal_x` (0–100, where the banner is
@@ -478,7 +499,17 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
   (1920×1080, graded into the palette); replace them with real photos.
 - `milestones`: `year`, `title`, `description` (one line), `sort_order` (oldest first). The /about timeline (§15) reads them
   with `getMilestones()`. The mock's seven rows are placeholders (2019–2026); replace them with the club's real history.
+- `partners` (§20): `name`, `logo_url` (a light logo on a transparent background, about 5:1), `url` (optional),
+  `sort_order`. `getPartners()` reads them; none hides the /contact logo row. The mock's five are made-up names with
+  generated logos in `/public/partners/`; replace them with the real partners and sponsors.
+- `contact_messages`: `name`, `email`, `subject` (`general` | `join` | `collaboration` | `sponsorship` | `workshop` |
+  `other`), `message` (max 1000), `created_at`.
+- `getUpcomingWorkshop()`: the next workshop that hasn't started (the /contact badge while recruitment is closed;
+  `cacheLife("hours")`).
 - Writes: `addRecruitmentSubscriber(email)` (a mock no-op for now), called only from the server action `notifyWhenRecruiting` in `lib/actions.ts`, which validates the email.
+  `addContactMessage(message)` (the mock keeps it in server memory after a 700ms pause; Supabase: an insert into
+  `contact_messages`), called only from `sendContactMessage` in `lib/actions.ts`, which validates with the same zod
+  schema as the form and quietly drops submissions that fill the honeypot.
 
 ---
 
@@ -1565,3 +1596,93 @@ autoplay, and the first-load keyframes don't run.
 ### Placeholders
 The photos in `/public/achievements/` are generated placeholder scenes graded into the palette, and the links point to
 `example.com`; replace both with the real ones.
+
+---
+
+## 20. Contact (`app/contact/page.tsx`, `components/contact`)
+
+```tsx
+<GridBackground />
+<ContactHero email badge partners />   // 100svh: headline over a planet's glowing horizon
+<ContactPanel {...settings} />         // the app-window panel rising from the horizon: details, form, map
+<ContactFaq />                         // [02] FAQ: an accordion
+```
+
+Built from a reference of a dark SaaS hero (a centred headline, a glowing planet horizon, an app window rising under the
+glow); here the window is the contact form, and the light is the site's red.
+
+### Hero (`ContactHero`)
+- **Background**: `bg` with a faint dot texture (`contact-dots`) and 46 tiny stars (1px, a few 1.5px; 20–40% opacity,
+  fixed seeded positions in the top 64%) twinkling slowly (`animate-twinkle`, 3.5–7.5s each).
+- **Content** (centred, max 760px):
+  - a badge `Link`: a `bg-2` pill with a hairline, "Recruitment for 2026 is open" (`SENIOR_CORE_TERM.year`) and a small red
+    circle with an arrow, to `join_form_url` or `/join`. While recruitment is closed: "Workshop: <title>" (the next
+    workshop, else "Next up: <title>", the next event) to `/events`; with neither, no badge;
+  - the `h1` "Let's build something together": Sora 500, `clamp(2.4rem, min(5.5vw, 8.5svh), 4.5rem)` (phones
+    `clamp(2rem, 9vw, 2.6rem)`), tracking -0.04em, each word a warm white → 65% gradient clipped to the text;
+  - a muted line (17px; 15px on phones) and two buttons: "Email us" (ghost `PillButton`, mail icon, `mailto:`) and
+    "Send a message" (`IrisButton`: scrolls to the form with Lenis over 1.2s, landing 24px under the navbar, then focuses
+    Name). Phones stack them full width;
+  - above the arc, the mono label "Trusted by our partners" and the partners' logos (`getPartners()`), greyscale at 50%
+    (80% on hover). No partners, no row.
+- **The planet**: the hero is a column (header padding, content, logos, then a band 32svh tall), and the rim is the top
+  of that band, so on a full-height hero it sits at 68% and a taller one (short screens) pushes it down instead of
+  overlapping. Inside the band:
+  - the surface: a circle 180vw wide (260vw on phones, so the arc stays gentle), `contact-planet`: red at 15% under the
+    rim fading to `bg` within ~34svh, plus a brighter band just under the rim;
+  - the rim: the same circle with `contact-rim` (a 2px edge of red mixed with warm white, a tight glow, a wide glow and a
+    glow on the surface);
+  - the streak: the same circle with `contact-streak`, a conic wedge masked to the edge;
+  - the surface, rim and streak sit in a band clipped from 10rem above the rim to 64svh below it, fading out at the
+    bottom, so the planet never covers the page below;
+  - above it, a wide radial red glow centred on the rim (so past the planet's sides it fades below the rim too), a
+    blurred bright spot (46vw × 14svh, red at 55%, blur 44px) and a small warm white core at the apex.
+- **Load** (CSS keyframes from the server HTML): the planet rises 25vh into place over 1.6s (expo) while the rim's glow
+  fades in, like a sunrise; the badge fades up at 300ms, the words rise out of masks from 400ms (60ms apart), then the
+  line, the buttons and the logos.
+- **Idle**: the rim breathes (opacity 1 ↔ 0.85, 5s); a short light runs along the rim from left to right every 8s.
+- **Cursor** (md+, fine pointers): the bright spot and the core move towards the cursor's x, up to 10vw at the screen's
+  edges (`gsap.quickTo`, 1.4s; the core at 55%).
+- **Scroll** (scrubbed): the planet moves at 0.6× the page (parallax: it drifts down 0.4× the scroll inside the hero),
+  and the text is gone by half the hero's height.
+
+### The panel (`ContactPanel`, `ContactDetails`, `ContactForm`)
+- **Window**: max 1120px, 24px radius, `bg-2/85` with `backdrop-blur-xl`, a hairline ring, a deep shadow, and a red line
+  with a soft red glow along the top edge. It overlaps the hero's bottom by 16svh (18svh on phones), so it stands on the
+  planet.
+- **Stand-up** (scrubbed from the top of the page until its top reaches 25% of the screen): from md it rises 80px and tilts
+  from `rotateX(18deg)` to flat, hinged at its bottom edge, under `perspective: 1400px`; phones only rise.
+- **Columns**: sidebar 240px | form | map 300px from lg; md puts the map in a full-width row under the other two; phones
+  stack sidebar, form, map. Hairlines between them.
+- **Sidebar** (`ContactDetails`): the logo mark, the club and the college, then a row per way in (Email, Phone, Lab
+  address, Instagram, LinkedIn, GitHub; only those set): an icon in a small ring, the mono label, a copy button, and the
+  value as a link below (mailto, tel, Maps, the profile). Copy writes the full value (the Clipboard API, else a textarea
+  fallback); the button turns into a tick in a red ring with a "Copied" pill beside it for 1.5s, and a status region
+  announces it.
+- **Form** (`ContactForm`): Name and Email (two columns from sm), Subject (a native select: General, Join the club,
+  Collaboration, Sponsorship, Workshop request, Other; it starts on "Choose a subject"), Message (a textarea, a mono
+  `0 / 1000` counter, `maxLength` 1000). Fields: `bg/70`, 14px radius, a hairline ring; focus turns it red with a soft red
+  glow; an error keeps it red, with the message under it (warm white beside a red dot, `aria-describedby`).
+  - Validation: react-hook-form with `zodResolver(contactSchema)` (`lib/contact.ts`), `mode: "onTouched"` (a field is
+    checked once left, then as you type; submitting checks all and focuses the first error).
+  - A honeypot (`website`) sits off screen, out of the tab order.
+  - Submit: a full-width `IrisButton`. Sending: a spinner and "Sending…", disabled. Sent: the form slides 56px left and
+    fades (0.55s expo, then `inert`), and the sent state fades up in its place (a circle that draws itself and a tick,
+    "Message sent. We'll get back within 48 hours.", "Send another", which clears the form and focuses Name). Error: an
+    alert under the fields with the message and "Try again".
+  - The server action `sendContactMessage` (§8) validates again and saves the message.
+- **Map**: "Find the lab", a Google Maps embed (`mapEmbedUrl(map_query)`, no API key, lazy) at 340px from lg (260px md,
+  220px phones), darkened with `filter: invert(0.9) hue-rotate(180deg) saturate(0.7)`, then the address and "Open in Maps".
+
+### FAQ (`ContactFaq`)
+`[02] FAQ`, "Good questions" and a "Send us a message" link (it scrolls to the form) in the left third; the questions
+(`CONTACT_FAQ`, six) on hairlines on the right. A question is a button (`aria-expanded`); its answer opens by its grid
+row going from 0fr to 1fr while it fades in (500ms power3), and the round + turns into a red ×. Several can be open; the
+first starts open. Closed answers are `inert`.
+
+### Reduced motion
+No rise, breathing, streak, twinkle, cursor glow, parallax, fade or tilt: the planet, the panel and the text are in their
+final places. The sent state appears without sliding, the check is drawn, and the FAQ opens instantly.
+
+### Placeholders
+The partners (names and logos), the phone number and the lab room in the address are placeholders.

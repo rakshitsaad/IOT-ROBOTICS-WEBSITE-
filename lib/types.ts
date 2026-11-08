@@ -263,6 +263,32 @@ export interface Milestone {
   created_at: Timestamp;
 }
 
+/* --------------------------------------------------------------- partners */
+/** A partner or sponsor, shown as a greyscale logo in the /contact hero. */
+export interface Partner {
+  id: UUID;
+  name: string;
+  /** A light (white) logo on a transparent background, SVG or PNG, about 5:1. */
+  logo_url: string;
+  url: string | null;
+  sort_order: number;
+  created_at: Timestamp;
+}
+
+/* ------------------------------------------------------- contact_messages */
+/** The /contact form's subjects (the `subject` column). */
+export type ContactSubject = "general" | "join" | "collaboration" | "sponsorship" | "workshop" | "other";
+
+export interface ContactMessage {
+  id: UUID;
+  name: string;
+  email: string;
+  subject: ContactSubject;
+  /** At most 1000 characters (CONTACT_LIMITS in lib/contact.ts). */
+  message: string;
+  created_at: Timestamp;
+}
+
 /* --------------------------------------------------------------- settings */
 /** Single-row table holding site-wide content. */
 export interface Settings {
@@ -275,6 +301,12 @@ export interface Settings {
   founded_year: number | null;
   tagline: string;
   contact_email: string;
+  /** Shown on /contact with a copy button; null hides the row. */
+  contact_phone: string | null;
+  /** The lab's postal address (/contact sidebar and map caption). */
+  lab_address: string;
+  /** What the /contact map searches for (a place name or "lat,lng"). */
+  map_query: string;
   instagram_url: string | null;
   linkedin_url: string | null;
   github_url: string | null;

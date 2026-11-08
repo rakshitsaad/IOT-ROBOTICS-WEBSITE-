@@ -9,6 +9,10 @@ export const settings: Settings = {
   founded_year: 2019,
   tagline: "We build things that sense, think and move.",
   contact_email: "iotrobotics@bennett.edu.in",
+  // Placeholders: replace with the lab's real phone number and room.
+  contact_phone: "+91 98765 43210",
+  lab_address: "IoT & Robotics Lab, Bennett University, TechZone II, Greater Noida, Uttar Pradesh 201310",
+  map_query: "Bennett University, Greater Noida",
   instagram_url: "https://www.instagram.com/",
   linkedin_url: "https://www.linkedin.com/",
   github_url: "https://github.com/",

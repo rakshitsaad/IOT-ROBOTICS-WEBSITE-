@@ -10,9 +10,11 @@ import { PODIUM, type MissionStats } from "./mission";
 import type {
   Achievement,
   ClubEvent,
+  ContactMessage,
   GalleryItem,
   Member,
   Milestone,
+  Partner,
   Project,
   Settings,
   Team,
@@ -123,6 +125,12 @@ export async function getMilestones(): Promise<Milestone[]> {
   return [...mock.milestones].sort((a, b) => a.sort_order - b.sort_order);
 }
 
+/** Partners and sponsors, in display order (the /contact hero's logo row). */
+export async function getPartners(): Promise<Partner[]> {
+  "use cache";
+  return [...mock.partners].sort((a, b) => a.sort_order - b.sort_order);
+}
+
 /**
  * The /gallery shelf: every published event that has gallery items, newest
  * first, with its page, photo and video counts.
@@ -196,6 +204,17 @@ export async function getUpcomingEvent(): Promise<ClubEvent | null> {
   const now = Date.now();
   const upcoming = (await getEvents())
     .filter((e) => Date.parse(e.starts_at) > now)
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+  return upcoming[0] ?? null;
+}
+
+/** The next workshop that hasn't started, or null (the /contact badge while recruitment is closed). */
+export async function getUpcomingWorkshop(): Promise<ClubEvent | null> {
+  "use cache";
+  cacheLife("hours");
+  const now = Date.now();
+  const upcoming = (await getEvents())
+    .filter((e) => e.type === "workshop" && Date.parse(e.starts_at) > now)
     .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
   return upcoming[0] ?? null;
 }
@@ -303,4 +322,13 @@ export async function getMissionStats(): Promise<MissionStats> {
  */
 export async function addRecruitmentSubscriber(email: string): Promise<void> {
   void email;
+}
+
+/**
+ * Saves a /contact message (contact_messages). The mock keeps it in server memory, after a short pause so the form's
+ * sending state shows; with Supabase this becomes an insert.
+ */
+export async function addContactMessage(input: Pick<ContactMessage, "name" | "email" | "subject" | "message">): Promise<void> {
+  await new Promise((r) => setTimeout(r, 700));
+  mock.contactMessages.push({ ...input, id: crypto.randomUUID(), created_at: new Date().toISOString() });
 }
