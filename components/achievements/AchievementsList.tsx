@@ -20,7 +20,7 @@ export function AchievementsList({
   const years = [...new Set(items.map((a) => achYear(a.date)))].sort((a, b) => b - a);
   return (
     <section aria-labelledby="all-achievements-title" className="shell pt-[clamp(5rem,14svh,9rem)] pb-[clamp(5rem,14svh,9rem)]">
-      <MonoLabel as="p" index={2}>
+      <MonoLabel as="p">
         Record
       </MonoLabel>
       <h2 id="all-achievements-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]">

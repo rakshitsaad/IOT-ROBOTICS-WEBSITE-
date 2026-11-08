@@ -58,7 +58,7 @@ export function ContactPanel(props: ContactDetailsProps) {
             </aside>
 
             <div className="p-5 sm:p-7 md:p-8 lg:p-9">
-              <MonoLabel as="p" index={1}>
+              <MonoLabel as="p">
                 New message
               </MonoLabel>
               <h2 id="message" className="mt-3 scroll-mt-28 text-[length:clamp(1.6rem,3vw,2.2rem)] leading-tight font-semibold tracking-[-0.03em]">

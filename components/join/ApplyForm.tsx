@@ -142,7 +142,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
 
         <fieldset className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
           <legend className="mb-5">
-            <MonoLabel tone="text">01 / About you</MonoLabel>
+            <MonoLabel tone="text">About you</MonoLabel>
           </legend>
           <Field label="Full name" id="apply-name" error={errors.name?.message}>
             {(p) => <input {...p} type="text" autoComplete="name" maxLength={APPLY_LIMITS.name} {...register("name")} className={inputClass(p)} />}
@@ -181,7 +181,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
 
         <fieldset className="mt-10 grid gap-x-4 gap-y-5 sm:grid-cols-2">
           <legend className="mb-5">
-            <MonoLabel tone="text">02 / Your team</MonoLabel>
+            <MonoLabel tone="text">Your team</MonoLabel>
           </legend>
           <Field
             label="Preferred team"
@@ -242,7 +242,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
 
         <fieldset className="mt-10 grid gap-x-4 gap-y-5 sm:grid-cols-2">
           <legend className="mb-5">
-            <MonoLabel tone="text">03 / Links and resume</MonoLabel>
+            <MonoLabel tone="text">Links and resume</MonoLabel>
           </legend>
           <Field label="LinkedIn" error={errors.linkedin?.message}>
             {(p) => <input {...p} type="url" inputMode="url" placeholder="https://linkedin.com/in/you" {...register("linkedin")} className={inputClass(p)} />}

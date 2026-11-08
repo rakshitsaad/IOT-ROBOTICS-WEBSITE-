@@ -21,7 +21,7 @@ export function WhyJoin() {
   return (
     <section aria-labelledby="why-title" className={SECTION}>
       <div data-reveal>
-        <MonoLabel as="p" index={1}>
+        <MonoLabel as="p">
           Why join
         </MonoLabel>
         <h2 id="why-title" className={HEADING}>
@@ -85,7 +85,7 @@ export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<
     <section id="teams" aria-labelledby="teams-title" className={cn(SECTION, "scroll-mt-24")}>
       <div data-reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
         <div>
-          <MonoLabel as="p" index={2}>
+          <MonoLabel as="p">
             Teams
           </MonoLabel>
           <h2 id="teams-title" className={HEADING}>
@@ -164,7 +164,7 @@ export function HowItWorks() {
   return (
     <section aria-labelledby="steps-title" className={SECTION}>
       <div data-reveal>
-        <MonoLabel as="p" index={3}>
+        <MonoLabel as="p">
           How it works
         </MonoLabel>
         <h2 id="steps-title" className={HEADING}>
@@ -200,7 +200,7 @@ export function JoinFaq() {
   return (
     <section aria-labelledby="join-faq-title" className={cn(SECTION, "grid gap-10 md:grid-cols-12 md:gap-8")}>
       <div data-reveal className="md:col-span-4">
-        <MonoLabel as="p" index={4}>
+        <MonoLabel as="p">
           FAQ
         </MonoLabel>
         <h2 id="join-faq-title" className={HEADING}>

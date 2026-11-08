@@ -297,8 +297,10 @@ tl.add(pillReveal(el.querySelector("[data-pill]")!), 0.15);
 ### `<MonoLabel>`
 The technical label style. Props: `index?: number | string` (numbers are zero-padded: `1` gives `[01]`), `tone?: muted | text | red | white` (default `muted`), `as?` (element, default `span`), `id?`.
 ```tsx
-<MonoLabel index={1}>About the club</MonoLabel>
+<MonoLabel>About the club</MonoLabel>
 ```
+**Section labels are names only, never numbered** (no `[01]`, no `01 /`). Use `index` only for a count, such as
+Junior Core's `[10] Members`.
 
 ### `<GridBackground>`
 Faint 80px grid lines (`--grid`) plus 4 small corner brackets.
@@ -809,7 +811,7 @@ Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and
 </HomeScroll>
 ```
 
-Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomingEvent` and `getHomeStats` (§8). Section labels: `[03]` featured, `[04]` event, `[05]` numbers, `[06]` join (the lab stations use `[01]`–`[04]`).
+Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomingEvent` and `getHomeStats` (§8). Section labels are names only, without numbers (§5), including the lab stations'.
 
 ### Hero (`HomeHero`)
 - 100svh, pinned for an extra **120vh** (60vh on phones).
@@ -927,7 +929,7 @@ Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in
 ## 13. Members page (`app/members/page.tsx`, `components/members`)
 
 ```tsx
-<SeniorCore members={getSeniorCore()} settings />   // [01] editorial spreads, Bodoni Moda
+<SeniorCore members={getSeniorCore()} settings />   // editorial spreads, Bodoni Moda
 <JuniorCore teams={getJuniorCoreByTeam()} />        // team pills + one expanding accordion per team (Sora)
 ```
 
@@ -939,7 +941,7 @@ of giant letters, a spinning badge and `*01` counters. Keep it original: no
 borrowed layouts, assets or branding.
 
 Order: **intro**, one spread per senior (`tier = "senior"`, by `sort_order`), **closing**.
-- **Intro**: `[01] Senior Core / 2026-27`, "The" small italic over "CORE" huge
+- **Intro**: `Senior Core / 2026-27`, "The" small italic over "CORE" huge
   (`min(34cqw, 48svh)`; its letters rise with `animate-rise` on first load), one line of text
   ("Eight people who…", counted from the data), the `RotatingBadge`
   (`club_name * SENIOR CORE * 2026 *`) and a "Meet them" next arrow. It holds the page's `h1`.
@@ -1172,10 +1174,10 @@ The mock photos and posters are `picsum.photos`, and the two clips are MDN's CC0
 ```tsx
 <HandsSection clubName />        // section 1: the pinned hands sequence (HandsScroll)
 <AboutReveals>                   // reveals for everything below
-  <Purpose />                    // [01] mission & vision cards
-  <Pillars />                    // [02] workshops, projects, competitions
-  <History milestones />         // [03] the timeline (getMilestones)
-  <TeamsOverview teams />        // [04] team pills → /members
+  <Purpose />                    // mission & vision cards
+  <Pillars />                    // workshops, projects, competitions
+  <History milestones />         // the timeline (getMilestones)
+  <TeamsOverview teams />        // team pills → /members
 </AboutReveals>
 ```
 
@@ -1203,7 +1205,7 @@ from md (the middle of the area below the header). Layers, back to front:
   robot 1.6s out of phase);
 - a **glow** at the contact point (a warm white radial gradient, `animate-pulse-soft`), hidden until the touch;
 - three **copy blocks**:
-  - **A**, bottom left: "01 / Who we are", "Built by students, for the real world" (Sora 600,
+  - **A**, bottom left: "Who we are", "Built by students, for the real world" (Sora 600,
     `clamp(2rem, min(4.5vw, 7svh), 4rem)`; the svh cap keeps it under the hands on short laptop screens), and one muted line;
   - **B**, top right, right-aligned: "Sense. / Understand. / Adapt." and one muted line;
   - **C**, bottom right, right-aligned: "02 / How we build", "Precision. With feeling." and one muted line.
@@ -1230,17 +1232,17 @@ apart (`motion-reduce:` translate), the ring still, no glow, and the three block
 The pinned layout's positions are all `motion-safe:` classes, so the default classes are the reduced-motion layout.
 
 ### Below the hands (`AboutSections`, `AboutReveals`)
-Each section has a mono index label and a Sora 700 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
-- **Purpose** (`[01] Mission & vision`): two large cards side by side from md (`bg-2`, `rounded-card`, hairline, a
+Each section has a mono label (no number) and a Sora 700 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
+- **Purpose** (`Mission & vision`): two large cards side by side from md (`bg-2`, `rounded-card`, hairline, a
   `DotGrid` in the corner): the accent mono label (Mission red, Vision warm white), a heading and a paragraph. Copy in
   `ABOUT_PURPOSE`.
-- **Pillars** (`[02] What we do`): Workshops, Projects, Competitions (`ABOUT_PILLARS`), three columns from md. Each has an
+- **Pillars** (`What we do`): Workshops, Projects, Competitions (`ABOUT_PILLARS`), three columns from md. Each has an
   icon (`components/about/icons.tsx`, 24px line icons) in an accent circle (Projects red with warm white; Workshops and Competitions warm white with dark), a heading and about two lines.
-- **History** (`[03] Our story`): a vertical line (centred from md, at the left on phones) with a dot and a year card for each
+- **History** (`Our story`): a vertical line (centred from md, at the left on phones) with a dot and a year card for each
   milestone. From md the cards alternate left and right, overlapping a little so they zig-zag. The line draws itself
   (scaleY, scrubbed from the list's top at 70% of the viewport to its bottom at 70%). Each dot lights up red as the line
   reaches it. Each card slides in 40px from its side (rises 30px on phones).
-- **Teams** (`[04] Teams`): "Seven teams, one club" (the count is spelled from the data), a line, and a row of large team
+- **Teams** (`Teams`): "Seven teams, one club" (the count is spelled from the data), a line, and a row of large team
   charcoal (`raised`) `Pill`s, each linking to `/members` with a small red ↗ that nudges on hover; on hover or focus the pill
   fills red and the ↗ turns warm white.
 
@@ -1387,7 +1389,7 @@ title and no letter animation, and the footer shows.
   <EventTint />                                  // fixed accent glow behind everything
   heading + filters
   <EventShowcase />                              // the feature card, thumbnails, progress
-  <AllEvents />                                  // [02] Archive: every event, grouped by year
+  <AllEvents />                                  // Archive: every event, grouped by year
   <EventDetail />, <Lightbox />                  // overlays (the gallery's Lightbox, §14)
 </EventsExperience>
 ```
@@ -1465,7 +1467,7 @@ hues give `--red`, anything else `--maroon`. A colourful banner never brings a f
   until the lightbox has fully closed.
 
 ### All events (`AllEvents`)
-`[02] Archive`, "All events", then one block per year (newest first, with a `[04]` count): 2 / 3 / 4 columns of cards (the
+`Archive`, "All events", then one block per year (newest first, with a `[04]` count): 2 / 3 / 4 columns of cards (the
 banner at 4:5, `rounded-image`; the title, the date and a quiet status badge). Clicking one scrolls back up (Lenis, 1.2s)
 and switches the showcase to it; the showing event's card has a ring.
 
@@ -1547,7 +1549,7 @@ units while slow, and wobbles slightly. Phones: 60% scale. (The home sidekick, �
     <AchievementsSlider key={filter} />               // remounts per filter
     heading + filters                                 // top left, under the header
   </section>
-  <AchievementsList />                                // [02] Record: every achievement, grouped by year
+  <AchievementsList />                                // Record: every achievement, grouped by year
 </AchievementsExperience>
 ```
 
@@ -1610,7 +1612,7 @@ empty.
   Merging, Best Paper"; the cards are buttons ("Show <title>, <result>").
 
 ### All achievements (`AchievementsList`)
-`[02] Record`, "All achievements", then one block per year (newest first, with a `[03]` count): a row per achievement with
+`Record`, "All achievements", then one block per year (newest first, with a `[03]` count): a row per achievement with
 the date (mono), the title (Sora 600), the event / location (muted) and the result badge, on hairlines. The showing one has
 a red dot. Clicking a row scrolls back up (Lenis, 1.2s) and then opens that slide (its card grows); a row outside the
 current filter switches to All first and the rebuilt slider starts on it.
@@ -1636,7 +1638,7 @@ The photos in `/public/achievements/` are generated placeholder scenes graded in
 ```tsx
 <ContactHero email badge partners />   // 100svh: headline over a planet's glowing horizon
 <ContactPanel {...settings} />         // the app-window panel rising from the horizon: details, form, map
-<ContactFaq />                         // [02] FAQ: an accordion
+<ContactFaq />                         // FAQ: an accordion
 ```
 
 Built from a reference of a dark SaaS hero (a centred headline, a glowing planet horizon, an app window rising under the
@@ -1706,7 +1708,7 @@ glow); here the window is the contact form, and the light is the site's red.
   220px phones), darkened with `filter: invert(0.9) hue-rotate(180deg) saturate(0.7)`, then the address and "Open in Maps".
 
 ### FAQ (`ContactFaq`)
-`[02] FAQ`, "Good questions" and a "Send us a message" link (it scrolls to the form) in the left third; the questions
+`FAQ`, "Good questions" and a "Send us a message" link (it scrolls to the form) in the left third; the questions
 (`CONTACT_FAQ`, six) on hairlines on the right. A question is a button (`aria-expanded`); its answer opens by its grid
 row going from 0fr to 1fr while it fades in (500ms power3), and the round + turns into a red ×. Several can be open; the
 first starts open. Closed answers are `inert`.
@@ -1780,14 +1782,14 @@ only fade-up reveals.
 Calm: sections start `clamp(6.5rem, 18svh, 12rem)` apart; cards are `bg-2` with `rounded-card` and no border; nothing
 moves on hover; the only motion is the reveal (each block, or each card in a list, fades in and rises 20px once at
 `top 80%`, 0.06s apart). Nothing under reduced motion.
-- **Why join** (`[01]`): four cards (Hands-on hardware, Real projects, Competitions and travel, Mentors and alumni): an
+- **Why join**: four cards (Hands-on hardware, Real projects, Competitions and travel, Mentors and alumni): an
   icon in a quiet circle, a heading and two lines.
-- **Teams** (`[02]`, `#teams`): a card per team in the teams' order: the character's face avatar, a status pill
+- **Teams** (`#teams`): a card per team in the teams' order: the character's face avatar, a status pill
   ("Hiring" in `maroon`, "Closed" muted), what the team does (`teams.description`), skill tags and "Apply to <team>"
   (ghost), or a disabled "Opens next round". 1 / 2 / 3 columns.
-- **How it works** (`[03]`): Apply online, Task round, Interview, Welcome aboard, joined by a static hairline from dot to
+- **How it works**: Apply online, Task round, Interview, Welcome aboard, joined by a static hairline from dot to
   dot (across from md, down on phones).
-- **FAQ** (`[04]`): an `<Accordion>` (§5): who can apply, experience, time, two teams, results.
+- **FAQ**: an `<Accordion>` (§5): who can apply, experience, time, two teams, results.
 - **Last call**: a wide `bg-2` card with a faint red glow from below, "Ready to build with us?", "Apply now" (or "Ask us
   anything" while recruitment is closed), and Design, Tech and PR peeking up from its bottom edge.
 

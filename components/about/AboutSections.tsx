@@ -18,10 +18,10 @@ import { PillarIcon } from "./icons";
 
 const SECTION = "shell py-[clamp(4.5rem,13svh,9rem)]";
 
-function SectionHead({ index, label, id, children }: { index: number; label: string; id: string; children: ReactNode }) {
+function SectionHead({ label, id, children }: { label: string; id: string; children: ReactNode }) {
   return (
     <div data-reveal>
-      <MonoLabel index={index}>{label}</MonoLabel>
+      <MonoLabel>{label}</MonoLabel>
       <h2
         id={id}
         className="mt-5 max-w-[18ch] text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]"
@@ -37,7 +37,7 @@ function SectionHead({ index, label, id, children }: { index: number; label: str
 export function Purpose() {
   return (
     <section aria-labelledby="purpose-title" className={SECTION}>
-      <SectionHead index={1} label="Mission & vision" id="purpose-title">
+      <SectionHead label="Mission & vision" id="purpose-title">
         Why the club exists
       </SectionHead>
       <div data-reveal-group className="mt-12 grid gap-4 md:mt-16 md:grid-cols-2 md:gap-5">
@@ -71,17 +71,16 @@ const ICON_FILL: Record<Accent, string> = {
 export function Pillars() {
   return (
     <section aria-labelledby="pillars-title" className={SECTION}>
-      <SectionHead index={2} label="What we do" id="pillars-title">
+      <SectionHead label="What we do" id="pillars-title">
         Three ways in
       </SectionHead>
       <ul data-reveal-group className="mt-12 grid gap-4 md:mt-16 md:grid-cols-3 md:gap-5">
-        {ABOUT_PILLARS.map((pillar, i) => (
+        {ABOUT_PILLARS.map((pillar) => (
           <li key={pillar.title} data-reveal-item className="rounded-card border border-line bg-bg-2/70 p-7 md:p-8">
             <div className="flex items-start justify-between">
               <span className={cn("grid size-14 place-items-center rounded-full", ICON_FILL[pillar.accent])}>
                 <PillarIcon name={pillar.icon} className="size-7" />
               </span>
-              <MonoLabel>[{String(i + 1).padStart(2, "0")}]</MonoLabel>
             </div>
             <h3 className="mt-10 text-2xl font-semibold tracking-[-0.02em] md:mt-14">{pillar.title}</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted">{pillar.body}</p>
@@ -106,7 +105,7 @@ const DOT_LIT: Record<Accent, string> = {
 export function History({ milestones }: { milestones: Milestone[] }) {
   return (
     <section aria-labelledby="history-title" className={SECTION}>
-      <SectionHead index={3} label="Our story" id="history-title">
+      <SectionHead label="Our story" id="history-title">
         How we got here
       </SectionHead>
       <ol data-timeline className="relative mt-14 md:mt-20">
@@ -162,7 +161,7 @@ export function TeamsOverview({ teams }: { teams: Team[] }) {
   const count = COUNT_WORDS[teams.length] ?? String(teams.length);
   return (
     <section aria-labelledby="teams-title" className={cn(SECTION, "pb-[clamp(6rem,18svh,11rem)]")}>
-      <SectionHead index={4} label="Teams" id="teams-title">
+      <SectionHead label="Teams" id="teams-title">
         {count} {teams.length === 1 ? "team" : "teams"}, one club
       </SectionHead>
       <p data-reveal className="mt-6 max-w-[48ch] text-[17px] leading-relaxed text-muted">

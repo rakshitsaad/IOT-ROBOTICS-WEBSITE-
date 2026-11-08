@@ -14,7 +14,7 @@ export function AllEvents({ events, active, onPick }: { events: ShowcaseEvent[];
   const years = [...new Set(events.map((e) => eventYear(e.starts_at)))].sort((a, b) => b - a);
   return (
     <section aria-labelledby="all-events-title" className="shell pt-[clamp(5rem,14svh,9rem)] pb-[clamp(5rem,14svh,9rem)]">
-      <MonoLabel as="p" index={2}>
+      <MonoLabel as="p">
         Archive
       </MonoLabel>
       <h2 id="all-events-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]">

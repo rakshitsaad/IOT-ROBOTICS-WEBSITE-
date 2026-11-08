@@ -22,7 +22,7 @@ export function JoinCard({ settings }: { settings: Settings }) {
           className="grid gap-10 rounded-card border border-line bg-bg-2 p-7 md:grid-cols-12 md:gap-12 md:p-14 lg:p-16"
         >
           <div className="md:col-span-7">
-            <MonoLabel index={6}>Join the club</MonoLabel>
+            <MonoLabel>Join the club</MonoLabel>
             <h2
               id="join-title"
               className="mt-6 text-[length:clamp(2.6rem,6.4vw,6.25rem)] leading-[1.05] font-bold tracking-[-0.045em]"

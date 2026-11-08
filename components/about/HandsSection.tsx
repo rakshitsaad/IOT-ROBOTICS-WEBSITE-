@@ -127,7 +127,7 @@ function HandsCopy() {
         data-hands-block="a"
         className={cn(block, belowHands, "md:max-w-[min(46vw,40rem)] motion-safe:md:bottom-(--copy-edge) motion-safe:md:left-(--gutter)")}
       >
-        <MonoLabel>01 / Who we are</MonoLabel>
+        <MonoLabel>Who we are</MonoLabel>
         <h2 className="mt-3 text-[length:clamp(2rem,min(4.5vw,7svh),4rem)] leading-[1.04] font-semibold tracking-[-0.03em] md:mt-4">
           Built by students, for the real world
         </h2>
@@ -160,7 +160,7 @@ function HandsCopy() {
           "md:max-w-[26rem] motion-safe:md:right-(--gutter) motion-safe:md:bottom-(--copy-edge) motion-safe:md:text-right",
         )}
       >
-        <MonoLabel>02 / How we build</MonoLabel>
+        <MonoLabel>How we build</MonoLabel>
         <h2 className="mt-3 text-[length:clamp(1.75rem,3vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.03em] md:mt-4">
           Precision. <span className="md:block">With feeling.</span>
         </h2>

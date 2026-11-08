@@ -75,7 +75,7 @@ export function LabCard({ stations }: { stations: LabPanelStation[] }) {
           animate={{ opacity: 1, y: 0, transition: { duration: DURATION.fast, ease: BEZIER.out } }}
           exit={{ opacity: 0, y: -6, transition: { duration: DURATION.micro * 0.6, ease: BEZIER.out } }}
         >
-          <MonoLabel index={station + 1} tone={s.accent}>
+          <MonoLabel tone={s.accent}>
             {s.short}
           </MonoLabel>
           <h3 className="mt-3 text-[1.35rem] leading-tight font-bold tracking-[-0.02em]">{s.title}</h3>

@@ -74,7 +74,7 @@ export function IntroSpread({
       <Blob speed={-0.5} className="top-[30%] left-[5%] w-[85vw] md:top-[20%] md:left-[16%] md:w-[44vw]" />
 
       <div className="flex items-start justify-between gap-4 pt-6 md:pt-10">
-        <MonoLabel index={1} tone="text">
+        <MonoLabel tone="text">
           Senior Core / {term}
         </MonoLabel>
         <MonoLabel className="hidden sm:inline-flex">{String(count).padStart(2, "0")} people</MonoLabel>

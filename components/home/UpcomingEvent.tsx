@@ -52,7 +52,7 @@ export function UpcomingEvent({ event }: { event: ClubEvent }) {
         </ScrollTilt>
 
         <div className="md:col-span-7 md:pl-[4vw]">
-          <MonoLabel as="p" index={4} tone="text">
+          <MonoLabel as="p" tone="text">
             Next up / <time dateTime={event.starts_at}>{formatWhen(event.starts_at)}</time>
           </MonoLabel>
           <h2

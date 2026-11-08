@@ -12,7 +12,7 @@ export function ContactFaq() {
   return (
     <section aria-labelledby="faq-title" className="shell grid gap-10 pt-[clamp(5rem,14svh,9rem)] md:grid-cols-12 md:gap-8">
       <div className="md:col-span-4">
-        <MonoLabel as="p" index={2}>
+        <MonoLabel as="p">
           FAQ
         </MonoLabel>
         <h2 id="faq-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]">

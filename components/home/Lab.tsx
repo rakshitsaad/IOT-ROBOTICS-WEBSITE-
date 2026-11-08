@@ -156,7 +156,7 @@ export function Lab({ projects }: { projects: Project[] }) {
       <div className="shell py-20 md:py-28 md:motion-safe:hidden">
         <LabHeading />
         <ol className="mt-12 space-y-16 md:mt-16 md:space-y-24">
-          {stations.map(({ station, projects: list }, i) => (
+          {stations.map(({ station, projects: list }) => (
             <li key={station.domain} className="md:grid md:grid-cols-12 md:items-end md:gap-8">
               <div className="grid grid-cols-2 gap-3 md:col-span-7">
                 {list.map((project, j) => (
@@ -181,7 +181,7 @@ export function Lab({ projects }: { projects: Project[] }) {
                 ))}
               </div>
               <div className="mt-4 rounded-card border border-line bg-bg-2 p-6 md:col-span-5 md:mt-0 md:p-8">
-                <MonoLabel index={i + 1} tone={station.accent}>
+                <MonoLabel tone={station.accent}>
                   {station.short}
                 </MonoLabel>
                 <div className="mt-4 flex items-center gap-3.5">
