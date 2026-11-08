@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { ContactFaq } from "@/components/contact/ContactFaq";
 import { ContactHero, type HeroBadge } from "@/components/contact/ContactHero";
 import { ContactPanel } from "@/components/contact/ContactPanel";
-import { GridBackground } from "@/components/ui";
 import { getPartners, getSettings, getUpcomingEvent, getUpcomingWorkshop } from "@/lib/data";
 import { SENIOR_CORE_TERM } from "@/lib/members";
 
@@ -30,7 +29,6 @@ export default async function ContactPage() {
 
   return (
     <>
-      <GridBackground />
       <ContactHero email={settings.contact_email} badge={badge} partners={partners} />
       <ContactPanel
         clubName={settings.club_name}

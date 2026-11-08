@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { GridBackground } from "@/components/ui";
 import { AboutReveals } from "@/components/about/AboutReveals";
 import { History, Pillars, Purpose, TeamsOverview } from "@/components/about/AboutSections";
 import { HandsSection } from "@/components/about/HandsSection";
@@ -15,7 +14,6 @@ export default async function AboutPage() {
 
   return (
     <>
-      <GridBackground />
       {/* Section 1: the pinned hands sequence (DESIGN.md §15). */}
       <HandsSection clubName={settings.club_name} />
       <AboutReveals>

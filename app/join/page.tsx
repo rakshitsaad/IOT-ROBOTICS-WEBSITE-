@@ -3,7 +3,6 @@ import { Crowd } from "@/components/join/Crowd";
 import { JoinHero } from "@/components/join/JoinHero";
 import { JoinReveals } from "@/components/join/JoinReveals";
 import { HowItWorks, JoinCta, JoinFaq, TeamsSection, WhyJoin } from "@/components/join/JoinSections";
-import { GridBackground } from "@/components/ui";
 import { getSettings, getTeams } from "@/lib/data";
 import { JOIN_CHARACTERS, isHiring } from "@/lib/join";
 import { SENIOR_CORE_TERM } from "@/lib/members";
@@ -19,7 +18,6 @@ export default async function JoinPage() {
   const hiring = Object.fromEntries(JOIN_CHARACTERS.map((c) => [c.slug, isHiring(c.team, settings)]));
   return (
     <>
-      <GridBackground />
       <JoinHero
         recruitmentOpen={settings.recruitment_open}
         year={SENIOR_CORE_TERM.year}

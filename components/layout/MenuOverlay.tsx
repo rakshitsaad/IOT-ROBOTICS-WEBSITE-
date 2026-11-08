@@ -9,7 +9,6 @@ import { BEZIER, DURATION } from "@/lib/motion";
 import { NAV_ITEMS } from "@/lib/nav";
 import { useUIStore } from "@/lib/store";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { GridBackground } from "@/components/ui/GridBackground";
 import { formatIndex } from "@/components/ui/MonoLabel";
 
 /**
@@ -92,7 +91,6 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
       exit={reduced ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0 }}
       transition={{ duration: DURATION.fast, ease: BEZIER.out }}
     >
-      <GridBackground fixed={false} brackets={false} fade />
 
       <nav aria-label="Site" className="shell flex flex-1 flex-col justify-center py-6 md:py-10">
         <ul className="group/list">

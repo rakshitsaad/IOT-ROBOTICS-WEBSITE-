@@ -133,7 +133,7 @@ hard-code hex values in components.
 | `--red`      | `#C62828` deep red          | `bg-red`, `text-red`       | The one signal colour: primary CTA, active states, a highlighted word |
 | `--red-deep` | `#A82222`                   | `bg-red-deep`              | Red at 85% toward black: the primary button's hover only |
 | `--maroon`   | `#5A1717` dark maroon       | `bg-maroon`                | Quiet fills (status badge), gradient partner of red |
-| `--grid`     | `rgba(242,240,235,0.035)`   | (used by GridBackground)   | Grid lines, fainter than `--line`            |
+| `--grid`     | `rgba(242,240,235,0.035)`   | (used by GridBackground)   | Grid lines, fainter than `--line`; dev pages only |
 
 **Distribution.** About 75% black and charcoal, 15% warm white, 8% red, 2% maroon. Black always dominates.
 - Red is for one thing per view: the primary CTA, an active state (current team pill, a lit timeline dot, an open
@@ -265,7 +265,7 @@ required so Tailwind treats it as a font size).
 - `--gutter`: 16px (base), 32px (≥ 768px), 48px (≥ 1280px). `px-gutter` applies it without the max-width.
 - `--nav-h`: 72px (base), 84px (≥ 768px). `--ann-h`: 40px, or 0 when the announcement is off or dismissed.
 - `pt-header` utility: `padding-top: calc(var(--nav-h) + var(--ann-h))`. Every page's first section must clear the fixed header with it (or account for it in a full-bleed hero).
-- `body` has **no background colour** on purpose (only `html` does) so the fixed `<GridBackground>` at `-z-10` shows through. Sections that set their own background cover the grid.
+- **No background grid on the site.** Pages sit on the plain matte black of `html`. `<GridBackground>` (§5) is kept for the `/lab` dev pages only; don't add it to site pages, the menu or sections.
 - `html` has `scrollbar-gutter: stable` so locking scroll causes no layout shift.
 - Focus rings are 2px `--red` (offset 3px); text selection is `--red` with warm white text.
 
@@ -303,7 +303,7 @@ The technical label style. Props: `index?: number | string` (numbers are zero-pa
 ### `<GridBackground>`
 Faint 80px grid lines (`--grid`) plus 4 small corner brackets.
 Props: `fixed` (default `true`, so it covers the viewport and brackets sit at the viewport corners; `false` fills the nearest positioned parent), `size` (80), `brackets` (true), `fade` (radial edge fade, false). Always `pointer-events: none`, `-z-10`.
-Panning: the lines layer (`[data-grid-lines]`) offsets its background by the CSS variables `--grid-x` / `--grid-y` (px, default 0), so a page can pan the grid by tweening them (the home lab does, §12).
+Panning: the lines layer (`[data-grid-lines]`) offsets its background by the CSS variables `--grid-x` / `--grid-y` (px, default 0). **Dev pages only** (`/lab`, `/lab/robot`, `/lab/drone`): the site itself has no grid (§4).
 
 ### `<IrisButton>`
 The primary action. Deep red pill (`--red`) with warm white text. On hover/focus the fill darkens to `--red-deep` inside a 1px `--red` rim (a lit edge, no glow). Use **one per view**.
@@ -797,7 +797,6 @@ Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and
 ## 12. Home page (`app/page.tsx`, `components/home`)
 
 ```tsx
-<GridBackground />
 <HomeScroll>                          // the hero pin, the one scroll timeline, robot scenes, statement reveals
   <HomeHero settings />               // A: wordmark, corner labels, decorations
   <HomeRobot />                       // the page's only <BotStage sidekick> (in a fixed box) + useBotMood()
@@ -827,7 +826,7 @@ The stage box is fixed and z-30, so the robot stands in front of the page conten
 - **Reduced motion:** the same box, but `absolute` at the top of the page, so the poster stays in the hero and scrolls away with it.
 
 ### Scroll choreography (`HomeScroll`; tune with `HOME_SCROLL`)
-One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, time unit = px of scroll). It moves the robot through every section by tweening `botTransform`, and also drives the hero while it is pinned, the lab's photo pans, pips and grid pan. Section positions are measured before the pin exists; the timeline is rebuilt when the page, hero, stage or footer change size.
+One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, time unit = px of scroll). It moves the robot through every section by tweening `botTransform`, and also drives the hero while it is pinned, the lab's photo pans and pips. Section positions are measured before the pin exists; the timeline is rebuilt when the page, hero, stage or footer change size.
 
 | Scroll | What happens |
 | --- | --- |
@@ -835,7 +834,7 @@ One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, tim
 | 60% of the pin, scrolling down | The robot looks down-left towards the statement (`lookAt` + `react("look-left", 1600)`) |
 | end of pin → +85vh (md and up) | The robot moves to the right edge (one gutter in), scale ×0.6, body turned -0.45 rad towards the headline |
 | lab top enters → lab top reaches the viewport top (md and up) | The robot moves to centre-right (55% of the width, base at 93% of the stage) at 1.1× its hero size (smaller on screens squarer than 1.55:1), facing the camera. Where the card would cover it, it steps left of the card (landscape, 1.2:1 or wider) or stands above the card, as big as fits under the heading (portrait tablets) |
-| each station boundary, over 0.7 screens centred on it | The photo layers pan left one station (`LAB_PAN` 1.25 screens × depth: back 0.6×, mid 1×, front 1.3×), the grid pans 40px (`--grid-x`), and the robot turns 0.26 rad (≈15°) towards the incoming photos and back |
+| each station boundary, over 0.7 screens centred on it | The photo layers pan left one station (`LAB_PAN` 1.25 screens × depth: back 0.6×, mid 1×, front 1.3×), and the robot turns 0.26 rad (≈15°) towards the incoming photos and back |
 | each station (one screen) | Its pip's fill grows (scaleX 0 → 1) |
 | lab lets go → +0.8 screens (md and up) | The robot ducks into the bottom-right corner: 34% of the stage tall, 22% of the stage peeking over the bottom edge, turned -0.3 rad. It stays there through the slider, the event and the numbers |
 | join card comes up (md and up) | The robot moves to the centre and lands on the card's top edge when the card's bottom reaches 90% of the viewport (lower if needed, so the robot stays clear of the header and inside its stage) |
@@ -928,7 +927,6 @@ Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in
 ## 13. Members page (`app/members/page.tsx`, `components/members`)
 
 ```tsx
-<GridBackground />
 <SeniorCore members={getSeniorCore()} settings />   // [01] editorial spreads, Bodoni Moda
 <JuniorCore teams={getJuniorCoreByTeam()} />        // team pills + one expanding accordion per team (Sora)
 ```
@@ -1172,7 +1170,6 @@ The mock photos and posters are `picsum.photos`, and the two clips are MDN's CC0
 ## 15. About page (`app/about/page.tsx`, `components/about`)
 
 ```tsx
-<GridBackground />
 <HandsSection clubName />        // section 1: the pinned hands sequence (HandsScroll)
 <AboutReveals>                   // reveals for everything below
   <Purpose />                    // [01] mission & vision cards
@@ -1193,7 +1190,7 @@ the outer edge. The current files are generated placeholders; replace them with 
 
 **Layout.** Everything is placed against `--tip-y`, the line the fingertips point along: 42% of the screen on phones, 52%
 from md (the middle of the area below the header). Layers, back to front:
-- `bg-bg` and a `GridBackground` at 50% opacity;
+- `bg-bg`;
 - the **iris ring** (`IrisRing`), 70vmin, centred on the contact point: a conic gradient of maroon and red with clear
   gaps, masked into a ring that fades over about 30px each side (the look of a 30px blur), plus a fine edge line. It turns
   once per 40s (`animate-orbit`) and breathes (`animate-breathe`). The softness comes from the mask, **not**
@@ -1387,7 +1384,6 @@ title and no letter animation, and the footer shows.
 ## 17. Events (`app/events/page.tsx`, `components/events`)
 
 ```tsx
-<GridBackground />
 <EventsExperience events={getEventShowcase()}>   // client: owns the active event, filter, autoplay, overlays
   <EventTint />                                  // fixed accent glow behind everything
   heading + filters
@@ -1547,7 +1543,6 @@ units while slow, and wobbles slightly. Phones: 60% scale. (The home sidekick, �
 ## 19. Achievements (`app/achievements/page.tsx`, `components/achievements`)
 
 ```tsx
-<GridBackground />
 <AchievementsExperience items={getAchievements()}>   // client: filter, crossfade, list → slide
   <section h-svh>                                     // the slider (100svh, under the transparent header)
     <AchievementsSlider key={filter} />               // remounts per filter
@@ -1640,7 +1635,6 @@ The photos in `/public/achievements/` are generated placeholder scenes graded in
 ## 20. Contact (`app/contact/page.tsx`, `components/contact`)
 
 ```tsx
-<GridBackground />
 <ContactHero email badge partners />   // 100svh: headline over a planet's glowing horizon
 <ContactPanel {...settings} />         // the app-window panel rising from the horizon: details, form, map
 <ContactFaq />                         // [02] FAQ: an accordion
@@ -1730,7 +1724,6 @@ The partners (names and logos), the phone number and the lab room in the address
 ## 21. Join (`app/join/page.tsx`, `app/join/apply/page.tsx`, `components/join`)
 
 ```tsx
-<GridBackground />
 <JoinHero recruitmentOpen year crowd={<Crowd variant="wide" /> + <Crowd variant="narrow" />} />  // 100svh
 <JoinReveals>                                   // subtle fade-up reveals only
   <WhyJoin /> <TeamsSection teams hiring /> <HowItWorks /> <JoinFaq /> <JoinCta open />

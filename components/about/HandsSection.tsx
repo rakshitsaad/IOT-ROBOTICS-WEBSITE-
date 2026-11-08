@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { GridBackground, MonoLabel } from "@/components/ui";
+import { MonoLabel } from "@/components/ui";
 import { ABOUT_HANDS } from "@/lib/about";
 import { cn } from "@/lib/cn";
 import { HandsScroll } from "./HandsScroll";
@@ -38,8 +38,6 @@ export function HandsSection({ clubName }: { clubName: string }) {
       >
         {/* The scene: one screen. */}
         <div className="relative h-svh overflow-clip">
-          <GridBackground fixed={false} className="opacity-50" />
-
           <IrisRing className="top-(--tip-y) left-1/2 -translate-1/2" />
 
           <div className="absolute inset-x-0 top-[calc((var(--nav-h)+var(--ann-h)+var(--tip-y))/2)] -translate-y-1/2 px-gutter text-center md:top-[calc(var(--tip-y)-15svh)]">

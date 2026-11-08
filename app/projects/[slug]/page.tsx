@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { GridBackground } from "@/components/ui";
 import { ProjectDetail } from "@/components/projects/ProjectDetail";
 import { getProject, getProjectsWithTeam } from "@/lib/data";
 
@@ -25,7 +24,6 @@ export async function generateMetadata({ params }: PageProps<"/projects/[slug]">
 export default function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
   return (
     <>
-      <GridBackground />
       <Suspense fallback={null}>
         <ProjectFromParams params={params} />
       </Suspense>

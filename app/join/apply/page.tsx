@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ApplyForm } from "@/components/join/ApplyForm";
 import { CharacterAvatar } from "@/components/join/CharacterAvatar";
-import { GridBackground, MonoLabel } from "@/components/ui";
+import { MonoLabel } from "@/components/ui";
 import { getSettings } from "@/lib/data";
 import { JOIN_CHARACTERS, isHiring } from "@/lib/join";
 import { SENIOR_CORE_TERM } from "@/lib/members";
@@ -22,7 +22,6 @@ export default async function ApplyPage() {
   const hiring = Object.fromEntries(JOIN_CHARACTERS.map((c) => [c.slug, isHiring(c.team, settings)]));
   return (
     <>
-      <GridBackground />
       <section aria-labelledby="apply-title" className="pt-header">
         <div className="mx-auto w-full max-w-[52rem] px-4 pt-[clamp(2rem,6svh,4rem)] md:px-gutter">
           <Link

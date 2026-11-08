@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { GridBackground } from "@/components/ui";
 import { JuniorCore } from "@/components/members/JuniorCore";
 import { SeniorCore } from "@/components/members/SeniorCore";
 import { getJuniorCoreByTeam, getSeniorCore, getSettings } from "@/lib/data";
@@ -14,7 +13,6 @@ export default async function MembersPage() {
 
   return (
     <>
-      <GridBackground />
       <SeniorCore members={seniors} settings={settings} />
       <JuniorCore teams={juniorTeams} />
     </>

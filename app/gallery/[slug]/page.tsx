@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { GridBackground } from "@/components/ui";
 import { JournalViewer } from "@/components/gallery/JournalViewer";
 import { getJournal, getJournals } from "@/lib/data";
 
@@ -28,7 +27,6 @@ export async function generateMetadata({ params }: PageProps<"/gallery/[slug]">)
 export default function JournalPage({ params }: PageProps<"/gallery/[slug]">) {
   return (
     <>
-      <GridBackground />
       <Suspense fallback={<div aria-hidden="true" className="h-svh" />}>
         <JournalFromParams params={params} />
       </Suspense>

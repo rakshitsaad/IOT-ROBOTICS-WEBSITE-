@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { EventsExperience } from "@/components/events/EventsExperience";
-import { GridBackground } from "@/components/ui";
 import { getEventShowcase } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -13,7 +12,6 @@ export default async function EventsPage() {
   const events = await getEventShowcase();
   return (
     <>
-      <GridBackground />
       <EventsExperience events={events} />
     </>
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GridBackground, MonoLabel } from "@/components/ui";
+import { MonoLabel } from "@/components/ui";
 import { JournalShelf } from "@/components/gallery/JournalShelf";
 import { getJournals } from "@/lib/data";
 import { pad2 } from "@/lib/gallery";
@@ -15,7 +15,6 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <GridBackground />
       <section aria-labelledby="journals-title" className="shell pt-header pb-8">
         <div className="pt-14 md:pt-24">
           <MonoLabel as="p">

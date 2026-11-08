@@ -1,4 +1,3 @@
-import { GridBackground } from "@/components/ui";
 import { Featured } from "@/components/home/Featured";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeRobot } from "@/components/home/HomeRobot";
@@ -21,8 +20,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <GridBackground />
-
       {/* One scroll sequence (DESIGN.md §12): the robot travels through every section below. */}
       <HomeScroll>
         <HomeHero settings={settings} />

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { AchievementsExperience } from "@/components/achievements/AchievementsExperience";
-import { GridBackground } from "@/components/ui";
 import { getAchievements } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -13,7 +12,6 @@ export default async function AchievementsPage() {
   const items = await getAchievements();
   return (
     <>
-      <GridBackground />
       <AchievementsExperience items={items} />
     </>
   );
