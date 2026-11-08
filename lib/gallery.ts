@@ -135,11 +135,6 @@ export function journalYear(iso: string): number {
   return Number(new Intl.DateTimeFormat("en-GB", { year: "numeric", timeZone: "Asia/Kolkata" }).format(new Date(iso)));
 }
 
-/** Zero-padded count for mono labels: 7 → "07". */
-export function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
-
 /** The image that stands for a page (the blurred backdrop): a photo, a video's poster, a collage's first photo. */
 export function pageImage(page: JournalPage): string | null {
   const first = page.items[0];

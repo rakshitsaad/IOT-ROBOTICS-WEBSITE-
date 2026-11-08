@@ -636,7 +636,7 @@ export function AchievementsSlider({
       </div>
       <p className="absolute right-4 bottom-4 z-20 flex items-end gap-2 font-bold text-text md:right-[6vw] md:bottom-[4svh]">
         <Odometer value={active + 1} className="text-[44px] tracking-[-0.03em] md:text-[64px]" />
-        <span className="mono-label mb-[0.45rem] text-text/60 md:mb-[0.7rem]">/ {String(n).padStart(2, "0")}</span>
+        <span className="mono-label mb-[0.45rem] text-text/60 md:mb-[0.7rem]">/ {n}</span>
       </p>
 
       <p aria-live="polite" className="sr-only">

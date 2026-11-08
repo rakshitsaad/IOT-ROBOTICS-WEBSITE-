@@ -300,7 +300,8 @@ The technical label style. Props: `index?: number | string` (shown before the la
 <MonoLabel>About the club</MonoLabel>
 ```
 **Section labels are names only, never numbered** (no `[01]`, no `01 /`), and **no square brackets anywhere**: counts are
-plain numbers in the text ("10 Members", "Events / 6 Total"), never zero-padded or bracketed.
+plain numbers in the text ("10 Members", "Events / 6 Total"), never zero-padded or bracketed. The same goes for
+counters ("1 / 6", "Step 1", "*1"): no leading zeros. Only the countdown's clock digits stay two-digit ("09").
 
 ### `<GridBackground>`
 Faint 80px grid lines (`--grid`) plus 4 small corner brackets.
@@ -937,7 +938,7 @@ Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in
 An editorial run of full-screen "spreads" on the near-black background (`bg-bg`
 covers the grid), and the only place Bodoni Moda is used. The genre is a fashion
 magazine: huge serif names, black-and-white portraits, a cut-out figure in front
-of giant letters, a spinning badge and `*01` counters. Keep it original: no
+of giant letters, a spinning badge and `*1` counters. Keep it original: no
 borrowed layouts, assets or branding.
 
 Order: **intro**, one spread per senior (`tier = "senior"`, by `sort_order`), **closing**.
@@ -952,7 +953,7 @@ Order: **intro**, one spread per senior (`tier = "senior"`, by `sort_order`), **
   - **C, Cutout** (the signature spread): the name in two giant lines across the full width (fitted to the width, up to `26svh` / 20rem), with the `cutout_url` figure standing on the bottom edge between them. Line 1 sits behind the person. Line 2's fill also sits behind, and a 1px outline copy sits in front, so the line passes partly behind. **Without a `cutout_url` it falls back to A.** Portrait tablets (`md:portrait:`) make the figure 74svh and move the lines to 26% / 52%.
   - **D, Stacked**: first name, last name and "the {role}" (italic, 0.42em) stacked top left; a small square portrait bottom left; the badge (`name * role * Senior Core`) on the right; the bio beside the portrait (two columns from `lg`).
 - **Closing**: "Want a seat / at this / *table?*", the view's one `IrisButton` ("Join the club" → `join_form_url`, else `/join`) and a ghost "Junior Core ↓" button to `#junior-core`. The pin then lets go and the page scrolls on to Junior Core.
-- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has), prev/next arrows, and the counter `*01` (Sora 700, `clamp(3rem, 6.5vw, 6rem)`, tabular figures).
+- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has), prev/next arrows, and the counter `*1` (Sora 700, no leading zero; `clamp(3rem, 6.5vw, 6rem)`, tabular figures).
 - **Phones**: each spread stacks portrait, then name, then text, about one screen tall. Layout C keeps its figure in front of the name.
 
 Shared parts (`parts.tsx`):
@@ -1208,7 +1209,7 @@ from md (the middle of the area below the header). Layers, back to front:
   - **A**, bottom left: "Who we are", "Built by students, for the real world" (Sora 600,
     `clamp(2rem, min(4.5vw, 7svh), 4rem)`; the svh cap keeps it under the hands on short laptop screens), and one muted line;
   - **B**, top right, right-aligned: "Sense. / Understand. / Adapt." and one muted line;
-  - **C**, bottom right, right-aligned: "02 / How we build", "Precision. With feeling." and one muted line.
+  - **C**, bottom right, right-aligned: "How we build", "Precision. With feeling." and one muted line.
 
   On phones the blocks sit in the band below the hands: A at its top, B at its bottom, and C where A was.
 
@@ -1358,7 +1359,7 @@ reversal mid-flight just tweens `p` back.
   counter. It is at most 80% of the stage's height and width.
 - **Behind it.** The other tiles, the title and the info panel dim to 30% and blur 4px (600ms).
 - **Stepping.** The label becomes "Close image". ← → (keys and buttons) step through the photos with a short crossfade, and
-  the strip scrolls that tile behind the photo. A mono `02 / 11` counter sits below.
+  the strip scrolls that tile behind the photo. A mono `2 / 11` counter sits below.
 - **Closing.** Esc, the label or a click outside the photo closes it. It flies back to its tile (0.7s expo.out), and focus
   returns there.
 
@@ -1366,7 +1367,7 @@ reversal mid-flight just tweens `p` back.
 - **No WebGL.** The reel is a horizontal scroll-snap carousel of 78vw cards.
   - Each card turns in 3D towards the centre, by up to 26° depending on its distance.
   - The same vertical title (`ReelTitle`, up to 11svh a letter) sits over the cards.
-  - A `01 / 12` counter and the summary sit below.
+  - A `1 / 12` counter and the summary sit below.
 - **Project page.** A card links to `/projects/<slug>`: the info panel, then the photos stacked (two columns from md, under
   reduced motion).
 - **Viewer.** Tapping a photo opens a full-screen viewer (portalled, z-90). Swipe or ← → moves between photos; Esc or
@@ -1427,7 +1428,7 @@ A streaming-app style showcase: one big card per event, its subject popping out 
   faded edges when it doesn't fit.
 - **Chrome**: a frosted round expand button top right (opens the detail overlay), prev/next round arrows on the card's
   side edges (higher up on phones, clear of the text), and under the card a progress bar of one segment per event (buttons)
-  with an `01 / 06` counter. The active segment fills over the autoplay time.
+  with a `1 / 6` counter. The active segment fills over the autoplay time.
 
 ### Background tint (`EventTint`)
 A fixed layer behind the page: a radial `color-mix(in oklab, accent 12%, bg)` centred behind the card (4% at mid-radius),
@@ -1574,7 +1575,7 @@ the right, and the first card grows into the next background.
   off screen), 170 × 260, 18px apart, 16px radius, a soft shadow, the photo with a dark bottom gradient, the title (12px
   bold caps, two lines) and the result (10px mono). `data-cursor="view"`.
 - **Bottom**: round frosted prev/next buttons at the left, a hairline track whose fill shows the position, and the slide
-  number at the bottom right (Sora 700, 64px, an `Odometer` that rolls each digit as a 0–9 column, with `/ 06` in mono).
+  number at the bottom right (Sora 700, 64px, an `Odometer` that rolls each digit as a 0–9 column, with `/ 6` in mono; no leading zero).
 - **Autoplay line**: a 2px red line just under the header that fills over the autoplay interval.
 
 ### Motion (`AchievementsSlider`; numbers in `ACH_MOTION`)

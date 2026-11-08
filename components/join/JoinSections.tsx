@@ -184,7 +184,7 @@ export function HowItWorks() {
             <span aria-hidden="true" className="absolute top-0 left-0 grid size-6 place-items-center rounded-full bg-bg-2">
               <span className="size-1.5 rounded-full bg-text/60" />
             </span>
-            <MonoLabel as="p">Step {String(i + 1).padStart(2, "0")}</MonoLabel>
+            <MonoLabel as="p">Step {i + 1}</MonoLabel>
             <h3 className="mt-3 text-xl leading-tight font-semibold tracking-[-0.02em] md:text-2xl">{s.title}</h3>
             <p className="mt-3 max-w-[30ch] text-[15px] leading-relaxed text-muted">{s.text}</p>
           </li>

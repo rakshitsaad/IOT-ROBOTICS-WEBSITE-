@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
-import { pad2 } from "@/lib/gallery";
 import { gsap } from "@/lib/gsap";
 import type { StripTile } from "@/lib/projects";
 
@@ -130,7 +129,7 @@ export function ImageView({
       )}
 
       <p className="mono-label absolute bottom-6 left-1/2 -translate-x-1/2 text-muted" aria-live="polite">
-        <span className="text-text">{pad2(index + 1)}</span> / {pad2(count)}
+        <span className="text-text">{index + 1}</span> / {count}
         <span className="sr-only">: {tile.image.alt}</span>
       </p>
     </div>

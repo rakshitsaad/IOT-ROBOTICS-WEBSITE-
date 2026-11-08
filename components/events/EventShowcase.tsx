@@ -428,7 +428,7 @@ function Progress({
         ))}
       </ol>
       <span className="mono-label text-muted tabular-nums">
-        {String(index + 1).padStart(2, "0")} / {String(list.length).padStart(2, "0")}
+        {index + 1} / {list.length}
       </span>
     </div>
   );

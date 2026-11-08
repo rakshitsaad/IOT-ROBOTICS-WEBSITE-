@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
-import { pad2 } from "@/lib/gallery";
 import { BEZIER, DURATION } from "@/lib/motion";
 import { useUIStore } from "@/lib/store";
 import type { GalleryItem } from "@/lib/types";
@@ -249,7 +248,7 @@ function LightboxPanel({ items, index, onIndex, onClose, onDownload, title, redu
       {/* Top: counter and title, zoom, download, close. */}
       <div className="flex items-center justify-between gap-3 px-gutter py-4">
         <p className="mono-label min-w-0 truncate text-muted">
-          <span className="text-text">{pad2(index + 1)}</span> / {pad2(count)}
+          <span className="text-text">{index + 1}</span> / {count}
           <span className="hidden sm:inline"> · {title}</span>
         </p>
         <div className="flex shrink-0 items-center gap-2">

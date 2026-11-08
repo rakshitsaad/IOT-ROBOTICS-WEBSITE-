@@ -2,7 +2,6 @@
 
 import type { MotionValue } from "motion/react";
 import { useEffect, useRef, type PointerEvent } from "react";
-import { pad2 } from "@/lib/gallery";
 import { clamp } from "./fan";
 
 /**
@@ -82,7 +81,7 @@ export function JournalScrubber({
         </div>
       </div>
       <p className="mono-label shrink-0 text-muted tabular-nums" aria-hidden="true">
-        <span className="text-text">{pad2(active + 1)}</span> / {pad2(count)}
+        <span className="text-text">{active + 1}</span> / {count}
       </p>
     </div>
   );

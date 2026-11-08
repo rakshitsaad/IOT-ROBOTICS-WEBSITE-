@@ -77,7 +77,7 @@ export function IntroSpread({
         <MonoLabel tone="text">
           Senior Core / {term}
         </MonoLabel>
-        <MonoLabel className="hidden sm:inline-flex">{String(count).padStart(2, "0")} people</MonoLabel>
+        <MonoLabel className="hidden sm:inline-flex">{count} people</MonoLabel>
       </div>
 
       <h1 id="senior-core-title" className="relative mt-auto pt-16 font-serif uppercase md:pt-0">

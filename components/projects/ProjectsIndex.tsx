@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MonoLabel } from "@/components/ui";
 import { prefersReducedMotion, useReducedMotion } from "@/hooks/use-reduced-motion";
-import { pad2 } from "@/lib/gallery";
 import {
   filterFromLocation,
   filterProjects,
@@ -165,7 +164,7 @@ function Carousel({ list }: { list: ProjectWithTeam[] }) {
       {project && (
         <div className="shell mt-5 flex items-start justify-between gap-6">
           <p className="mono-label shrink-0 text-muted" aria-live="polite">
-            <span className="text-text">{pad2(active + 1)}</span> / {pad2(list.length)}
+            <span className="text-text">{active + 1}</span> / {list.length}
             <span className="sr-only">: {project.title}</span>
           </p>
           <p className="max-w-[30ch] text-right text-sm leading-snug text-muted">{project.summary}</p>

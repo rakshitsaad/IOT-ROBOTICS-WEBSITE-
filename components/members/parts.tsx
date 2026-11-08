@@ -173,13 +173,14 @@ export function SocialLinks({ member, className }: { member: Member; className?:
 }
 
 /**
- * "*01" in Sora 700. Each digit is a column of 0–9 twice over; entering the
+ * "*1" in Sora 700 (no leading zero). Each digit is a column of 0–9 twice over; entering the
  * spread rolls it like an odometer from the previous number (the ones digit
  * spins a full turn). Rendered at its final digit.
  */
 export function Counter({ value, from, total }: { value: number; from: number; total: number }) {
-  const to = String(value).padStart(2, "0");
-  const was = String(from).padStart(2, "0");
+  const to = String(value);
+  // The previous number, right-aligned to as many digits as `to` (so the ones digit rolls from the old ones digit).
+  const was = String(from).padStart(to.length, "0").slice(-to.length);
   return (
     <p className="text-[length:clamp(3rem,6.5vw,6rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">
       <span className="sr-only">

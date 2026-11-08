@@ -347,7 +347,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
         <ol className="mx-auto mt-8 grid max-w-md gap-3 text-left">
           {JOIN_STEPS.slice(1).map((s, i) => (
             <li key={s.title} className="flex gap-3 rounded-[14px] bg-bg/60 p-4 ring-1 ring-line">
-              <span className="font-mono text-[12px] text-muted">{String(i + 2).padStart(2, "0")}</span>
+              <span className="font-mono text-[12px] text-muted">{i + 2}</span>
               <span>
                 <span className="block text-[15px] font-semibold">{s.title}</span>
                 <span className="text-[13px] text-muted">{s.text}</span>

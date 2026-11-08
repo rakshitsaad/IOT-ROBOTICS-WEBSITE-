@@ -21,17 +21,17 @@ export function ResultBadge({ result, className }: { result: string; className?:
 }
 
 /**
- * A two-digit number that rolls like an odometer when it changes: each digit is a 0–9 column moved with a CSS
+ * A number (no leading zero) that rolls like an odometer when it changes: each digit is a 0–9 column moved with a CSS
  * transition (900ms expo; instant under reduced motion, like every transition). `aria-hidden`: give the value as text
  * elsewhere.
  */
 export function Odometer({ value, className }: { value: number; className?: string }) {
-  const digits = String(value).padStart(2, "0").split("").map(Number);
+  const digits = String(value).split("").map(Number);
   return (
     <span aria-hidden="true" className={cn("inline-flex overflow-hidden tabular-nums", className)}>
       {digits.map((d, i) => (
         // The cells set their own line-height: a font size passed in `className` would drop a `leading-*` there (cn).
-        <span key={i} className="relative inline-block h-[1em] w-[0.66em] overflow-hidden leading-none">
+        <span key={digits.length - i} className="relative inline-block h-[1em] w-[0.66em] overflow-hidden leading-none">
           <span
             className="absolute inset-x-0 top-0 flex flex-col transition-transform duration-[900ms] ease-expo"
             style={{ transform: `translateY(${-d}em)` }}

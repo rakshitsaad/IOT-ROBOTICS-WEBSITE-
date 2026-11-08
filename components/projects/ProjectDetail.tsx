@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { pad2 } from "@/lib/gallery";
 import { projectImages, type ProjectWithTeam } from "@/lib/projects";
 import { useUIStore } from "@/lib/store";
 import type { ProjectImage } from "@/lib/types";
@@ -159,7 +158,7 @@ function ViewerPanel({
 
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
         <p className="mono-label text-muted" aria-live="polite">
-          <span className="text-text">{pad2(current + 1)}</span> / {pad2(count)}
+          <span className="text-text">{current + 1}</span> / {count}
           <span className="sr-only">: {images[current]?.alt}</span>
         </p>
         <button
