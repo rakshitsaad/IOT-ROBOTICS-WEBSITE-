@@ -163,7 +163,6 @@ export function HomeScroll({ children }: { children: ReactNode }) {
       /* 1. Hero, pinned: [0, P] */
       tl.to(botTransform, { y: dropY, scale: base.scale * R.grow, rotY: 0, duration: P }, 0);
       tl.to("[data-hero-wordmark]", { y: -HOME_SCROLL.wordmarkSpeed * P, opacity: 0, duration: P }, 0);
-      tl.to("[data-hero-scroll]", { opacity: 0, duration: 0.12 * P }, 0);
       tl.call(
         () => {
           if (scrub.trigger && scrub.trigger.direction < 0) return; // only on the way down

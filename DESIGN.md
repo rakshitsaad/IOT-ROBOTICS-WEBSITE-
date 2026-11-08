@@ -342,7 +342,7 @@ Used by the /contact and /join FAQs. Instant under reduced motion.
 `mono-label`, `bg-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
 `paper` (warm white `--text` with a faint grain: gallery pages, caption tags) and `paper-ruled` (the same with faint grey
 rules every `--rule`, default 2rem, and a red margin line: note pages). Gallery only (§14).
-Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (the scroll arrow), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateX(−110%) over 0.7s expo, out to translateX(110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`; in vertical text, local x is "up", §16).
+Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (a nudging arrow; unused since the home scroll hint was removed), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateX(−110%) over 0.7s expo, out to translateX(110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`; in vertical text, local x is "up", §16).
 The /events first load (§17), all `both`: `animate-wipe-in` (a left-to-right `clip-path` wipe with a fade, 0.8s expo),
 `animate-settle` (scale 1.08 → 1, 0.8s expo), `animate-pop-up` (opacity 0 and 40px down → in place, 0.8s expo) and
 `animate-slide-up` (opacity 0 and 20px down → in place, 0.6s power3).
@@ -370,7 +370,7 @@ Order: inline no-flash script, skip link, `<Providers>` → `<Header>` → `<mai
   - `data-cursor="link"`: the ring grows to a 56px soft filled circle. Links and buttons get this automatically.
   - `data-cursor="none"`: hides the custom cursor. Text inputs hide it and keep the native text cursor.
   The native cursor is hidden only while `html[data-custom-cursor]` is set.
-- **Footer** (`Footer.tsx`): tagline and email, quick links (Explore / Club), socials (Instagram, LinkedIn, GitHub, email from `settings`), the club wordmark scaled to span the full width (`FitText`), and the mono line `© 2026 {club_name} / {college_name}`.
+- **Footer** (`Footer.tsx`): tagline and email, quick links (Explore / Club), socials (Instagram, LinkedIn, GitHub, email from `settings`) and the club wordmark scaled to span the full width (`FitText`). No copyright line or dot grid.
 - **Route transition** (`app/template.tsx` → `PageTransition`): page content fades in and rises 12px (0.6s power3.out) on client navigations. The first server-rendered page is not animated (its HTML must be visible before JS), and nothing animates under reduced motion.
 
 ---
@@ -494,7 +494,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - `members`: `tier` (`senior` = Senior Core, `junior` = Junior Core, shown grouped by team, `member`), `sort_order` (display order within the tier), `kicker` (short role line, "The President"), `quote` (max 140 characters), `bio`, `photo_url`, `focal_point` (where a cropped portrait is anchored: a CSS `object-position` value, default `DEFAULT_FOCAL_POINT` = `"50% 30%"`), `cutout_url` (optional transparent PNG of the person, for Senior Core's cutout spread), `socials` (jsonb: `{ linkedin, github, instagram }`, each a URL or null).
   - Limits are per tier in `MEMBER_LIMITS` (`lib/types.ts`): quote 140 for every tier; bio **300** for seniors (and `member`), **160** for juniors. The mock throws if a row breaks its tier's limit.
   - The mock has 8 seniors with placeholder portraits; `/members/cutout-1.png` is a generated placeholder figure, not a real cutout. It also has 33 juniors across all 7 teams: Tech has 10 (so its accordion wraps onto a second line), Manav Arora (Tech) and Aditya Rawat (PR) have no photo (initials avatar), and a few set a non-default `focal_point`. Replace the photos with real ones.
-- `settings.founded_year` feeds the hero's "Est. 2019" label and the "years running" count (the mock value is a placeholder).
+- `settings.founded_year` feeds the "years running" count (the mock value is a placeholder).
 - `settings.recruitment_open` switches the home join card between "Apply now" and "Get notified"; `settings.open_teams` (team names) lists the teams taking applications.
 - `settings.contact_phone` (null hides the row), `settings.lab_address` and `settings.map_query` (what the map searches
   for: a place name or "lat,lng") feed /contact (§20). The mock phone and lab room are placeholders.
@@ -798,7 +798,7 @@ Red and maroon come from `COLORS` in `lib/tokens.ts`. Lights: the rim lights and
 
 ```tsx
 <HomeScroll>                          // the hero pin, the one scroll timeline, robot scenes, statement reveals
-  <HomeHero settings />               // A: wordmark, corner labels, decorations
+  <HomeHero settings />               // A: the wordmark
   <HomeRobot />                       // the page's only <BotStage sidekick> (in a fixed box) + useBotMood()
   <Statement clubName />              // B
   <Lab projects />                    // C: "Inside the lab", four stations
@@ -816,8 +816,8 @@ Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomin
 - Wordmark: `club_name` split into two lines (all words but the last, then the last word), uppercase Sora 800, line-height 0.85, tracking -0.04em, line 2 indented `min(8vw, 7.2rem)` (5vw on phones).
 - Wordmark size: `clamp(4rem, min(15vw, 30svh), 14.5rem)`; phones `min(16vw, 28svh)`. "ROBOTICS" is about 5.3em wide, so 18vw cannot fit a phone and a 15rem cap overflows the 1440 shell. Re-check at 360 and 1920 if the club name changes.
 - Letters rise out of a vertical mask on load (`animate-rise`, 40ms apart from 150ms), alongside the robot's bootUp.
-- Corner labels: `{college_name} / Est. {founded_year}` top left, "IoT / Robotics / Research" bottom left, "Scroll" with a nudging arrow bottom right.
-- No decorations: the wordmark and the corner labels sit on plain black (no capsules, dot grids or cross marks).
+- Nothing else: the wordmark sits on plain black, with no corner labels, scroll hint or decorations (capsules, dot grids,
+  cross marks).
 
 ### Robot stage (`HomeRobot`)
 The stage box is fixed and z-30, so the robot stands in front of the page content (the lab card and the header sit above it). `HOME_ROBOT` makes the robot 70% of the stage height with its base at 88%, turned -20°. The box decides where that lands, so the server-rendered poster is already in place:
@@ -830,7 +830,7 @@ One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, tim
 
 | Scroll | What happens |
 | --- | --- |
-| 0 → end of pin | Wordmark rises at 1.4× scroll speed and fades out; the scroll hint fades first. The robot drops 25vh, scales ×1.12 and turns to face the camera |
+| 0 → end of pin | Wordmark rises at 1.4× scroll speed and fades out. The robot drops 25vh, scales ×1.12 and turns to face the camera |
 | 60% of the pin, scrolling down | The robot looks down-left towards the statement (`lookAt` + `react("look-left", 1600)`) |
 | end of pin → +85vh (md and up) | The robot moves to the right edge (one gutter in), scale ×0.6, body turned -0.45 rad towards the headline |
 | lab top enters → lab top reaches the viewport top (md and up) | The robot moves to centre-right (55% of the width, base at 93% of the stage) at 1.1× its hero size (smaller on screens squarer than 1.55:1), facing the camera. Where the card would cover it, it steps left of the card (landscape, 1.2:1 or wider) or stands above the card, as big as fits under the heading (portrait tablets) |
@@ -1202,7 +1202,6 @@ from md (the middle of the area below the header). Layers, back to front:
   translate of ±20vw, never touched by GSAP, §7), the scroll x, the cursor parallax and the float (`animate-float`, the
   robot 1.6s out of phase);
 - a **glow** at the contact point (a warm white radial gradient, `animate-pulse-soft`), hidden until the touch;
-- **tag pills** top right ("IoT", "Robotics", "Research"; small mono pills), fading up on load (`animate-fade-up`, 80ms apart);
 - three **copy blocks**:
   - **A**, bottom left: "01 / Who we are", "Built by students, for the real world" (Sora 600,
     `clamp(2rem, min(4.5vw, 7svh), 4rem)`; the svh cap keeps it under the hands on short laptop screens), and one muted line;
@@ -1215,7 +1214,7 @@ from md (the middle of the area below the header). Layers, back to front:
 
 | Pin | What happens |
 | --- | --- |
-| 0 | Fingertips 40vw apart, title fully visible, tags fading in |
+| 0 | Fingertips 40vw apart, title fully visible |
 | 0 → 0.35 | The hands close to about 8vw (on the `1 − (1 − t)^2.5` curve, §7). The title scales to 0.9, blurs 0 → 8px and fades out; the ring scales 1 → 1.15 |
 | 0.35 → 0.65 | The hands close to 2vw. A rises in (60px, from 0.37), then B (30px, from 0.44) |
 | 0.65 → 0.9 | The hands drift to 1.2vw. A and B slide up 56px and fade out; C rises in (40px, from 0.74) |

@@ -2,12 +2,10 @@ import Link from "next/link";
 import type { Settings } from "@/lib/types";
 import { NAV_ITEMS } from "@/lib/nav";
 import { MonoLabel } from "@/components/ui/MonoLabel";
-import { DotGrid } from "@/components/ui/DotGrid";
 import { FitText } from "./FitText";
 
 /**
- * Site footer: quick links, socials, a full-width club wordmark and the
- * mono copyright line.
+ * Site footer: quick links, socials and a full-width club wordmark (no copyright line).
  */
 export function socialLinks(settings: Settings) {
   return [
@@ -71,17 +69,10 @@ export function Footer({ settings }: { settings: Settings }) {
         </div>
       </div>
 
-      <div className="px-gutter">
+      <div className="px-gutter pb-6 md:pb-8">
         <FitText estimate={12.4} className="font-extrabold tracking-[-0.055em] text-text">
           {settings.club_name}
         </FitText>
-      </div>
-
-      <div className="shell flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between md:py-8">
-        <p className="mono-label text-muted">
-          © 2026 {settings.club_name} / {settings.college_name}
-        </p>
-        <DotGrid rows={2} cols={6} gap={8} size={2} className="hidden text-text/30 sm:block" />
       </div>
     </footer>
   );

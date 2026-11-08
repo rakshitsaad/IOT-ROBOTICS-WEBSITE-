@@ -11,7 +11,7 @@ import { IrisRing } from "./IrisRing";
  * robot hand from the right reaching for each other in front of the iris
  * ring. HandsScroll pins it and drives the [data-*] hooks below.
  *
- * Layers, back to front: bg + grid at 50%, ring, title, hands, glow, tags,
+ * Layers, back to front: bg, ring, title, hands, glow,
  * copy blocks. Everything is placed against `--tip-y`, the line the
  * fingertips point along (42% of the screen on phones, 52% from md).
  *
@@ -21,7 +21,6 @@ import { IrisRing } from "./IrisRing";
  * stacked below the scene. The `motion-safe:` classes are the pinned layout.
  */
 
-const TAGS = ["IoT", "Robotics", "Research"];
 
 export function HandsSection({ clubName }: { clubName: string }) {
   const vars = {
@@ -66,21 +65,6 @@ export function HandsSection({ clubName }: { clubName: string }) {
               <div className="size-full animate-pulse-soft rounded-full bg-radial from-text from-5% via-text/25 via-25% to-transparent to-65% motion-reduce:animate-none" />
             </div>
           </div>
-
-          <ul
-            aria-label="What we work on"
-            className="absolute top-[calc(var(--nav-h)+var(--ann-h)+1rem)] right-(--gutter) flex gap-2"
-          >
-            {TAGS.map((tag, i) => (
-              <li
-                key={tag}
-                style={{ animationDelay: `${300 + i * 80}ms` }}
-                className="mono-label animate-fade-up rounded-pill border border-line bg-bg-2/70 px-3 py-1.5 text-text backdrop-blur-md motion-reduce:animate-none"
-              >
-                {tag}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <HandsCopy />

@@ -1,14 +1,11 @@
-import { MonoLabel } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { Settings } from "@/lib/types";
 
 /**
- * Home hero: the giant two-line wordmark and the corner labels, on plain black (no decorations).
+ * Home hero: the giant two-line wordmark on plain black (no corner labels, scroll hint or decorations).
  * The robot is not in here: it lives on the page's fixed stage (HomeRobot)
  * and stands in front of line 2. HomeScroll pins this section and drives
- * the [data-*] hooks below:
- *   data-hero-wordmark  rises at 1.4× scroll speed and fades out
- *   data-hero-scroll    the scroll hint, fades out first
+ * the wordmark ([data-hero-wordmark]): it rises at 1.4× scroll speed and fades out.
  */
 
 /** 40ms between letters, after a short wait so the first paint settles. */
@@ -23,11 +20,6 @@ export function HomeHero({ settings }: { settings: Settings }) {
   return (
     <section data-home-hero aria-labelledby="hero-title" className="relative isolate min-h-svh overflow-hidden">
       <div className="shell relative z-10 flex min-h-svh flex-col pt-header">
-        <MonoLabel className="mt-6 md:mt-8">
-          {settings.college_name}
-          {settings.founded_year ? ` / Est. ${settings.founded_year}` : null}
-        </MonoLabel>
-
         {/* Phones: the wordmark ends at 42svh; the robot's antenna (40svh) just overlaps it. md+: centred, a little high. */}
         <div className="flex flex-1 flex-col justify-end pb-[58svh] md:justify-center md:pb-[9svh]">
           <h1
@@ -69,25 +61,6 @@ export function HomeHero({ settings }: { settings: Settings }) {
             </span>
           </h1>
         </div>
-      </div>
-
-      <div className="shell absolute inset-x-0 bottom-5 z-10 flex items-end justify-between gap-6 md:bottom-8">
-        <MonoLabel>IoT / Robotics / Research</MonoLabel>
-        <span data-hero-scroll className="mono-label inline-flex items-center gap-2 text-muted">
-          Scroll
-          <svg
-            aria-hidden="true"
-            width="10"
-            height="14"
-            viewBox="0 0 10 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.25"
-            className="animate-nudge text-text motion-reduce:animate-none"
-          >
-            <path d="M5 1v11M1.5 8.5 5 12l3.5-3.5" />
-          </svg>
-        </span>
       </div>
     </section>
   );
