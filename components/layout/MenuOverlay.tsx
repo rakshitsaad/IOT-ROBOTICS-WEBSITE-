@@ -9,7 +9,6 @@ import { BEZIER, DURATION } from "@/lib/motion";
 import { NAV_ITEMS } from "@/lib/nav";
 import { useUIStore } from "@/lib/store";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { formatIndex } from "@/components/ui/MonoLabel";
 
 /**
  * Full-screen menu. Sits under the fixed header (z-40 vs z-50) so the logo
@@ -114,9 +113,6 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
                       "transition-opacity duration-[350ms] ease-power3 group-hover/list:opacity-40 hover:opacity-100! focus-visible:opacity-100!",
                     )}
                   >
-                    <span className="mono-label w-9 shrink-0 text-muted transition-colors duration-[350ms] group-hover/item:text-text md:w-12">
-                      [{formatIndex(i + 1)}]
-                    </span>
                     <span
                       className="font-bold leading-[1.04] tracking-[-0.035em] transition-transform duration-600 ease-expo group-hover/item:translate-x-3"
                       style={{ fontSize: "clamp(2rem, min(9vw, 6.6vh), 6.5rem)" }}
