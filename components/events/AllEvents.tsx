@@ -27,7 +27,7 @@ export function AllEvents({ events, active, onPick }: { events: ShowcaseEvent[];
             <h3 className="flex items-center gap-4 text-2xl font-bold tracking-[-0.03em] tabular-nums">
               {year}
               <span aria-hidden="true" className="h-px flex-1 bg-line" />
-              <MonoLabel>[{String(own.length).padStart(2, "0")}]</MonoLabel>
+              <MonoLabel>{own.length} {own.length === 1 ? "event" : "events"}</MonoLabel>
             </h3>
             <ul className="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 md:gap-x-5 lg:grid-cols-4">
               {own.map((e) => (

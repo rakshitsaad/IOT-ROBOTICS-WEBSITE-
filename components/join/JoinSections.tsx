@@ -93,7 +93,7 @@ export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<
           </h2>
         </div>
         <MonoLabel as="p" tone="text">
-          [{String(open).padStart(2, "0")}] hiring now
+          {open} hiring now
         </MonoLabel>
       </div>
       <ul data-reveal-group className="mt-12 grid gap-4 sm:grid-cols-2 md:mt-16 md:gap-5 lg:grid-cols-3">

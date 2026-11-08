@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
 import { MonoLabel } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { pad2 } from "@/lib/gallery";
 import { BEZIER, DURATION } from "@/lib/motion";
 import { JournalIcon, type JournalIconName } from "./icons";
 
@@ -206,7 +205,7 @@ export function JournalTopBar({
         <div className="order-last basis-full text-center md:order-none md:basis-auto">
           <h1 className="text-[17px] leading-tight font-semibold tracking-[-0.015em] md:text-xl">{title}</h1>
           <MonoLabel as="p" className="mt-1">
-            [{pad2(pages)}] Pages
+            {pages} Pages
           </MonoLabel>
         </div>
 
@@ -322,7 +321,7 @@ export function JournalToolbar({
         <p className="mt-2 text-lg leading-snug font-semibold tracking-[-0.01em]">{info.title}</p>
         <p className="mt-2 text-sm text-muted">{info.summary}</p>
         <MonoLabel as="p" className="mt-4">
-          [{pad2(info.photos)}] Photos / [{pad2(info.videos)}] Videos
+          {info.photos} Photos / {info.videos} Videos
         </MonoLabel>
         {info.caption && <p className="mt-4 border-t border-line pt-4 font-hand text-2xl leading-tight">“{info.caption}”</p>}
       </Popover>

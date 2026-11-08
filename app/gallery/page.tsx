@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { MonoLabel } from "@/components/ui";
 import { JournalShelf } from "@/components/gallery/JournalShelf";
 import { getJournals } from "@/lib/data";
-import { pad2 } from "@/lib/gallery";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -18,7 +17,7 @@ export default async function GalleryPage() {
       <section aria-labelledby="journals-title" className="shell pt-header pb-8">
         <div className="pt-14 md:pt-24">
           <MonoLabel as="p">
-            [{pad2(journals.length)}] Events / [{pad2(photos)}] Photos
+            {journals.length} Events / {photos} Photos
           </MonoLabel>
           <h1
             id="journals-title"

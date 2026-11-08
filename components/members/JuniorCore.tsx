@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { MonoLabel, formatIndex } from "@/components/ui";
+import { MonoLabel } from "@/components/ui";
 import type { JuniorCoreTeam } from "@/lib/data";
 import { juniorRowId } from "@/lib/members";
 import { teamAccent } from "@/lib/tokens";
@@ -24,8 +24,8 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
       <div className="shell">
         <MonoLabel tone="muted">
           {/* "[33] MEMBERS / [07] TEAMS", counted from the data */}
-          <span className="text-text/70">[{formatIndex(total)}]</span> Members /{" "}
-          <span className="text-text/70">[{formatIndex(teams.length)}]</span> Teams
+          <span className="text-text/70">{total}</span> Members /{" "}
+          <span className="text-text/70">{teams.length}</span> Teams
         </MonoLabel>
         <h2
           id="junior-core-title"
@@ -63,7 +63,7 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
                     className="mt-2 block h-0.5 w-10 origin-left scale-x-0 rounded-pill bg-(--jc-accent) transition-transform duration-[600ms] ease-expo group-data-[highlight]/row:scale-x-100"
                   />
                 </div>
-                <MonoLabel index={members.length}>{members.length === 1 ? "Member" : "Members"}</MonoLabel>
+                <MonoLabel>{members.length} {members.length === 1 ? "Member" : "Members"}</MonoLabel>
               </div>
               <TeamAccordion team={team.name} members={members} />
             </div>

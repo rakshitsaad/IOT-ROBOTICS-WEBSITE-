@@ -295,12 +295,12 @@ tl.add(pillReveal(el.querySelector("[data-pill]")!), 0.15);
 ```
 
 ### `<MonoLabel>`
-The technical label style. Props: `index?: number | string` (numbers are zero-padded: `1` gives `[01]`), `tone?: muted | text | red | white` (default `muted`), `as?` (element, default `span`), `id?`.
+The technical label style. Props: `index?: number | string` (shown before the label, without brackets; numbers are zero-padded), `tone?: muted | text | red | white` (default `muted`), `as?` (element, default `span`), `id?`.
 ```tsx
 <MonoLabel>About the club</MonoLabel>
 ```
-**Section labels are names only, never numbered** (no `[01]`, no `01 /`). Use `index` only for a count, such as
-Junior Core's `[10] Members`.
+**Section labels are names only, never numbered** (no `[01]`, no `01 /`), and **no square brackets anywhere**: counts are
+plain numbers in the text ("10 Members", "Events / 6 Total"), never zero-padded or bracketed.
 
 ### `<GridBackground>`
 Faint 80px grid lines (`--grid`) plus 4 small corner brackets.
@@ -896,7 +896,7 @@ each living **0.8s**, more when it flies faster.
 - Photos: up to 3 projects per station whose tags include the domain and that have a cover (`stationProjects`). "See projects" goes to `/projects?tag=<domain>` (`stationHref`).
 - **md and up, with motion:** the section is (stations + 1) × 100svh tall. Two sticky layers hold for one screen per station (sticky, not a GSAP pin, §7):
   - `[data-lab-photos]`, below the robot: three layers (`[data-lab-layer]` back / mid / front), each station's frames one pan to the right of the previous. Back frames 15vw at 40% opacity, mid 21vw at 80%, front 18.5vw at 4:5; all `rounded-image`; mid and front have a mono "Title / year" caption.
-  - `[data-lab-ui]` (z-35, above the robot): the heading top left, two `Pill`s, "What we build" (red) and "inside the lab" (white); the counter top right (`[02/04] ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
+  - `[data-lab-ui]` (z-35, above the robot): the heading top left, two `Pill`s, "What we build" (red) and "inside the lab" (white); the counter top right (`2/4 ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
 - **Phones and reduced motion:** four stacked blocks, photos (two-column grid) then the card, with a `BotHeadIcon` showing the station's icon beside each title. No pinning.
 
 ### Featured slider (`Featured`, `FeaturedSlider`)
@@ -1000,7 +1000,7 @@ The juniors (`tier = "junior"`) are grouped by team, in the teams' order (`getJu
 accordion per team. **Sora and mono only** (no Bodoni). The section keeps the `#junior-core` id that Senior Core's
 closing button links to.
 
-- **Heading**: the mono label `[33] MEMBERS / [07] TEAMS` (both numbers counted from the data), then "Junior Core" (Sora 800, `clamp(3rem, 9vw, 8rem)`).
+- **Heading**: the mono label `33 MEMBERS / 7 TEAMS` (both numbers counted from the data), then "Junior Core" (Sora 800, `clamp(3rem, 9vw, 8rem)`).
 - **Team bar** (`JuniorCoreNav`):
   - **Layout.** A sticky strip of team `Pill`s (`raised`, the current team in its accent), `sticky top-(--nav-h)`, `bg/80` with a backdrop blur and hairlines above and below. No ancestor up to `main` may set `overflow` or `transform`, or it stops sticking.
   - **Why only `--nav-h`.** It sticks at `--nav-h`, not `--nav-h + --ann-h`: the announcement bar has always collapsed (past 40px of scroll) by the time this section is on screen.
@@ -1010,7 +1010,7 @@ closing button links to.
   - **Lenis anchors.** The click handler stops propagation, because Lenis (`anchors: true`) would otherwise scroll to the anchor itself without the offset.
   - **Without JS.** The pills are real `#jc-<slug>` links, and the rows have a scroll-margin for the header and bar.
   - **Scroll spy.** A row is current while it spans a line 40% down the screen (never above the bar). Its ScrollTriggers use `refreshPriority: -1`, below Senior Core's pin.
-- **Row**: the team name, an accent bar (shown while highlighted) and `[10] Members` sit above the accordion below `lg`, and in a 10rem column to its left from `lg`. The row sets `--jc-accent` to the team's accent (`teamAccent`).
+- **Row**: the team name, an accent bar (shown while highlighted) and `10 Members` sit above the accordion below `lg`, and in a 10rem column to its left from `lg`. The row sets `--jc-accent` to the team's accent (`teamAccent`).
 - **Accordion, md and up** (`@container`; sizes are CSS variables in `cqw`, so a full line with one card open always fits the column):
   - **Line.** A flex row of cards 440px tall, gap `clamp(8px, 1.1cqw, 12px)`. Each line holds up to 8 cards (`JUNIOR_CORE.perLine`). More members continue on a second line of the same accordion, and the lines are fixed, so cards never jump between them.
   - **Closed card.** A pill `clamp(44px, 6.6cqw, 76px)` wide (radius half its width, so it can animate). The portrait is `object-cover` at the member's `focal_point`, dimmed with `grayscale-40 brightness-80`. The first name runs vertically at the bottom (mono 11px, `text-text/60`) over a faint bottom gradient.
@@ -1055,19 +1055,19 @@ Items in `sort_order` become pages:
 Collage rotations and stickers come from `seeded(id)` (a hash), so the server and the client agree.
 
 ### Shelf (`/gallery`: `JournalShelf`, `JournalCover`)
-- "Journals" (Sora 800, `clamp(3.4rem, 11vw, 10rem)`) under the mono label `[03] EVENTS / [61] PHOTOS` (photos with a file,
+- "Journals" (Sora 800, `clamp(3.4rem, 11vw, 10rem)`) under the mono label `3 EVENTS / 61 PHOTOS` (photos with a file,
   counted from the data).
 - Year filter `Pill`s ("All" and each year, newest first; `aria-pressed`). Changing the year fades the covers out and the
   rest slide into place (Motion layout); instant under reduced motion.
 - Grid: 1 column on phones, 3 from md. A cover is the event's `cover_url` bound like a notebook (4:5, `rounded-image`, a
-  spine shade and crease, an elastic band), then the title (Sora 700), `[19] PAGES` and the mono date (IST).
+  spine shade and crease, an elastic band), then the title (Sora 700), `19 PAGES` and the mono date (IST).
 - Hover or keyboard focus: the cover turns **rotateY(-12°)** on its spine and three white page edges slide out from its right
   side (7%, 10%, 13% of the width, 40ms apart), 600ms power3, plain CSS. `data-cursor="view"`. It links to `/gallery/<slug>`.
 
 ### Viewer layout (`JournalViewer`)
 Journal view fills the screen (`h-svh`, `pt-header`), top to bottom:
 - **Top bar** (`JournalTopBar`): a round back button (to `/gallery`) and the journal/grid toggle on the left; the title
-  (Sora 600) and `[23] PAGES` in the centre (on phones it wraps to its own row); share and a "More" menu on the right. More
+  (Sora 600) and `23 PAGES` in the centre (on phones it wraps to its own row); share and a "More" menu on the right. More
   has "About the event", "Copy link", "Download this page" and "All journals". In grid view the bar sticks under the header.
 - **The fan** (below).
 - **Scrubber** (`JournalScrubber`): a hairline track whose fill follows the position every frame, a dot, and `12 / 40`. Click
@@ -1271,12 +1271,12 @@ Three states on md and up with motion: the **reel** (`/projects`), one project's
   waits on them.
 
 ### Chrome
-- **Top left**: mono `[club_name] / Projects` (the page's `h1`), with the filter `Pill`s under it: All, Drones, Robotics, IoT,
+- **Top left**: mono `{club_name} / Projects` (the page's `h1`), with the filter `Pill`s under it: All, Drones, Robotics, IoT,
   Research (`PROJECT_FILTERS`).
   - A project matches when one of its tags equals the filter, in any case.
   - The filter is kept in `?tag=`.
   - Changing it fades the reel out (0.3s) and back in (0.6s).
-- **Top right**: `[12] Builds`, the filtered count.
+- **Top right**: `12 Builds`, the filtered count.
 - **Bottom centre**: every project's name in mono, with thin dividers between them.
   - The active name is in `text`, the rest `muted`.
   - The row scrolls sideways, with faded edges, when it doesn't fit.
@@ -1398,7 +1398,7 @@ A streaming-app style showcase: one big card per event, its subject popping out 
 
 ### Order, heading and filters
 - **Order** (`sortShowcase`): upcoming first (soonest first), then past (newest first).
-- **Heading**: the page's `h1` is the mono label `Events / [06] Total`. Under it, filter `Pill` buttons (`aria-pressed`):
+- **Heading**: the page's `h1` is the mono label `Events / 6 Total`. Under it, filter `Pill` buttons (`aria-pressed`):
   All, Upcoming, Past and each year, newest first (`eventFilters`). The current one is `white`, the rest `raised`.
   Changing the filter keeps the current event if it still matches, otherwise it shows the first that does.
 
@@ -1467,7 +1467,7 @@ hues give `--red`, anything else `--maroon`. A colourful banner never brings a f
   until the lightbox has fully closed.
 
 ### All events (`AllEvents`)
-`Archive`, "All events", then one block per year (newest first, with a `[04]` count): 2 / 3 / 4 columns of cards (the
+`Archive`, "All events", then one block per year (newest first, with a count, "4 events"): 2 / 3 / 4 columns of cards (the
 banner at 4:5, `rounded-image`; the title, the date and a quiet status badge). Clicking one scrolls back up (Lenis, 1.2s)
 and switches the showcase to it; the showing event's card has a ring.
 
@@ -1560,7 +1560,7 @@ the right, and the first card grows into the next background.
 - **Background**: the active photo (`object-cover`) under a gradient from `black/75` at the left to `black/20` at the
   right (phones 60% → 25%), a light radial vignette, and soft scrims at the top (under the header) and the bottom.
 - **Heading and filters** (top left, under the header, 6vw in from md): the page's `h1` is the mono label
-  `Achievements / [06] Total`; under it the filter `Pill` buttons All, Competitions, Research (`aria-pressed`; the current
+  `Achievements / 6 Total`; under it the filter `Pill` buttons All, Competitions, Research (`aria-pressed`; the current
   one `white`, the rest `raised` with a blur).
 - **Text** (left, max 520px, 6vw in; centred in the band between the filters and the controls from md):
   - a short red dash and "event / location" (13px);
@@ -1612,7 +1612,7 @@ empty.
   Merging, Best Paper"; the cards are buttons ("Show <title>, <result>").
 
 ### All achievements (`AchievementsList`)
-`Record`, "All achievements", then one block per year (newest first, with a `[03]` count): a row per achievement with
+`Record`, "All achievements", then one block per year (newest first, with a count, "3 achievements"): a row per achievement with
 the date (mono), the title (Sora 600), the event / location (muted) and the result badge, on hairlines. The showing one has
 a red dot. Clicking a row scrolls back up (Lenis, 1.2s) and then opens that slide (its card grows); a row outside the
 current filter switches to All first and the rebuilt slider starts on it.

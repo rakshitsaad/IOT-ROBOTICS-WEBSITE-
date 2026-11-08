@@ -4,9 +4,10 @@ import type { Accent } from "@/lib/types";
 
 /**
  * Small uppercase technical label: JetBrains Mono, 11px (12px ≥ md),
- * letter-spacing 0.14em. Optional index renders as "[01]".
+ * letter-spacing 0.14em. An optional index renders before the label, without brackets ("404 Not found").
+ * Section labels are names only: don't number them.
  *
- *   <MonoLabel index={1}>About the club</MonoLabel>
+ *   <MonoLabel>About the club</MonoLabel>
  */
 type Tone = "muted" | "text" | Accent;
 
@@ -43,7 +44,7 @@ export function MonoLabel({
     <Tag id={id} className={cn("mono-label inline-flex items-baseline gap-[0.9em]", TONE[tone], className)}>
       {index !== undefined && (
         <span className="text-text/70" aria-hidden="true">
-          [{formatIndex(index)}]
+          {formatIndex(index)}
         </span>
       )}
       <span>{children}</span>

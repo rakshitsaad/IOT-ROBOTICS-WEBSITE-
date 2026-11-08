@@ -1,7 +1,6 @@
 import type { Ref } from "react";
 import { MonoLabel, Pill, PillButton } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { pad2 } from "@/lib/gallery";
 import { PROJECT_FILTERS, type ProjectFilter, type ProjectWithTeam } from "@/lib/projects";
 
 /** Shared /projects pieces (DESIGN.md §16). Server-compatible. */
@@ -10,7 +9,7 @@ import { PROJECT_FILTERS, type ProjectFilter, type ProjectWithTeam } from "@/lib
 export function ProjectsLabel({ clubName, className }: { clubName: string; className?: string }) {
   return (
     <h1 className={cn("mono-label text-text", className)}>
-      <span className="text-muted">[{clubName}]</span> / Projects
+      <span className="text-muted">{clubName}</span> / Projects
     </h1>
   );
 }
@@ -19,7 +18,7 @@ export function ProjectsLabel({ clubName, className }: { clubName: string; class
 export function BuildsCount({ count, className }: { count: number; className?: string }) {
   return (
     <p className={cn("mono-label text-muted", className)} aria-live="polite">
-      <span className="text-text">[{pad2(count)}]</span> Builds
+      <span className="text-text">{count}</span> Builds
     </p>
   );
 }

@@ -33,7 +33,7 @@ export function AchievementsList({
             <h3 className="flex items-center gap-4 text-2xl font-bold tracking-[-0.03em] tabular-nums">
               {year}
               <span aria-hidden="true" className="h-px flex-1 bg-line" />
-              <MonoLabel>[{String(own.length).padStart(2, "0")}]</MonoLabel>
+              <MonoLabel>{own.length} {own.length === 1 ? "achievement" : "achievements"}</MonoLabel>
             </h3>
             <ul className="mt-4">
               {own.map((a) => {

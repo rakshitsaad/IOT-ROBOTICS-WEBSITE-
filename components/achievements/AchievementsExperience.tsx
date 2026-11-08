@@ -87,7 +87,7 @@ export function AchievementsExperience({ items }: { items: Achievement[] }) {
 
         <div className="absolute top-[calc(var(--nav-h)+var(--ann-h)+1.25rem)] left-4 z-30 md:left-[6vw]">
           <MonoLabel as="h1" id="achievements-title" tone="text">
-            Achievements / [{String(items.length).padStart(2, "0")}] Total
+            Achievements / {items.length} Total
           </MonoLabel>
           <div role="group" aria-label="Filter achievements" className="mt-3.5 flex flex-wrap gap-2">
             {ACH_FILTERS.map(({ id, label }) => {

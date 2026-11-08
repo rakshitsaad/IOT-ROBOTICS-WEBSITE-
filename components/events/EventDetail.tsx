@@ -166,7 +166,7 @@ function Panel({ event, onClose, onPhoto, covered, reduced }: Props) {
           {event.photos.length > 0 && (
             <section aria-labelledby="event-detail-photos" className="mt-16">
               <MonoLabel as="h3" id="event-detail-photos" tone="text">
-                Photos / [{String(event.photos.length).padStart(2, "0")}]
+                Photos / {event.photos.length}
               </MonoLabel>
               <ul className="mt-6 columns-2 gap-3 md:columns-3 lg:columns-4">
                 {event.photos.map((p, i) => (

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MonoLabel } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { journalDate, pad2, type JournalSummary } from "@/lib/gallery";
+import { journalDate, type JournalSummary } from "@/lib/gallery";
 
 /**
  * A journal on the /gallery shelf (DESIGN.md §14): the event's cover photo
@@ -79,7 +79,7 @@ export function JournalCover({ journal, eager = false }: { journal: JournalSumma
 
       <div className="mt-6 flex items-start justify-between gap-4">
         <h2 className="text-[22px] leading-tight font-bold tracking-[-0.02em] md:text-2xl">{journal.title}</h2>
-        <MonoLabel className="mt-1.5 shrink-0">[{pad2(journal.pages)}] Pages</MonoLabel>
+        <MonoLabel className="mt-1.5 shrink-0">{journal.pages} Pages</MonoLabel>
       </div>
       <MonoLabel as="p" className="mt-2">
         <time dateTime={journal.date}>{journalDate(journal.date)}</time>

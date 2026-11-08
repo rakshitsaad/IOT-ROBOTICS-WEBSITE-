@@ -134,7 +134,7 @@ export function EventsExperience({ events }: { events: ShowcaseEvent[] }) {
       <section ref={showcase} aria-roledescription="carousel" aria-labelledby="events-title" className="pt-header">
         <div className="shell pt-[clamp(1.5rem,4svh,3rem)]">
           <MonoLabel as="h1" id="events-title" tone="text">
-            Events / [{String(events.length).padStart(2, "0")}] Total
+            Events / {events.length} Total
           </MonoLabel>
           <div role="group" aria-label="Filter events" className="mt-5 flex flex-wrap gap-2">
             {filters.map(({ value, label }) => {

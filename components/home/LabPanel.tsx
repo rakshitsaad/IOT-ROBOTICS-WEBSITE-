@@ -26,7 +26,7 @@ export interface LabPanelStation {
 /** "[02/04] ROBOTICS": the digit and the word roll like an odometer. */
 export function LabCounter({ stations }: { stations: LabPanelStation[] }) {
   const station = useLabStore((s) => s.station);
-  const total = String(stations.length).padStart(2, "0");
+  const total = stations.length;
   return (
     <p className="mono-label shrink-0 text-text">
       <span className="sr-only">
@@ -34,8 +34,7 @@ export function LabCounter({ stations }: { stations: LabPanelStation[] }) {
       </span>
       <span aria-hidden="true" className="inline-flex items-start gap-[0.9em]">
         <span>
-          [0
-          <Roll index={station} items={stations.map((_, i) => String(i + 1))} />/{total}]
+          <Roll index={station} items={stations.map((_, i) => String(i + 1))} />/{total}
         </span>
         <Roll index={station} items={stations.map((s) => s.short)} />
       </span>
