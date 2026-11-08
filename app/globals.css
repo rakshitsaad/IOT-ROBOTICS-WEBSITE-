@@ -116,6 +116,14 @@ html[data-ann="off"] {
   --animate-rim: rim-in 1.6s cubic-bezier(0.33, 1, 0.68, 1) both, rim-breathe 5s ease-in-out 1.6s infinite;
   --animate-streak: rim-streak 8s linear 2.2s infinite;
   --animate-twinkle: twinkle 5s ease-in-out infinite;
+  /* The /join crowd (§21). crowd-pop: a character rises from below the hero's edge (--from) with an overshoot
+     (back.out(1.6)); crowd-bob: the idle bob (--bob px) and sway (--sway). Each character sets its own
+     animation-delay and animation-duration inline (a var() inside these values would resolve once, on :root).
+     wave: an avatar waving (team cards); shake: a speech bubble saying no. */
+  --animate-crowd-pop: crowd-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-crowd-bob: crowd-bob 3s ease-in-out infinite;
+  --animate-wave: wave 1.1s ease-in-out;
+  --animate-shake: shake 0.45s ease-in-out;
 
   @keyframes wipe-in {
     from {
@@ -247,6 +255,59 @@ html[data-ann="off"] {
     100% {
       --streak: 42deg;
       opacity: 0;
+    }
+  }
+  @keyframes crowd-pop {
+    from {
+      transform: translateY(var(--from, 100%));
+    }
+  }
+  @keyframes crowd-bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(calc(var(--sway, 1.5deg) * -1));
+    }
+    50% {
+      transform: translateY(calc(var(--bob, 6px) * -1)) rotate(var(--sway, 1.5deg));
+    }
+  }
+  @keyframes wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    15% {
+      transform: rotate(14deg);
+    }
+    30% {
+      transform: rotate(-8deg);
+    }
+    45% {
+      transform: rotate(12deg);
+    }
+    60% {
+      transform: rotate(-4deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+  }
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-7px);
+    }
+    40% {
+      transform: translateX(6px);
+    }
+    60% {
+      transform: translateX(-4px);
+    }
+    80% {
+      transform: translateX(3px);
     }
   }
   @keyframes twinkle {
@@ -442,6 +503,47 @@ html[data-ann="off"] [data-announcement] {
     transparent 360deg
   );
   mask-image: radial-gradient(closest-side, transparent calc(100% - 3px), black calc(100% - 2px), black 100%, transparent 100%);
+}
+
+/* The /join crowd (§21). Each character's spot comes from lib/join.ts as CSS variables (md+: --x, --s, --b, --r, --z,
+   --fade; phones: --mx, --ms, --mb, --mr, --mz, --mfade), in units of 0.1cqw of the crowd box: x is the image's
+   centre, s its size, b how far its bottom sits below the hero's edge, r its tilt. --from (the pop-up's start) puts
+   the image's top just under the hero's edge. */
+.crowd-char {
+  --X: var(--x);
+  --S: var(--s);
+  --B: var(--b);
+  --R: var(--r);
+  --F: var(--fade, 0);
+  --from: calc((var(--S) - var(--B)) * 0.1cqw + 3cqw);
+  position: absolute;
+  left: calc((var(--X) - var(--S) / 2) * 0.1cqw);
+  bottom: calc(var(--B) * -0.1cqw);
+  width: calc(var(--S) * 0.1cqw);
+  aspect-ratio: 1;
+  z-index: var(--z);
+  /* Only the head-and-shoulders hit areas take the pointer, not the images' square boxes. */
+  pointer-events: none;
+}
+.crowd-char [data-hit] {
+  pointer-events: auto;
+}
+@media (max-width: 767.98px) {
+  .crowd-char {
+    --X: var(--mx);
+    --S: var(--ms);
+    --B: var(--mb);
+    --R: var(--mr);
+    --F: var(--mfade, 0);
+    z-index: var(--mz);
+  }
+  .crowd-char[data-phone="false"] {
+    display: none;
+  }
+}
+/* Back characters fade out at the bottom, so a body cut off above the hero's edge never shows a hard line. */
+.crowd-fade {
+  mask-image: linear-gradient(to top, transparent, black calc(var(--F) * 100%));
 }
 
 /* =========================================================================

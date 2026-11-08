@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  experimental: {
+    // /join/apply uploads a resume of up to 5MB through a server action (default limit 1MB), plus the form's overhead.
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   partialPrefetching: true,
   images: {
     remotePatterns: [

@@ -10,6 +10,7 @@ import { PODIUM, type MissionStats } from "./mission";
 import type {
   Achievement,
   ClubEvent,
+  Application,
   ContactMessage,
   GalleryItem,
   Member,
@@ -328,6 +329,27 @@ export async function addRecruitmentSubscriber(email: string): Promise<void> {
  * Saves a /contact message (contact_messages). The mock keeps it in server memory, after a short pause so the form's
  * sending state shows; with Supabase this becomes an insert.
  */
+/**
+ * Saves a recruitment application (applications). The mock keeps the row in server memory, records the resume's name
+ * and size instead of storing it, and pauses briefly so the form's sending state shows. With Supabase: upload the file
+ * to Storage, then insert the row with its path.
+ */
+export async function addApplication(
+  input: Omit<Application, "id" | "reference" | "resume_path" | "created_at">,
+  resume: File,
+): Promise<string> {
+  await new Promise((r) => setTimeout(r, 900));
+  const reference = `IOTR-${String(new Date().getFullYear()).slice(2)}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+  mock.applications.push({
+    ...input,
+    id: crypto.randomUUID(),
+    reference,
+    resume_path: `mock://${resume.name} (${Math.round(resume.size / 1024)} KB)`,
+    created_at: new Date().toISOString(),
+  });
+  return reference;
+}
+
 export async function addContactMessage(input: Pick<ContactMessage, "name" | "email" | "subject" | "message">): Promise<void> {
   await new Promise((r) => setTimeout(r, 700));
   mock.contactMessages.push({ ...input, id: crypto.randomUUID(), created_at: new Date().toISOString() });

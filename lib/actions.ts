@@ -1,7 +1,8 @@
 "use server";
 
-import { addContactMessage, addRecruitmentSubscriber } from "./data";
+import { addApplication, addContactMessage, addRecruitmentSubscriber, getSettings } from "./data";
 import { contactSchema, type ContactResult } from "./contact";
+import { applicationSchema, characterBySlug, isHiring, resumeError, type ApplyResult } from "./join";
 
 /** Result of the home join card's "Get notified" form. */
 export interface NotifyState {
@@ -37,5 +38,31 @@ export async function sendContactMessage(input: unknown): Promise<ContactResult>
     return { status: "ok" };
   } catch {
     return { status: "error", message: "We couldn't send that just now. Please try again." };
+  }
+}
+
+/**
+ * /join/apply. Checks everything again on the server (the same zod schema as the form, the resume's type and size, and
+ * that the team exists and is hiring), then saves the application. Returns the applicant's reference.
+ */
+export async function submitApplication(formData: FormData): Promise<ApplyResult> {
+  const fields = Object.fromEntries(
+    ["name", "phone", "email", "year", "branch", "team", "skills", "why", "linkedin", "github"].map((k) => [k, String(formData.get(k) ?? "")]),
+  );
+  const parsed = applicationSchema.safeParse(fields);
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Please check the form." };
+  const resume = formData.get("resume");
+  const fileError = resumeError(resume instanceof File ? resume : null);
+  if (fileError) return { status: "error", message: fileError };
+  const character = characterBySlug(parsed.data.team);
+  if (!character) return { status: "error", message: "Pick a team." };
+  if (!isHiring(character.team, await getSettings())) {
+    return { status: "error", message: `${character.team} opens next round. Pick a team that's hiring.` };
+  }
+  try {
+    const reference = await addApplication({ ...parsed.data, github: parsed.data.github || null }, resume as File);
+    return { status: "ok", reference };
+  } catch {
+    return { status: "error", message: "We couldn't send your application just now. Please try again." };
   }
 }

@@ -13,3 +13,4 @@ export { galleryItems } from "./gallery";
 export { milestones } from "./milestones";
 export { partners } from "./partners";
 export { contactMessages } from "./contact-messages";
+export { applications } from "./applications";

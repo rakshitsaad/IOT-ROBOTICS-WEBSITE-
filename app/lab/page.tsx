@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
+  Accordion,
   Capsule,
   CrossMark,
   DotGrid,
@@ -339,6 +340,16 @@ export default function LabPage() {
               ))}
             </ul>
           </div>
+        </Section>
+
+        <Section index={18} title="<Accordion> · FAQs (/contact, /join)">
+          <Accordion
+            items={[
+              { q: "Does it animate its height?", a: "Yes: the answer's grid row goes from 0fr to 1fr over 500ms while it fades in." },
+              { q: "Can several be open?", a: "Yes. The first one starts open; pass defaultOpen to change that." },
+              { q: "What about reduced motion?", a: "It opens instantly, like every transition." },
+            ]}
+          />
         </Section>
       </div>
     </div>

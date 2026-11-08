@@ -7,3 +7,4 @@ export { Capsule, type CapsuleTone } from "./Capsule";
 export { DotGrid } from "./DotGrid";
 export { CrossMark } from "./CrossMark";
 export { RotatingBadge } from "./RotatingBadge";
+export { Accordion, type AccordionItem } from "./Accordion";

@@ -289,6 +289,27 @@ export interface ContactMessage {
   created_at: Timestamp;
 }
 
+/* ----------------------------------------------------------- applications */
+/** A recruitment application from /join/apply. `resume_path` is where the uploaded file is stored (Supabase Storage). */
+export interface Application {
+  id: UUID;
+  /** Shown to the applicant, e.g. "IOTR-26-4F7K". */
+  reference: string;
+  name: string;
+  phone: string;
+  email: string;
+  year: string;
+  branch: string;
+  /** `teams.slug`. */
+  team: string;
+  skills: string;
+  why: string;
+  linkedin: string;
+  github: string | null;
+  resume_path: string;
+  created_at: Timestamp;
+}
+
 /* --------------------------------------------------------------- settings */
 /** Single-row table holding site-wide content. */
 export interface Settings {
