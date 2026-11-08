@@ -36,7 +36,7 @@ app/
   events/page.tsx    /events: the feature card showcase, the All events grid (§17)
   achievements/page.tsx /achievements: the card-expansion slider, the All achievements list (§19)
   contact/page.tsx   /contact: the planet-horizon hero, the contact panel (details, form, map), the FAQ (§20)
-  join/page.tsx      /join: the crowd of team characters, why join, teams, how it works, FAQ, last call (§21)
+  join/page.tsx      /join: the crowd hero, why join, teams, how it works, FAQ, last call (§21)
   join/apply/        /join/apply: the application form (§21)
   lab/page.tsx       primitive showcase (noindex)
   lab/robot/page.tsx robot mascot controls (noindex, dev only, not linked)
@@ -76,9 +76,9 @@ components/
   contact/           /contact (§20): ContactHero (planet, badge, headline, partners, motion), ContactPanel (window,
                      stand-up scroll, map) with ContactDetails (rows + copy) and ContactForm (react-hook-form + zod,
                      sending / sent / error), ContactFaq (accordion), scroll.ts (to the form), icons
-  join/              /join (§21): JoinHero (the crowd: layers, bubbles, parallax, sink), CharacterAvatar (face crop),
-                     JoinSections (why, teams, steps, FAQ, last call), JoinReveals (reveals, the steps' line),
-                     ApplyForm (react-hook-form + zod, resume upload), scroll.ts (to the teams)
+  join/              /join (§21): JoinHero (headline, button, the crowd's entrance and parallax), Crowd (the SVG crowd),
+                     CharacterAvatar (a team character's face crop), JoinSections (why, teams, steps, FAQ, last call),
+                     JoinReveals (fade-up reveals), ApplyForm (react-hook-form + zod, resume upload)
   forms/             fields.tsx: Field, inputClass, SentCheck (shared by /contact and /join/apply)
   drone/             the drone (§18): Drone (model), Trail; the home sidekick: Sidekick (+ sidekick-plan.ts: zones,
                      stops, routes, stunts) (§12); the /lab/drone bench: DroneRig, director, ScanBeam, HoloGlobe,
@@ -101,8 +101,9 @@ lib/
   achievements.ts    /achievements config: filters, ACH_MOTION, ACH_CARD, isWin, link label, IST dates; client-safe
   contact.ts         /contact config: subjects, limits, the zod schema (form + server action), FAQ, map URLs,
                      CONTACT_MOTION; client-safe
-  join.ts            /join config: JOIN_CHARACTERS (team, image, pitch, skills, face and hit boxes, crowd spots),
-                     isHiring, JOIN_MOTION, benefits, steps, FAQ, the application schema and resume rules; client-safe
+  join.ts            /join config: JOIN_CHARACTERS (team, image, pitch, skills, face box), isHiring, JOIN_HERO,
+                     benefits, steps, FAQ, the application schema and resume rules; client-safe
+  crowd.ts           the /join crowd: CROWD (rows, counts, perspective), CROWD_PALETTE, buildCrowd() (seeded); client-safe
   mission.ts         /lab/drone bench: MissionStats type, PODIUM, MISSION (bench drone settings); client-safe
   tokens.ts          JS mirror of tokens, team accent map, textOn()
   motion.ts          EASE / BEZIER / DURATION / STAGGER constants
@@ -173,9 +174,9 @@ small shapes; every other result's badge is muted (`bg-text/10`).
 and "Send message" buttons, focused fields, the panel's top-edge glow and the sent check. The rim is a light source, not
 a fill; text stays warm white or muted (form errors are warm white beside a red dot).
 
-/join (§21) uses red for status: the "Hiring" pills (in the bubbles and on the team cards), the hero badge's dot, the
-first benefit's icon, the steps' line and lit dots, and its two "Apply now" `IrisButton`s (hero and last call, a screen
-apart). The team cards' Apply buttons are ghost pills, so red stays a signal.
+/join (§21) keeps red to its two "Apply now" `IrisButton`s (hero and last call, pages apart), the soft glow behind the
+crowd and about 8% of the crowd's shirts (a touch muted). Its "Hiring" pills are `maroon`, the team cards' Apply buttons
+ghost pills.
 
 Junior Core (§13) uses `iris-border` twice: the 1px ring of each team's open card
 (one per team row) and the thin ring of the initials avatar shown for a member
@@ -219,7 +220,7 @@ column must match this map.
 Exceptions: the /events thumbnail row (§17) uses **10px** (`rounded-[10px]`), because 18px on a 72px-tall thumbnail
 reads as a pill; the /achievements waiting cards (§19) use **16px** (`ACH_CARD.radius`), the spec's value, animating to
 0 as a card grows into the background; the /contact panel (§20) uses **24px** (the spec's app-window radius) and its
-fields **14px** (also on /join/apply, §21); the /join speech bubbles use **18px**.
+fields **14px** (also on /join/apply, §21).
 
 ---
 
@@ -351,12 +352,9 @@ breathes 1 ↔ 0.85 every 5s), `animate-streak` (a light along the rim every 8s,
 `animate-twinkle` (a star dims to a quarter of its `--o` and back). The looks are utilities: `contact-dots` (faint dot
 texture), `contact-planet` (the surface), `contact-rim` (the 2px edge and its glows) and `contact-streak` (the masked
 conic light).
-/join (§21): `animate-crowd-pop` (a character rises from `--from`, below the hero's edge, 0.9s
-`cubic-bezier(0.34, 1.56, 0.64, 1)`, `both`) and `animate-crowd-bob` (`--bob` px up and down with a `--sway` tilt) set
-their `animation-delay` / `animation-duration` inline per character: a `var()` inside an `--animate-*` value resolves
-once, on `:root`. `animate-wave` (an avatar waving, 1.1s) and `animate-shake` (a bubble saying no, 0.45s). The crowd's
-placement is plain CSS: `.crowd-char` (a spot from CSS variables, in `cqw` of the crowd box; only its `[data-hit]` takes
-the pointer) and `.crowd-fade` (the bottom fade of the back characters).
+/join (§21): `animate-crowd-in` (the crowd fades in and rises 30px as one layer, 1.2s power3.out, `both`).
+Note: a `var()` inside an `--animate-*` value resolves once, on `:root`, so per-element timing goes in inline
+`animation-delay` / `animation-duration`.
 
 ---
 
@@ -430,10 +428,9 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
 - Exception: the **/contact hero** (§20, `CONTACT_MOTION` in `lib/contact.ts`): the planet rises over **1.6s** expo and its
   text starts at **300ms** (the headline's words **60ms** apart); the rim breathes over **5s** and a streak runs along it
   every **8s**; the glow follows the cursor on a 1.4s `quickTo`. The FAQ answers open over **500ms** power3.
-- Exception: the **/join crowd** (§21, `JOIN_MOTION` in `lib/join.ts`) is springy, because the spec is: the pop-up is
-  `back.out(1.6)` over 0.9s, **90ms** apart, from 0.75s (CSS keyframes from the server HTML with the equivalent curve
-  `cubic-bezier(0.34, 1.56, 0.64, 1)`, per "First-load entrances" below, not a GSAP tween); hover lifts with the same
-  curve over 550ms; the bubble scales in on a Motion spring (stiffness 420, damping 22). The bob is 4–8px over 2.5–4s.
+- The **/join hero** (§21, `JOIN_HERO` in `lib/join.ts`) is deliberately quiet: its text fades up 12px **60ms** apart
+  from 120ms, and the crowd fades in and rises 30px as one layer over **1.2s** from 360ms; on scroll it moves at
+  **0.85×** the page and fades.
 - Stagger siblings by **0.06s** (`STAGGER`); long lists (menu) use 0.05s.
 - Scrubbed tweens use `ease: "none"`. Exception: the **/about hands** (§15) close in on `1 − (1 − t)^2.5` over the first 65% of their
   pin, so they are fast at first and settle into the close-up without a sudden change of speed; the touch uses `sine.inOut`.
@@ -1734,78 +1731,73 @@ The partners (names and logos), the phone number and the lab room in the address
 
 ```tsx
 <GridBackground />
-<JoinHero hiring recruitmentOpen year />        // 100svh: headline over a crowd of seven team characters
-<JoinReveals>                                   // reveals, the steps' line
+<JoinHero recruitmentOpen year crowd={<Crowd variant="wide" /> + <Crowd variant="narrow" />} />  // 100svh
+<JoinReveals>                                   // subtle fade-up reveals only
   <WhyJoin /> <TeamsSection teams hiring /> <HowItWorks /> <JoinFaq /> <JoinCta open />
 </JoinReveals>
 ```
 
-Built from a reference of a centred headline over a crowd of cheerful 3D cartoon students in a group selfie; here each
-character stands for one of the club's teams.
+Simple and premium, from a reference of a big uppercase headline over a crowd of tiny flat-illustrated people filling
+the bottom of the screen. The sections below share its calm: generous space, cards without borders, one radius, and
+only fade-up reveals.
+
+### Hero (`JoinHero`)
+- **Background**: `bg` and one soft, wide red glow (a radial gradient, 10%) rising from behind the crowd. Nothing else:
+  no grid, no stars, no shapes.
+- **Text** (centred in the space above the crowd, which is the top 55%, 60% on phones): the mono label "Recruitment 2026"
+  (`SENIOR_CORE_TERM.year`); the `h1` "Join our community" (Sora 700, uppercase, tracking 0.03em, `text`,
+  `clamp(2.6rem, 6.5vw, 5.5rem)`; phones `clamp(2rem, 9vw, 2.6rem)`, on two lines); one muted line (17px, 15px on
+  phones, max 480px); and one button, "Apply now" (`IrisButton` → `/join/apply`, its → slides 3px right on hover), or,
+  while recruitment is closed, the "Get notified" email form (`NotifyForm`, §12).
+- **The crowd**: the bottom 45% of the hero (40% on phones), edge to edge, cut off at the bottom; a dark gradient over its
+  bottom 15% fades it into the page. Decorative and inert (`aria-hidden`, no pointer events).
+- **Motion**: on load (CSS keyframes from the server HTML) the label, headline, line and button fade up 12px, 60ms
+  apart, and the crowd fades in and rises 30px as one layer over 1.2s, just after; on scroll (scrubbed) the crowd moves at
+  0.85× the page and fades out as the hero leaves. Nothing reacts to the cursor, and no figure moves on its own.
+- **Reduced motion**: no fade-ups and no parallax; everything is in place.
+
+### The crowd (`Crowd`, `buildCrowd` and `CROWD` in `lib/crowd.ts`)
+- **Generated, not counted**: a fixed crowd from a seeded generator (mulberry32), the same on every visit and on the
+  server and the client; it does not depend on the member count. md+: 271 people in 7 rows; phones: 108 in 5 rows. Both
+  are server-rendered SVGs (the page shows one per breakpoint); no JS.
+- **A figure**: front view, chest up, in local units (head radius 10): rounded shoulders with soft arm lines, a neck, a
+  crew, V or collared neckline, ears, two dots for eyes (a small smile in the front rows), one of 8 hair shapes (crop,
+  side part, buzz, long, bun, curly, bob, a headscarf), glasses on about a fifth and an event lanyard on some. Built from
+  `<symbol>`s coloured per person through `fill` and `color`, so the markup stays small.
+- **Colour** (`CROWD_PALETTE`: illustration colours, not UI tokens): natural, varied skin tones; clothes in charcoal,
+  slate, warm grey, soft beige and deep navy, with about 8% of shirts in the accent red (muted a little); headscarves in
+  the darker colours. Back rows are mixed up to 72% towards the page's black (66% on phones), as if further away.
+- **Layout**: rows from the back (smaller, higher, darker) to the front (larger, lower; 0.74× to 1.22× on md+), each row
+  spaced by its people's size with jitter in x, y and size, and every other row offset by half a place, so heads behind
+  show between the heads in front. The box's height follows from the rows; the SVG fills the hero's band with
+  `xMidYMax slice`, so narrower screens crop the sides: about 185 people are on screen at 1440 × 900 and about 40 on a
+  390px phone, keeping them small and evenly spaced rather than shrinking them to a thin strip.
 
 ### The characters (`JOIN_CHARACTERS` in `lib/join.ts`)
-- **Art**: transparent PNGs, 1254px square, chest-up, one per team (all in the club's black tee with the red chip logo).
-  Management, PR and Social Media are the delivered files in `/public/join/`. Tech, Design, Multimedia and Research were
-  delivered with a checkerboard painted into the pixels; their cut-outs (closed-form matting from a trimap of the
-  checkerboard, faces protected) are in `/public/join/cutout/`, and the originals are untouched. Replace them with real
-  transparent exports when there are some.
-- **Per character**: the team and its slug (`/join/apply?team=`), the image, a one-line pitch (the bubble), skills, its
-  row (back, middle, front), a **face** box and a head-and-shoulders **hit** box (fractions of the image), and its spot
-  on md+ and on phones.
+- **Art**: transparent PNGs, 1254px square, chest-up, one per team (all in the club's black tee with the red chip logo),
+  used as the team cards' avatars (`CharacterAvatar`, a round crop on the `face` box), beside the apply form's team, and
+  peeking up from the last call. Management, PR and Social Media are the delivered files in `/public/join/`. Tech,
+  Design, Multimedia and Research were delivered with a checkerboard painted into the pixels; their cut-outs
+  (closed-form matting from a trimap of the checkerboard, faces protected) are in `/public/join/cutout/`, and the
+  originals are untouched. Replace them with real transparent exports when there are some.
+- **Per character**: the team and its slug (`/join/apply?team=`), the image, a one-line pitch, skills and the face box.
 - **Hiring**: from settings (`isHiring`): recruitment open and the team in `open_teams`. The mock hires Tech, Research,
   Design and Multimedia.
 
-### Hero (`JoinHero`)
-- **Background**: `bg` with a soft red spotlight (radial, 12%) behind the crowd.
-- **Text** (centred): a badge, "Recruitment 2026 / [04] teams hiring" (the year from `SENIOR_CORE_TERM`, the count of
-  hiring teams; "Recruitment opens soon" when closed); the `h1` "Find your crew, / build what's next." (Sora 700,
-  `clamp(2.4rem, min(5.5vw, 8svh), 4.5rem)`, phones `clamp(2rem, 9vw, 2.6rem)`, lines rising out of masks); a muted
-  line (17px, max 32rem, so it wraps before the back row's heads); "Apply now" (`IrisButton` → `/join/apply`) and
-  "Explore teams" (ghost, with three overlapping face avatars; scrolls to `#teams`). Phones stack the buttons. The text
-  layer takes no pointer except its controls, so heads beside it stay hoverable.
-- **The crowd**: a box anchored to the hero's bottom, `min(100%, 150svh)` wide on md+ and the full width on phones,
-  and a container (`cqw`). Each character is placed by its spot (centre x, size, how far below the edge it sits, tilt,
-  paint order), cut off by the hero's bottom edge; the back characters fade out at the bottom so a body that ends above
-  the edge never shows a line. Rows: back (Research, Management: smaller, higher, beside the headline), middle (Design,
-  PR, Multimedia), front (Social Media at the left with her selfie arm out, Tech centred and largest). Tilts −6 to 6°.
-  Phones show the middle and front rows only (five), larger, all faces inside the screen.
-- **Faces**: the spots were planned offline by compositing the cut-outs: every face is clear of the characters in front
-  of it by 12px at 1280–1920 and 18px on phones (room for the bob, sway and parallax), no head enters the text, and no
-  face is cut by the screen's edge. Re-check if the art or the spots change.
-- **Layers** per character, so each motion has its own transform: spot → sink (scroll) → pop-up (CSS) → parallax
-  (cursor) → pose (hover, lean, tilt) → bob (idle) → the image, a darker copy, the face box (for checks) and the hit area.
-
-### Hero motion
-- **Entrance** (CSS keyframes from the server HTML, after the headline): from 0.75s, back row first, then the middle,
-  then the front (left to right within a row), 90ms apart, each rising from just under the edge with an overshoot.
-- **Idle**: each bobs 4–8px over 2.5–4s and sways ±1.5°, with its own period and phase.
-- **Cursor** (md+, fine pointers): each row drifts towards the cursor (front 24px, middle 14, back 6; y at 60%),
-  damped (`quickTo`, 1s), and the group turns up to 3° (`rotationY`) under `perspective: 1600px`.
-- **Hover / focus** (the head-and-shoulders hit area, rounded; never the image's transparent corners): the character
-  lifts 14px, scales 1.05 and straightens; its neighbours (by position) lean 2.5° away; the others dim to 70% (their
-  darker copy fades in: only opacity animates); a speech bubble pops above its head (a Motion spring from 0.6), clamped
-  inside the screen with its tail on the head: the team, "Hiring" (red pill) or "Closed" (muted), the pitch, "Apply →".
-- **Click**: a hiring team goes to `/join/apply?team=<slug>`; a closed team's bubble shakes and says "Opens next round".
-- **Touch**: a tap shows the bubble; tapping it (or the character again) applies; a tap elsewhere closes it.
-- **Scroll** (scrubbed over the hero): the crowd sinks 32% of the hero and fades, front row first, back row last.
-- **Reduced motion**: no pop-up, bob, parallax, tilt or sinking; hover and tap still show the bubbles.
-- **Loading**: the front row (Tech, Social Media) is preloaded and eager; Multimedia is eager too (on md+ it is the
-  largest image on screen, the page's largest paint); the rest load lazily.
-
 ### Sections (`JoinSections`, `JoinReveals`)
-- **Why join** (`[01]`): four cards (Hands-on hardware, Real projects, Competitions and travel, Mentors and alumni), each
-  an icon in a circle (the first red), a heading and two lines; they rise in 0.06s apart.
-- **Teams** (`[02]`, `#teams`): a card per team in the teams' order: the character as a round face avatar
-  (`CharacterAvatar`, which waves on hover: `animate-wave`), the status pill, what the team does (`teams.description`),
-  skill tags and "Apply to <team>" (ghost), or a disabled "Opens next round". 1 / 2 / 3 columns.
-- **How it works** (`[03]`): Apply online, Task round, Interview, Welcome aboard. A line runs from the first dot to the
-  last (measured; horizontal from md, vertical on phones) and draws itself as the list scrolls through (scrubbed, from
-  its top at 75% of the screen to its bottom at 55%); each dot lights up red as the line reaches it.
+Calm: sections start `clamp(6.5rem, 18svh, 12rem)` apart; cards are `bg-2` with `rounded-card` and no border; nothing
+moves on hover; the only motion is the reveal (each block, or each card in a list, fades in and rises 20px once at
+`top 80%`, 0.06s apart). Nothing under reduced motion.
+- **Why join** (`[01]`): four cards (Hands-on hardware, Real projects, Competitions and travel, Mentors and alumni): an
+  icon in a quiet circle, a heading and two lines.
+- **Teams** (`[02]`, `#teams`): a card per team in the teams' order: the character's face avatar, a status pill
+  ("Hiring" in `maroon`, "Closed" muted), what the team does (`teams.description`), skill tags and "Apply to <team>"
+  (ghost), or a disabled "Opens next round". 1 / 2 / 3 columns.
+- **How it works** (`[03]`): Apply online, Task round, Interview, Welcome aboard, joined by a static hairline from dot to
+  dot (across from md, down on phones).
 - **FAQ** (`[04]`): an `<Accordion>` (§5): who can apply, experience, time, two teams, results.
-- **Last call**: a wide `bg-2` card with a red glow from below, "Ready to build with us?", "Apply now" (or "Ask us
-  anything" while recruitment is closed), and Design, Tech and PR peeking up from its bottom edge (they rise a little
-  when the card is hovered).
-- Reduced motion: no reveals; the line is drawn and every dot lit.
+- **Last call**: a wide `bg-2` card with a faint red glow from below, "Ready to build with us?", "Apply now" (or "Ask us
+  anything" while recruitment is closed), and Design, Tech and PR peeking up from its bottom edge.
 
 ### Apply (`/join/apply`, `ApplyForm`)
 - **Page**: "Apply to the crew", the hiring teams' avatars, and the form in a `bg-2` card. `?team=<slug>` preselects a
@@ -1824,4 +1816,4 @@ character stands for one of the club's teams.
 
 ### Placeholders
 The four cut-outs stand in for real transparent exports; the mock stores applications in memory and doesn't keep the
-resume.
+resume. The crowd is illustration, not the club's members.

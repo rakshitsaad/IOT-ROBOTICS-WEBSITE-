@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Crowd } from "@/components/join/Crowd";
 import { JoinHero } from "@/components/join/JoinHero";
 import { JoinReveals } from "@/components/join/JoinReveals";
 import { HowItWorks, JoinCta, JoinFaq, TeamsSection, WhyJoin } from "@/components/join/JoinSections";
@@ -9,7 +10,7 @@ import { SENIOR_CORE_TERM } from "@/lib/members";
 
 export const metadata: Metadata = {
   title: "Join",
-  description: "Join the IoT & Robotics club: seven teams, real hardware, real projects. See who's hiring and apply.",
+  description: "Join the IoT & Robotics club: build drones, robots and connected things with people who love it. See who's hiring and apply.",
 };
 
 /** /join (DESIGN.md §21): the crowd hero, why join, the teams, how it works, the FAQ and the last call. */
@@ -19,7 +20,16 @@ export default async function JoinPage() {
   return (
     <>
       <GridBackground />
-      <JoinHero hiring={hiring} recruitmentOpen={settings.recruitment_open} year={SENIOR_CORE_TERM.year} />
+      <JoinHero
+        recruitmentOpen={settings.recruitment_open}
+        year={SENIOR_CORE_TERM.year}
+        crowd={
+          <>
+            <Crowd variant="wide" className="absolute inset-0 size-full max-md:hidden" />
+            <Crowd variant="narrow" className="absolute inset-0 size-full md:hidden" />
+          </>
+        }
+      />
       <JoinReveals>
         <WhyJoin />
         <TeamsSection teams={teams} hiring={hiring} />

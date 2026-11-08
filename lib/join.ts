@@ -2,72 +2,40 @@ import { z } from "zod";
 import type { TeamName } from "./types";
 
 /**
- * /join config (DESIGN.md §21): one cartoon character per team (image, a one-line pitch, skills, where it stands in
- * the hero's crowd), the page's copy (benefits, steps, FAQ), the motion numbers and the application form's schema.
+ * /join config (DESIGN.md §21): one cartoon character per team (image, a one-line pitch, skills, its face for the
+ * avatars), the hero's motion numbers, the page's copy (benefits, steps, FAQ) and the application form's schema.
  * Client-safe. Whether a team is hiring comes from settings (`recruitment_open` and `open_teams`), not from here.
+ * The hero's crowd is lib/crowd.ts.
  */
 
 /** A box in fractions of the character's square image: [left, top, right, bottom]. */
 export type Box = [number, number, number, number];
-
-/**
- * Where a character stands in the crowd, in a 1000-unit-wide frame (the crowd box, `min(100%, 150svh)` wide on md+,
- * the full width on phones): x = the image's centre, s = its size (it is square), b = how far its bottom sits below the
- * hero's bottom edge (negative: above it, faded out), r = its tilt in degrees, z = paint order (higher is in front),
- * fade = the share of the image's height that fades out at the bottom (back characters, so a cut-off body never shows
- * a hard edge). The layouts were checked offline so that every face is clear of the characters in front of it by 18px
- * (room for the bob, sway and parallax) and no head reaches the headline or the buttons.
- */
-export interface Spot {
-  x: number;
-  s: number;
-  b: number;
-  r: number;
-  z: number;
-  fade?: number;
-}
-
-export type Row = "back" | "middle" | "front";
 
 export interface JoinCharacter {
   team: TeamName;
   /** The team's slug (`teams.slug`), used in `/join/apply?team=`. */
   slug: string;
   image: string;
-  /** One line for the speech bubble. */
+  /** One line about the team (the apply form shows it beside the chosen team). */
   pitch: string;
   skills: string[];
-  row: Row;
-  /** The face (forehead to chin, cheek to cheek; Multimedia's includes the camera over his eye). */
+  /** The face (forehead to chin, cheek to cheek), for the round avatars (`CharacterAvatar`). */
   face: Box;
-  /** The hover / tap target: head and shoulders, not the image's transparent corners. */
-  hit: Box;
-  desktop: Spot;
-  /** Phones show five characters (not the back row). */
-  mobile: Spot | null;
-  /**
-   * Load eagerly though not in the front row: the largest image on screen on md+ (the page's largest paint, since most
-   * of Tech sits below the edge). The front row is also preloaded; the rest load lazily.
-   */
-  eager?: boolean;
 }
 
 /**
- * The art: transparent PNGs, 1254px square, chest-up. Tech, Design, Multimedia and Research were delivered with a
+ * The team characters: transparent PNGs, 1254px square, chest-up, used as the team cards' avatars, beside the apply
+ * form's team and peeking up from the last call. Tech, Design, Multimedia and Research were delivered with a
  * checkerboard painted into the pixels; their cut-outs are in /join/cutout/ (the originals stay in /join/).
  */
 export const JOIN_CHARACTERS: JoinCharacter[] = [
   {
-    team: "Management",
-    slug: "management",
-    image: "/join/char-management.png",
-    pitch: "Budgets, venues and the plan that makes every event happen.",
-    skills: ["Planning", "Budgets", "Logistics", "Spreadsheets"],
-    row: "back",
-    face: [0.335, 0.155, 0.605, 0.375],
-    hit: [0.22, 0.01, 0.74, 0.58],
-    desktop: { x: 742, s: 300, b: -100, r: 5, z: 1, fade: 0.4 },
-    mobile: null,
+    team: "Tech",
+    slug: "tech",
+    image: "/join/cutout/char-tech.png",
+    pitch: "Firmware, PCBs, sensors and the robots themselves.",
+    skills: ["C / C++", "ESP32", "ROS 2", "PCB design", "CAD"],
+    face: [0.375, 0.175, 0.65, 0.445],
   },
   {
     team: "Research",
@@ -75,11 +43,7 @@ export const JOIN_CHARACTERS: JoinCharacter[] = [
     image: "/join/cutout/char-research.png",
     pitch: "Reads the papers, runs the experiments, writes up what we learn.",
     skills: ["Literature reviews", "Experiments", "Python", "Technical writing"],
-    row: "back",
     face: [0.365, 0.15, 0.625, 0.415],
-    hit: [0.25, 0.02, 0.73, 0.6],
-    desktop: { x: 238, s: 300, b: -118, r: -5, z: 2, fade: 0.4 },
-    mobile: null,
   },
   {
     team: "Design",
@@ -87,11 +51,7 @@ export const JOIN_CHARACTERS: JoinCharacter[] = [
     image: "/join/cutout/char-design.png",
     pitch: "Posters, brand and the UI on our dashboards.",
     skills: ["Figma", "Illustration", "Typography", "Motion"],
-    row: "middle",
     face: [0.405, 0.165, 0.67, 0.43],
-    hit: [0.2, 0.03, 0.8, 0.62],
-    desktop: { x: 366, s: 360, b: 66, r: -6, z: 3, fade: 0.25 },
-    mobile: { x: 270, s: 590, b: -236, r: -6, z: 1, fade: 0.35 },
   },
   {
     team: "Multimedia",
@@ -99,24 +59,7 @@ export const JOIN_CHARACTERS: JoinCharacter[] = [
     image: "/join/cutout/char-multimedia.png",
     pitch: "Shoots the builds, cuts the reels and the after-movies.",
     skills: ["Photography", "Premiere Pro", "Reels", "Sound"],
-    row: "middle",
     face: [0.25, 0.185, 0.705, 0.475],
-    hit: [0.2, 0.02, 0.8, 0.62],
-    desktop: { x: 872, s: 400, b: 50, r: 6, z: 4 },
-    mobile: { x: 815, s: 620, b: 154, r: 4, z: 3 },
-    eager: true,
-  },
-  {
-    team: "PR",
-    slug: "pr",
-    image: "/join/char-pr.png",
-    pitch: "Talks to sponsors and partner clubs, and gets us on stage.",
-    skills: ["Outreach", "Public speaking", "Sponsorships", "Emails that get replies"],
-    row: "middle",
-    face: [0.395, 0.175, 0.675, 0.47],
-    hit: [0.25, 0.02, 0.78, 0.62],
-    desktop: { x: 655, s: 360, b: 64, r: 4, z: 5, fade: 0.25 },
-    mobile: { x: 735, s: 590, b: -272, r: 5, z: 2, fade: 0.35 },
   },
   {
     team: "Social Media",
@@ -124,32 +67,25 @@ export const JOIN_CHARACTERS: JoinCharacter[] = [
     image: "/join/char-social.png",
     pitch: "Runs our Instagram and LinkedIn, and keeps people talking.",
     skills: ["Content", "Copywriting", "Canva", "Analytics"],
-    row: "front",
     face: [0.415, 0.165, 0.705, 0.45],
-    hit: [0.08, 0.03, 0.8, 0.62],
-    desktop: { x: 118, s: 430, b: 100, r: -5, z: 6 },
-    mobile: { x: 170, s: 700, b: 154, r: -5, z: 4 },
   },
   {
-    team: "Tech",
-    slug: "tech",
-    image: "/join/cutout/char-tech.png",
-    pitch: "Firmware, PCBs, sensors and the robots themselves.",
-    skills: ["C / C++", "ESP32", "ROS 2", "PCB design", "CAD"],
-    row: "front",
-    face: [0.375, 0.175, 0.65, 0.445],
-    hit: [0.25, 0.02, 0.76, 0.62],
-    desktop: { x: 520, s: 450, b: 190, r: 1, z: 7 },
-    mobile: { x: 520, s: 780, b: 231, r: 1, z: 5 },
+    team: "Management",
+    slug: "management",
+    image: "/join/char-management.png",
+    pitch: "Budgets, venues and the plan that makes every event happen.",
+    skills: ["Planning", "Budgets", "Logistics", "Spreadsheets"],
+    face: [0.335, 0.155, 0.605, 0.375],
+  },
+  {
+    team: "PR",
+    slug: "pr",
+    image: "/join/char-pr.png",
+    pitch: "Talks to sponsors and partner clubs, and gets us on stage.",
+    skills: ["Outreach", "Public speaking", "Sponsorships", "Emails that get replies"],
+    face: [0.395, 0.175, 0.675, 0.47],
   },
 ];
-
-/** The entrance order: back row first, then the middle, then the front (left to right within a row). */
-export const ENTRANCE_ORDER: string[] = (["back", "middle", "front"] as Row[]).flatMap((row) =>
-  JOIN_CHARACTERS.filter((c) => c.row === row)
-    .sort((a, b) => a.desktop.x - b.desktop.x)
-    .map((c) => c.slug),
-);
 
 export const characterBySlug = (slug: string) => JOIN_CHARACTERS.find((c) => c.slug === slug);
 
@@ -157,23 +93,15 @@ export const characterBySlug = (slug: string) => JOIN_CHARACTERS.find((c) => c.s
 export const isHiring = (team: TeamName, settings: { recruitment_open: boolean; open_teams: TeamName[] }) =>
   settings.recruitment_open && settings.open_teams.includes(team);
 
-/** Seconds, px and degrees. */
-export const JOIN_MOTION = {
-  /** The crowd pops up after the headline: 90ms apart, 0.9s with an overshoot (back.out(1.6)). */
-  enterDelay: 0.75,
-  enterStagger: 0.09,
-  enterDuration: 0.9,
-  /** Idle: each character bobs 4–8px over 2.5–4s and sways ±1.5deg, out of sync. */
-  bob: [4, 8] as [number, number],
-  bobPeriod: [2.5, 4] as [number, number],
-  sway: 1.5,
-  /** Cursor parallax per row (px, at the screen's edge), and the group's tilt. */
-  parallax: { back: 6, middle: 14, front: 24 } as Record<Row, number>,
-  tilt: 3,
-  /** Hover: lift, scale, and how far the neighbours lean away. */
-  lift: 14,
-  scale: 1.05,
-  lean: 2.5,
+/** The hero's motion (ms, and the crowd's scroll speed as a share of the page's). The crowd itself is lib/crowd.ts. */
+export const JOIN_HERO = {
+  /** The label, headline, line and button fade up 12px, this far apart, from `textDelay`. */
+  textDelay: 120,
+  textStagger: 60,
+  /** The crowd fades in and rises 30px (1.2s) from here, just after the text. */
+  crowdDelay: 360,
+  /** Parallax: the crowd moves at 0.85× the page while the hero scrolls away, and fades. */
+  parallax: 0.85,
 };
 
 /* ------------------------------------------------------------------ copy */
