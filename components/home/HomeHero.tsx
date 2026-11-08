@@ -1,58 +1,19 @@
-import { Capsule, CrossMark, DotGrid, MonoLabel, type CapsuleTone } from "@/components/ui";
+import { MonoLabel } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { Settings } from "@/lib/types";
 
 /**
- * Home hero: the giant two-line wordmark, corner labels and decorations.
+ * Home hero: the giant two-line wordmark and the corner labels, on plain black (no decorations).
  * The robot is not in here: it lives on the page's fixed stage (HomeRobot)
  * and stands in front of line 2. HomeScroll pins this section and drives
- * every [data-*] hook below:
+ * the [data-*] hooks below:
  *   data-hero-wordmark  rises at 1.4× scroll speed and fades out
- *   data-rise="n"       moves up at n× scroll speed (capsules)
- *   data-drift="px"     slides sideways by px (dot grids)
- *   data-spin           rotates 90° (cross marks)
  *   data-hero-scroll    the scroll hint, fades out first
  */
 
 /** 40ms between letters, after a short wait so the first paint settles. */
 const LETTER_DELAY_MS = 150;
 const LETTER_STAGGER_MS = 40;
-
-interface Decor {
-  /** Position (and colour), per breakpoint. */
-  className: string;
-}
-
-/** Desktop: 4 around the robot (it stands at 66% of the width). Phones: only the two without `hidden`. */
-const CAPSULES: (Decor & { tone: CapsuleTone; rise: number; size: string; rotate?: number })[] = [
-  { tone: "raised", rise: 0.6, className: "hidden md:block md:left-[44%] md:top-[14%]", size: "md:h-72 md:w-24" },
-  {
-    tone: "iris-line",
-    rise: 1.1,
-    className: "left-[7%] top-[60%] md:left-[80%] md:top-[44%]",
-    size: "h-40 w-12 md:h-80 md:w-24",
-  },
-  { tone: "raised", rise: 1.6, className: "hidden md:block md:left-[89%] md:top-[11%]", size: "md:h-52 md:w-16" },
-  {
-    tone: "haze",
-    rise: 0.6,
-    className: "right-[7%] top-[52%] md:right-auto md:left-[55%] md:top-[50%]",
-    size: "h-56 w-14 md:h-[26rem] md:w-28",
-  },
-];
-
-const DOT_GRIDS: (Decor & { drift: number; rows: number; cols: number })[] = [
-  { drift: -90, rows: 3, cols: 4, className: "right-[10%] top-[20%] text-text/30 md:right-auto md:left-[35%] md:top-[19%]" },
-  { drift: 120, rows: 2, cols: 6, className: "left-[5%] bottom-[14%] text-muted md:left-[7%] md:bottom-[17%]" },
-  { drift: -70, rows: 4, cols: 3, className: "right-[5%] top-[78%] text-red/55 md:right-[4%] md:top-[34%]" },
-];
-
-const CROSSES: (Decor & { size: number; tone: "muted" | "red" })[] = [
-  { tone: "muted", size: 14, className: "left-[62%] top-[17%] md:left-[52%] md:top-[25%]" },
-  { tone: "red", size: 12, className: "left-[30%] top-[52%] md:left-[39%] md:top-[76%]" },
-  { tone: "muted", size: 16, className: "right-[30%] bottom-[11%] md:right-[13%] md:bottom-[15%]" },
-  { tone: "red", size: 12, className: "right-[6%] top-[46%] md:right-[24%] md:top-[15%]" },
-];
 
 export function HomeHero({ settings }: { settings: Settings }) {
   const words = settings.club_name.trim().split(/\s+/);
@@ -61,25 +22,6 @@ export function HomeHero({ settings }: { settings: Settings }) {
 
   return (
     <section data-home-hero aria-labelledby="hero-title" className="relative isolate min-h-svh overflow-hidden">
-      {/* Decorations, behind the wordmark (the robot is in front of everything). */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        {CAPSULES.map(({ tone, rise, rotate, className, size }, i) => (
-          <div key={i} data-rise={rise} className={cn("absolute will-change-transform", className)}>
-            <Capsule tone={tone} rotate={rotate} className={size} />
-          </div>
-        ))}
-        {DOT_GRIDS.map(({ drift, rows, cols, className }, i) => (
-          <div key={i} data-drift={drift} className={cn("absolute will-change-transform", className)}>
-            <DotGrid rows={rows} cols={cols} className="text-current" />
-          </div>
-        ))}
-        {CROSSES.map(({ tone, size, className }, i) => (
-          <div key={i} data-spin className={cn("absolute will-change-transform", className)}>
-            <CrossMark size={size} strokeWidth={1.5} className={tone === "red" ? "text-red" : "text-text/45"} />
-          </div>
-        ))}
-      </div>
-
       <div className="shell relative z-10 flex min-h-svh flex-col pt-header">
         <MonoLabel className="mt-6 md:mt-8">
           {settings.college_name}

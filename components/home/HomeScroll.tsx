@@ -164,13 +164,6 @@ export function HomeScroll({ children }: { children: ReactNode }) {
       tl.to(botTransform, { y: dropY, scale: base.scale * R.grow, rotY: 0, duration: P }, 0);
       tl.to("[data-hero-wordmark]", { y: -HOME_SCROLL.wordmarkSpeed * P, opacity: 0, duration: P }, 0);
       tl.to("[data-hero-scroll]", { opacity: 0, duration: 0.12 * P }, 0);
-      hero.querySelectorAll<HTMLElement>("[data-rise]").forEach((el) => {
-        tl.to(el, { y: -Number(el.dataset.rise) * P, duration: P }, 0);
-      });
-      hero.querySelectorAll<HTMLElement>("[data-drift]").forEach((el) => {
-        tl.to(el, { x: Number(el.dataset.drift), duration: P }, 0);
-      });
-      tl.to(hero.querySelectorAll("[data-spin]"), { rotation: 90, duration: P }, 0);
       tl.call(
         () => {
           if (scrub.trigger && scrub.trigger.direction < 0) return; // only on the way down

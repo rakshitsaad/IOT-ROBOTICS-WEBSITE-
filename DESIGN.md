@@ -817,7 +817,7 @@ Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomin
 - Wordmark size: `clamp(4rem, min(15vw, 30svh), 14.5rem)`; phones `min(16vw, 28svh)`. "ROBOTICS" is about 5.3em wide, so 18vw cannot fit a phone and a 15rem cap overflows the 1440 shell. Re-check at 360 and 1920 if the club name changes.
 - Letters rise out of a vertical mask on load (`animate-rise`, 40ms apart from 150ms), alongside the robot's bootUp.
 - Corner labels: `{college_name} / Est. {founded_year}` top left, "IoT / Robotics / Research" bottom left, "Scroll" with a nudging arrow bottom right.
-- Decorations behind the wordmark: 4 Capsules (2 `raised`, 1 `iris-line`, 1 `haze`; phones show only `iris-line` and `haze`), 3 DotGrids (one red at 55%), 4 CrossMarks (2 warm white at 45%, 2 red). Scroll hooks: `data-rise="speed"`, `data-drift="px"`, `data-spin`.
+- No decorations: the wordmark and the corner labels sit on plain black (no capsules, dot grids or cross marks).
 
 ### Robot stage (`HomeRobot`)
 The stage box is fixed and z-30, so the robot stands in front of the page content (the lab card and the header sit above it). `HOME_ROBOT` makes the robot 70% of the stage height with its base at 88%, turned -20°. The box decides where that lands, so the server-rendered poster is already in place:
@@ -830,7 +830,7 @@ One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, tim
 
 | Scroll | What happens |
 | --- | --- |
-| 0 → end of pin | Wordmark rises at 1.4× scroll speed and fades out; capsules rise at 0.6× / 1.1× / 1.6×; dot grids drift sideways; cross marks turn 90°; the scroll hint fades first. The robot drops 25vh, scales ×1.12 and turns to face the camera |
+| 0 → end of pin | Wordmark rises at 1.4× scroll speed and fades out; the scroll hint fades first. The robot drops 25vh, scales ×1.12 and turns to face the camera |
 | 60% of the pin, scrolling down | The robot looks down-left towards the statement (`lookAt` + `react("look-left", 1600)`) |
 | end of pin → +85vh (md and up) | The robot moves to the right edge (one gutter in), scale ×0.6, body turned -0.45 rad towards the headline |
 | lab top enters → lab top reaches the viewport top (md and up) | The robot moves to centre-right (55% of the width, base at 93% of the stage) at 1.1× its hero size (smaller on screens squarer than 1.55:1), facing the camera. Where the card would cover it, it steps left of the card (landscape, 1.2:1 or wider) or stands above the card, as big as fits under the heading (portrait tablets) |
