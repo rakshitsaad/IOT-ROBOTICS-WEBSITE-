@@ -6,14 +6,14 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, STAGGER } from "@/lib/motion";
 
 /**
- * Reveals for the /about sections below the hands (DESIGN.md §15):
+ * Reveals for the /about sections below the intro (DESIGN.md §15):
  * - [data-reveal] rises 40px and fades in once at `top 80%`;
  * - [data-reveal-group] does the same for its [data-reveal-item]s, 0.06s apart;
  * - [data-timeline]: the line draws itself (scrubbed) from the list's top at
  *   70% of the viewport to its bottom at 70%; each dot lights up as the line
  *   passes it; each card slides in from its side.
  * Nothing under reduced motion. Every trigger has refreshPriority -1, so it
- * refreshes after the hands' pin above it.
+ * refreshes after the intro's pin above it.
  */
 export function AboutReveals({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);

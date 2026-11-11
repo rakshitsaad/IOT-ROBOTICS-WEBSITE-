@@ -14,8 +14,8 @@ import {
   type CapsuleTone,
   type PillColor,
 } from "@/components/ui";
-import { IrisRing } from "@/components/about/IrisRing";
 import { MotionStatus, PillRevealDemo, RevealDemo } from "@/components/lab/MotionDemos";
+import { RobotHandLab } from "@/components/lab/RobotHandLab";
 import { BotHeadIcon } from "@/components/robot/BotHeadIcon";
 import { BOT_ICON_NAMES } from "@/components/robot/icons";
 import { COLORS, TEAM_ACCENT } from "@/lib/tokens";
@@ -319,27 +319,23 @@ export default function LabPage() {
           </div>
         </Section>
 
-        {/* 17 /about ring + ambient loops */}
-        <Section index={17} title="<IrisRing> · float, breathe, orbit, pulse-soft, fade-up">
-          <div className="grid gap-8 md:grid-cols-[1fr_1.4fr] md:items-center">
-            <div className="relative grid h-72 place-items-center overflow-clip rounded-image bg-bg md:h-96">
-              <IrisRing className="inset-0 m-auto size-56 md:size-80" />
-              <div className="size-16 animate-pulse-soft rounded-full bg-radial from-white from-5% via-white/25 via-25% to-transparent to-65% motion-reduce:animate-none" />
-            </div>
-            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {[
-                ["float", "animate-float"],
-                ["breathe", "animate-breathe"],
-                ["orbit", "animate-orbit"],
-                ["fade-up", "animate-fade-up"],
-              ].map(([name, cls]) => (
-                <li key={name} className="grid justify-items-center gap-3 rounded-image border border-line p-5">
-                  <span className={`block size-10 rounded-[10px] bg-iris motion-reduce:animate-none ${cls}`} />
-                  <MonoLabel>{name}</MonoLabel>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* 17 /about robot hand + ambient loops */}
+        <Section index={17} title="<RobotHand> · the /about intro · float, breathe, orbit, pulse-soft, fade-up">
+          <RobotHandLab />
+          <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-5">
+            {[
+              ["float", "animate-float"],
+              ["breathe", "animate-breathe"],
+              ["orbit", "animate-orbit"],
+              ["pulse-soft", "animate-pulse-soft"],
+              ["fade-up", "animate-fade-up"],
+            ].map(([name, cls]) => (
+              <li key={name} className="grid justify-items-center gap-3 rounded-image border border-line p-5">
+                <span className={`block size-10 rounded-[10px] bg-iris motion-reduce:animate-none ${cls}`} />
+                <MonoLabel>{name}</MonoLabel>
+              </li>
+            ))}
+          </ul>
         </Section>
 
         <Section index={18} title="<Accordion> · FAQs (/contact, /join)">

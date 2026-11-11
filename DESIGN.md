@@ -26,7 +26,7 @@ app/
   layout.tsx         root layout: providers, header, footer, cursor
   template.tsx       route transition wrapper
   page.tsx           home: hero, statement, lab, featured, event, numbers, join; the robot travels through them (§12)
-  about/page.tsx     /about: the pinned hands sequence, mission and vision, pillars, history, teams (§15)
+  about/page.tsx     /about: the pinned robot hand intro, mission and vision, pillars, history, teams (§15)
   members/page.tsx   /members: Senior Core spreads + Junior Core team accordions (§13)
   gallery/page.tsx   /gallery: the shelf of event journals (§14)
   gallery/[slug]/    the journal viewer: 3D page fan, grid view, lightbox (§14)
@@ -61,8 +61,9 @@ components/
                      JournalFan (+ fan.ts geometry), JournalPages (photo, video, collage, note),
                      JournalScrubber, JournalGrid, Lightbox, JournalBackdrop, JournalChrome (top bar,
                      toolbar, popovers, toast), icons, download.ts (download, share, copy)
-  about/             /about (§15): HandsSection (+ HandsScroll: pin, timeline, parallax), IrisRing,
-                     AboutSections (Purpose, Pillars, History, TeamsOverview), AboutReveals, icons
+  about/             /about (§15): AboutIntro (heading, copy, the card; the pin), RobotHand (the SVG hand, setPose)
+                     + robot-hand-rig.ts (joints, pose keyframes, poseAt), AboutSections (Purpose, Pillars,
+                     History, TeamsOverview), AboutReveals, icons
   projects/          /projects (§16): ProjectsStage (engine: physics, flight, keys, hit buttons),
                      ReelCanvas (+ reel-shaders, reel-state: shared mutable reel), ReelTitle (vertical title),
                      ProjectStrip (gallery tiles), ImageView (enlarged photo), parts (label, count, filters,
@@ -83,7 +84,8 @@ components/
   drone/             the drone (§18): Drone (model), Trail; the home sidekick: Sidekick (+ sidekick-plan.ts: zones,
                      stops, routes, stunts) (§12); the /lab/drone bench: DroneRig, director, ScanBeam, HoloGlobe,
                      Dissolve, DroneCanvas (bloom), DroneStage (lazy mount, poster), store
-  lab/               /lab helpers (MotionDemos, RobotLab, DroneLab + MissionDashboard: the bench's stat cards)
+  lab/               /lab helpers (MotionDemos, RobotLab, RobotHandLab: the /about hand on a slider,
+                     DroneLab + MissionDashboard: the bench's stat cards)
 hooks/               useReducedMotion, useMediaQuery
 lib/
   types.ts           row types for every Supabase table
@@ -91,7 +93,7 @@ lib/
   data.ts            data access layer (the only thing pages import for data)
   actions.ts         server actions (recruitment "Get notified")
   home.ts            home config: lab stations, photo depths, pan distance
-  about.ts           /about config: the hands timeline (ABOUT_HANDS), mission and vision, pillars; client-safe
+  about.ts           /about config: the intro's pin (ABOUT_INTRO), mission and vision, pillars; client-safe
   gallery.ts         journal pages from gallery items (buildJournalPages), seeded(), dates; client-safe
   members.ts         /members config: term, layout cycle, name lines, Bodoni capital widths, social links;
                      Junior Core: cards per line, row ids, first name, initials
@@ -155,13 +157,14 @@ A restrained maroon → red → maroon sheen, like light along a machined edge. 
 rainbow version; it now means this sheen.) Use it **sparingly**, only for:
 - the robot bezel (the logo mark uses it),
 - active borders (`iris-border` utility),
-- soft blurred blobs behind content (Senior Core puts one behind every spread at 30%, §13; the /about ring, §15, is a
-  conic gradient of maroon and red shaped into a soft ring).
+- soft blurred blobs behind content (Senior Core puts one behind every spread at 30%, §13).
 
 Senior Core's vertical spread also uses a small iris rectangle at 25% opacity over a
 portrait's corner; that is the only iris fill shape outside the list above.
 
-/about (§15) sets one word in `text-red`: "machines" in the hero title.
+/about (§15) opens with its heading's first line in a red pill after a small red dot, and the robot hand's wrist cuff
+is red (its fingertip pads maroon, the pointing fingertip's brief glow red). The design asks for both; the hand is an
+illustration, and the rest of the view stays black, charcoal and warm white.
 
 /events (§17) marks an upcoming event's status with a `maroon` Pill ("Registrations open"), so it never competes
 with the card's red `IrisButton` ("Register").
@@ -349,7 +352,10 @@ Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (a
 The /events first load (§17), all `both`: `animate-wipe-in` (a left-to-right `clip-path` wipe with a fade, 0.8s expo),
 `animate-settle` (scale 1.08 → 1, 0.8s expo), `animate-pop-up` (opacity 0 and 40px down → in place, 0.8s expo) and
 `animate-slide-up` (opacity 0 and 20px down → in place, 0.6s power3).
-Ambient loops (always with `motion-reduce:animate-none`): `animate-float` (±2.5px up and down, 4s), `animate-breathe` (scale 0.98 ↔ 1.02, 6s), `animate-orbit` (one turn per 40s, linear) and `animate-pulse-soft` (scale 0.85 ↔ 1.15 with opacity, 1.8s). The /about hands use all four (§15).
+Ambient loops (always with `motion-reduce:animate-none`): `animate-float` (±2.5px up and down, 4s), `animate-breathe` (scale 0.98 ↔ 1.02, 6s), `animate-orbit` (one turn per 40s, linear) and `animate-pulse-soft` (scale 0.85 ↔ 1.15 with opacity, 1.8s). No page uses them now; /lab shows them.
+/about (§15), all `both`: `animate-line-up` (opacity 0 and 30px down → in place, 0.9s power3.out; a heading line),
+`animate-pill-grow` (scaleX 0 → 1, 0.9s expo; a pill's background, with `origin-left`) and `animate-dot-in` (scale 0 → 1,
+0.7s expo; the dot before the first line).
 /contact (§20): `animate-planet-rise` (25vh up into place, 1.6s expo, `both`), `animate-rim` (fades in over 1.6s, then
 breathes 1 ↔ 0.85 every 5s), `animate-streak` (a light along the rim every 8s, from the registered `--streak` angle) and
 `animate-twinkle` (a star dims to a quarter of its `--o` and back). The looks are utilities: `contact-dots` (faint dot
@@ -435,8 +441,10 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
   from 120ms, and the crowd fades in and rises 30px as one layer over **1.2s** from 360ms; on scroll it moves at
   **0.85×** the page and fades.
 - Stagger siblings by **0.06s** (`STAGGER`); long lists (menu) use 0.05s.
-- Scrubbed tweens use `ease: "none"`. Exception: the **/about hands** (§15) close in on `1 − (1 − t)^2.5` over the first 65% of their
-  pin, so they are fast at first and settle into the close-up without a sudden change of speed; the touch uses `sine.inOut`.
+- Scrubbed tweens use `ease: "none"`. The **/about robot hand** (§15) is scrubbed linearly too, but its pose keyframes ease
+  inside `setPose` (per phase: cubic out, sine in-out, cubic in; each joint smoothstepped), so the hand moves like a machine
+  rather than at the scroll's constant speed. Its idle servo jitter (a 1–2px fingertip twitch every 2.1–3s while the
+  scroll is still) is a 0.32s stepped GSAP tween, below the 0.6s floor, because a servo correction is that short.
 - Scroll triggers: reveal at `start: "top 80%"`.
 
 ### First-load entrances
@@ -456,7 +464,7 @@ with an inline `animation-delay`, and always add `motion-reduce:animate-none`
 - ScrollTriggers created by child components (`ScrollTilt`, `CountUp`) set `refreshPriority: -1` so they refresh after the pins above them, and `HomeScroll` calls `ScrollTrigger.refresh()` once it has built.
 - GSAP folds an element's CSS `translate` (every Tailwind `translate-*` class) into its own transform the first time it tweens
   a transform there, converting the value to px; tweening `x` then replaces it. Keep a CSS pose (`-translate-1/2`, a vw
-  start offset) on a wrapper and tween an inner element (the /about hands, title and glow do this).
+  start offset) on a wrapper and tween an inner element.
 - Horizontal sections: pin a viewport, tween its track's `x` with `ease: "none"`, and give animations inside it `containerAnimation` (Senior Core, §13). If anything jumps the scroll instantly (arrow keys, drag), set `snap.inertia: false`, or the jump reads as a huge flick and the snap throws several steps ahead.
 
 ### Reduced motion: the rule
@@ -482,7 +490,7 @@ things per breakpoint can use `gsap.matchMedia()` with a
 `(prefers-reduced-motion: reduce)` condition instead; it rebuilds by itself
 when either changes (`SeniorCoreTrack` does this). It calls back only while **at least one** condition
 matches, so give it complementary width conditions (`phone` and `desktop`), or the case where none match (a phone
-with motion) builds nothing (`HandsScroll` does this). Motion components: pass
+with motion) builds nothing (`AboutIntro` does this). Motion components: pass
 `initial={reduced ? false : {...}}`; `MotionConfig reducedMotion="user"` is
 also set globally as a safety net. `globals.css` cuts all CSS transitions and
 keyframes to ~0ms under reduced motion.
@@ -1173,7 +1181,7 @@ The mock photos and posters are `picsum.photos`, and the two clips are MDN's CC0
 ## 15. About page (`app/about/page.tsx`, `components/about`)
 
 ```tsx
-<HandsSection clubName />        // section 1: the pinned hands sequence (HandsScroll)
+<AboutIntro />                   // section 1: the heading, the copy and the pinned robot hand card
 <AboutReveals>                   // reveals for everything below
   <Purpose />                    // mission & vision cards
   <Pillars />                    // workshops, projects, competitions
@@ -1182,57 +1190,92 @@ The mock photos and posters are `picsum.photos`, and the two clips are MDN's CC0
 </AboutReveals>
 ```
 
-### Section 1: Hands (`HandsSection`, `HandsScroll`, `IrisRing`; numbers in `ABOUT_HANDS`)
-A human hand reaches in from the left and a robot hand from the right, like a fresco's two outstretched fingers, in front of
-a soft iridescent ring. Scrolling brings the fingertips together while copy fades in and out around them.
+### Section 1: the robot hand (`AboutIntro`, `RobotHand`, `robot-hand-rig.ts`; the pin in `ABOUT_INTRO`)
+Two columns: the heading and two paragraphs on the left, and on the right a card in which a drawn robot hand slides in,
+spreads its fingers, points, grips and leaves as you scroll.
 
-**Assets.** `/public/about/hand-human.png` and `/public/about/hand-robot.png`: transparent cut-outs of a hand and forearm, 5:2
-(2000×800), loaded with `next/image` `preload` (Next 16's name for `priority`). Framing contract: the index fingertip touches
-the image's **inner edge** (right edge for the human, left for the robot) **40% of the way down**, and the forearm runs off
-the outer edge. The current files are generated placeholders; replace them with real cut-outs framed the same way.
+**Layout (md and up).** The stage is `h-svh` (with `pt-header`), its content centred vertically, in the `shell`: a grid of
+**42fr | 52fr** with a 6% gap.
+- **Heading** (the page's `h1`): three lines, Sora 600, `min(clamp(2rem, 4vw, 3.4rem), 100cqw / 10.9)` (the left column
+  is a size container, and 10.9em is the widest line with its padding, so "students could build" always fits), line-height
+  1.18, tracking -0.03em. Each line is a pill, in the `<Pill>` fills (§5) but built by hand so its background can grow
+  on its own as a CSS keyframe:
+  1. a small red dot (1.3em), then "The things we" in a `red` pill;
+  2. "always imagined" in a `raised` pill (charcoal, hairline, warm white text);
+  3. "students could build" in a `white` pill (dark text).
+- **Copy**: two paragraphs, 15px, muted, max 440px, their first words ("We build", "Our aim is simple:") bold in `text`.
+- **Card**: `rounded-card`, `bg-bg-2`, a hairline border, `overflow-hidden`, `min(72vh, 100svh − header − 4rem)` tall.
 
-**Layout.** Everything is placed against `--tip-y`, the line the fingertips point along: 42% of the screen on phones, 52%
-from md (the middle of the area below the header). Layers, back to front:
-- `bg-bg`;
-- the **iris ring** (`IrisRing`), 70vmin, centred on the contact point: a conic gradient of maroon and red with clear
-  gaps, masked into a ring that fades over about 30px each side (the look of a 30px blur), plus a fine edge line. It turns
-  once per 40s (`animate-orbit`) and breathes (`animate-breathe`). The softness comes from the mask, **not**
-  `filter: blur()`: a blurred layer that rotates is re-blurred every frame, while a masked one is rasterised once and only
-  turned by the compositor;
-- the **title** (the page's `h1`): `club_name` (Sora 700) over "where humans meet machines" (Sora 500, `text-text/75`,
-  "machines" in `text-red`), `clamp(2.25rem, 4.4vw, 4.5rem)` from md, centred above the hands;
-- the **hands**: 54vw wide (55vw on phones), each made of four wrappers: the CSS pose (placement and the start
-  translate of ±20vw, never touched by GSAP, §7), the scroll x, the cursor parallax and the float (`animate-float`, the
-  robot 1.6s out of phase);
-- a **glow** at the contact point (a warm white radial gradient, `animate-pulse-soft`), hidden until the touch;
-- three **copy blocks**:
-  - **A**, bottom left: "Who we are", "Built by students, for the real world" (Sora 600,
-    `clamp(2rem, min(4.5vw, 7svh), 4rem)`; the svh cap keeps it under the hands on short laptop screens), and one muted line;
-  - **B**, top right, right-aligned: "Sense. / Understand. / Adapt." and one muted line;
-  - **C**, bottom right, right-aligned: "How we build", "Precision. With feeling." and one muted line.
+**Phones (< 768px).** Stacked: the heading and the copy, then the card, full width and 60svh tall.
 
-  On phones the blocks sit in the band below the hands: A at its top, B at its bottom, and C where A was.
+**The hand (`RobotHand`).** An inline SVG (viewBox 1000 × 1000, `slice`, so it fills the card and narrow cards crop the
+sides), an original flat illustration in the palette:
+- a 2.5px `--bg` outline that stays 2.5px at any scale (`vector-effect: non-scaling-stroke`);
+- warm white plates with a soft grey shade on one side (a hard-stop gradient, so it reads as cel shading);
+- a long forearm with a seam, a segmented wrist cuff in `--red` (shaded `--red-deep`), fingertip pads in `--maroon`;
+- round pins on the joints.
 
-**Timeline.** It is pinned for 300vh from md and 180vh on phones (scrub 1). Its time runs 0 → 1 over the pin:
+The colours are CSS variables built from the tokens (`--text`, `--muted`, `--bg`, `--red`, `--red-deep`, `--maroon`), set
+in `style`, because SVG presentation attributes don't resolve `var()` reliably. No hex values.
 
-| Pin | What happens |
+**The rig.**
+- **Anatomy.** The forearm and cuff end at the wrist pivot, then the palm (a plate with an inset panel). The palm carries
+  four fingers of three segments each (proximal, middle, tip) and a thumb of two.
+- **One group per segment.** Every segment is its own `<g data-j>` with `transform="translate(joint) rotate(angle)"` in
+  its parent's frame, so each turns around its own joint and carries the segments beyond it.
+- **Nothing detaches.** The segments are capsules whose round ends are centred on their joints, so no angle opens a gap.
+- **Draw order.** Little, ring, middle and index fingers, then the thumb in front.
+- **Joint positions and poses** live in `robot-hand-rig.ts`.
+
+`setPose(progress)` (on the component's ref) writes the transforms for any progress from 0 to 1, interpolating between
+six keyframes:
+- entering, off the card's top right;
+- entered;
+- open;
+- pointing;
+- gripping;
+- gone, off the bottom right.
+
+Within a phase, the joints don't all move at once. Each finger starts after the one before it (index first), each segment
+after the one below it (proximal → middle → tip), and the thumb after its own delay. Each joint eases with a smoothstep and
+finishes before the phase ends, leaving a short hold.
+
+| Progress | The hand |
 | --- | --- |
-| 0 | Fingertips 40vw apart, title fully visible |
-| 0 → 0.35 | The hands close to about 8vw (on the `1 − (1 − t)^2.5` curve, §7). The title scales to 0.9, blurs 0 → 8px and fades out; the ring scales 1 → 1.15 |
-| 0.35 → 0.65 | The hands close to 2vw. A rises in (60px, from 0.37), then B (30px, from 0.44) |
-| 0.65 → 0.9 | The hands drift to 1.2vw. A and B slide up 56px and fade out; C rises in (40px, from 0.74) |
-| 0.9 → 0.96 | The fingertips meet (`sine.inOut`) |
-| 0.955 → 1 | The glow appears at the contact point; the ring flashes (a warm white copy, 0 → 1 → 0) and expands to 1.7× while fading out |
-| after the pin | The stage fades out over 0.6 of a screen as it scrolls away into the mission cards |
+| 0 → 0.15 | Slides in diagonally from beyond the top-right corner (cubic out), turned 35° off vertical, fingers relaxed and slightly open |
+| 0.15 → 0.4 | Moves to the card's centre and turns to 15°; the fingers spread wide one after another, index first, little finger last |
+| 0.4 → 0.6 | The index straightens to point while the others curl halfway and the thumb tucks; the index pad glows red briefly (peak at 0.52) |
+| 0.6 → 0.85 | The grip: finger by finger, each bending proximal, middle, tip (5% of the phase apart, about 70ms at an easy scroll); the thumb closes last |
+| 0.85 → 1 | Loosens a little and leaves through the bottom right (cubic in); the card is empty again |
 
-**Cursor parallax** (md and up, fine pointers only): the hands drift up to 12px towards the cursor, and the ring up to 6px
-the other way (`gsap.quickTo`, 0.9s power3.out).
+**Idle.** While the scroll is still (700ms after the last pose) and the hand is on screen with the tab visible, every
+2.1–3s the fingertips and the thumb tip twitch by 1–2px, as a servo correcting (a stepped 0.32s GSAP tween, §7).
 
-**Reduced motion.** Nothing is pinned or scrubbed. The CSS shows the final layout instead of the first frame: the hands 2vw
-apart (`motion-reduce:` translate), the ring still, no glow, and the three blocks stacked below the scene in a plain column.
-The pinned layout's positions are all `motion-safe:` classes, so the default classes are the reduced-motion layout.
+**Scroll (one ScrollTrigger).** A proxy `{ p }` tweens 0 → 1 with `ease: "none"`, and its `onUpdate` calls `setPose(p)`.
+- **md and up:** the stage is pinned at `top top` for **2.5 screens** (`ABOUT_INTRO.pin`), scrub 1. The left column stays
+  still; after the pin the page scrolls straight on into Mission & Vision.
+- **Phones:** no pin; the trigger is the card, scrub 1. The entrance plays as the card's bottom comes up to the screen's
+  bottom. The open, point and grip (15–85%) play while the card is wholly on screen, finishing as its top reaches the
+  header. The exit plays as the card scrolls under the header.
 
-### Below the hands (`AboutSections`, `AboutReveals`)
+**First load** (CSS keyframes from the server HTML, §5):
+- each heading line rises 30px and fades in (`animate-line-up`), from 120ms, 100ms apart;
+- its pill's background grows from scaleX 0 at the left (`animate-pill-grow`), 100ms after its line;
+- the dot pops in (`animate-dot-in`);
+- then the paragraphs fade up (`animate-fade-up`, 560ms and 660ms).
+
+**Before JS.** The server renders the open pose with `data-state="static"`, hidden (`motion-safe:`) until the controller
+poses the hand, so it never shows in the middle of the card and then jumps off it. A `<noscript>` style shows it without JS.
+
+**Performance.** Only SVG `transform` attributes change, written straight from `setPose` (no React state, no layout). There
+is one ScrollTrigger, and the idle jitter runs only while the hand is visible.
+
+**Reduced motion.** No pin, no ScrollTrigger, no entrance and no jitter: the hand is still, in the open, reaching pose
+(`STATIC_POSE`), and the heading's pills are in place.
+
+**Checking it.** `/lab` section 17 drives `setPose` with a slider and buttons for each pose.
+
+### Below the intro (`AboutSections`, `AboutReveals`)
 Each section has a mono label (no number) and a Sora 700 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
 - **Purpose** (`Mission & vision`): two large cards side by side from md (`bg-2`, `rounded-card`, hairline, a
   `DotGrid` in the corner): the accent mono label (Mission red, Vision warm white), a heading and a paragraph. Copy in
@@ -1248,7 +1291,7 @@ Each section has a mono label (no number) and a Sora 700 heading (`clamp(2.2rem,
   fills red and the ↗ turns warm white.
 
 Reveals: `[data-reveal]` and `[data-reveal-group]` items rise 40px and fade in once at `top 80%` (0.06s apart). Every trigger
-uses `refreshPriority: -1`, below the hands' pin. Under reduced motion nothing animates, the line is drawn and every dot is lit.
+uses `refreshPriority: -1`, below the intro's pin. Under reduced motion nothing animates, the line is drawn and every dot is lit.
 
 ---
 

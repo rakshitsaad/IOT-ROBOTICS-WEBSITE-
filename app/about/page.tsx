@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { AboutReveals } from "@/components/about/AboutReveals";
 import { History, Pillars, Purpose, TeamsOverview } from "@/components/about/AboutSections";
-import { HandsSection } from "@/components/about/HandsSection";
-import { getMilestones, getSettings, getTeams } from "@/lib/data";
+import { AboutIntro } from "@/components/about/AboutIntro";
+import { getMilestones, getTeams } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "About",
@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [settings, teams, milestones] = await Promise.all([getSettings(), getTeams(), getMilestones()]);
+  const [teams, milestones] = await Promise.all([getTeams(), getMilestones()]);
 
   return (
     <>
-      {/* Section 1: the pinned hands sequence (DESIGN.md §15). */}
-      <HandsSection clubName={settings.club_name} />
+      {/* Section 1: the robot hand, pinned on md+ (DESIGN.md §15). */}
+      <AboutIntro />
       <AboutReveals>
         <Purpose />
         <Pillars />

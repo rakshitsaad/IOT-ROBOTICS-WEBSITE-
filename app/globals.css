@@ -92,7 +92,7 @@ html[data-ann="off"] {
   --animate-grow-x: grow-x 5s linear both;
   /* Small labels fading up into place on load (power3.out, 0.9s). Stagger with animation-delay. */
   --animate-fade-up: fade-up 0.9s cubic-bezier(0.33, 1, 0.68, 1) both;
-  /* Ambient loops (/about hands, §15). Always pair with motion-reduce:animate-none. */
+  /* Ambient loops (shown on /lab). Always pair with motion-reduce:animate-none. */
   --animate-float: float 4s ease-in-out infinite; /* ±2.5px up and down */
   --animate-breathe: breathe 6s ease-in-out infinite; /* scale 0.98 ↔ 1.02 */
   --animate-orbit: orbit 40s linear infinite; /* one turn per 40s */
@@ -118,6 +118,29 @@ html[data-ann="off"] {
   --animate-twinkle: twinkle 5s ease-in-out infinite;
   /* The /join crowd (§21): it fades in and rises 30px as one layer, 1.2s power3.out, just after the hero's text. */
   --animate-crowd-in: crowd-in 1.2s cubic-bezier(0.33, 1, 0.68, 1) both;
+
+  /* /about intro (§15): each heading line rises 30px and fades in, its pill grows from the left (origin-left), the dot
+     before line 1 pops in. Stagger with animation-delay. */
+  --animate-line-up: line-up 0.9s cubic-bezier(0.33, 1, 0.68, 1) both;
+  --animate-pill-grow: pill-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-dot-in: dot-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes line-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  @keyframes pill-grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes dot-in {
+    from {
+      transform: scale(0);
+    }
+  }
 
   @keyframes wipe-in {
     from {

@@ -7,7 +7,7 @@ import type { Accent, Milestone, Team } from "@/lib/types";
 import { PillarIcon } from "./icons";
 
 /**
- * The /about sections below the hands (DESIGN.md §15), in the site's usual
+ * The /about sections below the intro (DESIGN.md §15), in the site's usual
  * style. AboutReveals animates the hooks:
  *   data-reveal              rises 40px and fades in once
  *   data-reveal-group/-item  the items rise in one after another
