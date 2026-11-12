@@ -11,9 +11,9 @@ import type { Member } from "./types";
  */
 export const SENIOR_CORE_TERM = { label: "2026-27", year: 2026 } as const;
 
-/** The four spread layouts, cycled by position: Split, Vertical, Cutout, Stacked. */
+/** The four spread layouts. Every senior uses Split (same big portrait); add layouts to CYCLE to mix them by position again. */
 export type SeniorLayout = "split" | "vertical" | "cutout" | "stacked";
-const CYCLE: SeniorLayout[] = ["split", "vertical", "cutout", "stacked"];
+const CYCLE: SeniorLayout[] = ["split"];
 
 /** Layout for the senior at `index` (0-based). The cutout spread needs a cutout_url, else it falls back to split. */
 export function seniorLayout(member: Member, index: number): SeniorLayout {

@@ -409,7 +409,6 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
 
 - Entrances, reveals and scroll motion: **0.6–1.2s** (`DURATION.fast` 0.6, `.base` 0.9, `.slow` 1.2). GSAP defaults are set to `power3.out` / 0.9s in `lib/gsap.ts`.
 - Exception: hover/press micro-feedback (colour, border, small nudges) uses **0.35s** (`DURATION.micro`, `duration-[350ms]`), because 0.6s feels laggy on hover.
-  Senior Core's portraits are the one slower hover: black and white to colour over **600ms** (a deliberate, slow reveal, §13).
 - Exception: the **Junior Core accordion** (§13, `JUNIOR_CORE_MOTION` in `TeamAccordion.tsx`) resizes its cards over
   **550ms** with **`cubic-bezier(0.22, 1, 0.36, 1)`**, because the design specifies that curve and timing. It covers the width
   (desktop) or height (phones) together with the radius, plus the glow, the iris ring, the portrait filter and the portrait/avatar
@@ -504,7 +503,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - Row types for every table in `lib/types.ts`: `members`, `teams`, `projects`, `events` (`ClubEvent`), `achievements`, `gallery_items` (`GalleryItem`), `milestones`, `partners`, `contact_messages` (`ContactMessage`), `settings` (single row). Columns are snake_case so generated Supabase types can replace them.
 - `members`: `tier` (`senior` = Senior Core, `junior` = Junior Core, shown grouped by team, `member`), `sort_order` (display order within the tier), `kicker` (short role line, "The President"), `quote` (max 140 characters), `bio`, `photo_url`, `focal_point` (where a cropped portrait is anchored: a CSS `object-position` value, default `DEFAULT_FOCAL_POINT` = `"50% 30%"`), `cutout_url` (optional transparent PNG of the person, for Senior Core's cutout spread), `socials` (jsonb: `{ linkedin, github, instagram }`, each a URL or null).
   - Limits are per tier in `MEMBER_LIMITS` (`lib/types.ts`): quote 140 for every tier; bio **300** for seniors (and `member`), **160** for juniors. The mock throws if a row breaks its tier's limit.
-  - The mock has 8 seniors with placeholder portraits; `/members/cutout-1.png` is a generated placeholder figure, not a real cutout. It also has 33 juniors across all 7 teams: Tech has 10 (so its accordion wraps onto a second line), Manav Arora (Tech) and Aditya Rawat (PR) have no photo (initials avatar), and a few set a non-default `focal_point`. Replace the photos with real ones.
+  - The mock has the 15 real seniors (names, roles and photos; year, branch, quote and bio are still placeholders, and there are no cutouts). They live in `lib/mock/senior-core.ts`, the one file to edit; photos are `public/members/senior/firstname-lastname.jpg`, cropped to 4:5 around the person, at most 1200 × 1500. `/members/placeholder.png` is a spare grey silhouette. It also has 33 juniors across all 7 teams: Tech has 10 (so its accordion wraps onto a second line), Manav Arora (Tech) and Aditya Rawat (PR) have no photo (initials avatar), and a few set a non-default `focal_point`. Replace the photos with real ones.
 - `settings.founded_year` feeds the "years running" count (the mock value is a placeholder).
 - `settings.recruitment_open` switches the home join card between "Apply now" and "Get notified"; `settings.open_teams` (team names) lists the teams taking applications.
 - `settings.contact_phone` (null hides the row), `settings.lab_address` and `settings.map_query` (what the map searches
@@ -945,23 +944,23 @@ Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in
 ### Senior Core
 An editorial run of full-screen "spreads" on the near-black background (`bg-bg`
 covers the grid), and the only place Bodoni Moda is used. The genre is a fashion
-magazine: huge serif names, black-and-white portraits, a cut-out figure in front
+magazine: huge serif names, full-colour portraits, a cut-out figure in front
 of giant letters, a spinning badge and `*1` counters. Keep it original: no
 borrowed layouts, assets or branding.
 
 Order: **intro**, one spread per senior (`tier = "senior"`, by `sort_order`), **closing**.
 - **Intro**: `Senior Core / 2026-27`, "The" small italic over "CORE" huge
   (`min(34cqw, 48svh)`; its letters rise with `animate-rise` on first load), one line of text
-  ("Eight people who…", counted from the data), the `RotatingBadge`
+  ("Fifteen people who…", counted from the data), the `RotatingBadge`
   (`club_name * SENIOR CORE * 2026 *`) and a "Meet them" next arrow. It holds the page's `h1`.
   The term is `SENIOR_CORE_TERM` in `lib/members.ts`, a constant so the page stays static. Update it yearly.
-- **Member spreads**: `seniorLayout()` picks the layout by position, cycling A, B, C, D:
+- **Member spreads**: every senior uses **A, Split**, so all 15 portraits are the same big size (`CYCLE` in `lib/members.ts` is `["split"]`). B, C and D are still built; add them to `CYCLE` and `seniorLayout()` cycles them by position again:
   - **A, Split**: the portrait fills the left half at full height. On the right: kicker, name, hairline, quote (Bodoni italic), role / branch, Connect.
   - **B, Vertical**: the name in two vertical columns (`writing-mode: vertical-rl` + `rotate-180`, reading upwards) either side of a medium portrait set high, with an iris rectangle (25%) over its lower corner. Kicker, role (Bodoni italic), bio and Connect sit bottom left; the quote bottom right.
   - **C, Cutout** (the signature spread): the name in two giant lines across the full width (fitted to the width, up to `26svh` / 20rem), with the `cutout_url` figure standing on the bottom edge between them. Line 1 sits behind the person. Line 2's fill also sits behind, and a 1px outline copy sits in front, so the line passes partly behind. **Without a `cutout_url` it falls back to A.** Portrait tablets (`md:portrait:`) make the figure 74svh and move the lines to 26% / 52%.
   - **D, Stacked**: first name, last name and "the {role}" (italic, 0.42em) stacked top left; a small square portrait bottom left; the badge (`name * role * Senior Core`) on the right; the bio beside the portrait (two columns from `lg`).
 - **Closing**: "Want a seat / at this / *table?*", the view's one `IrisButton` ("Join the club" → `join_form_url`, else `/join`) and a ghost "Junior Core ↓" button to `#junior-core`. The pin then lets go and the page scrolls on to Junior Core.
-- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has), prev/next arrows, and the counter `*1` (Sora 700, no leading zero; `clamp(3rem, 6.5vw, 6rem)`, tabular figures).
+- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has), prev/next arrows, and the counter `*1` (Sora 700, no leading zero; `clamp(3rem, 6.5vw, 6rem)`, tabular figures) with a small mono `/ 15` (the senior count) after it.
 - **Phones**: each spread stacks portrait, then name, then text, about one screen tall. Layout C keeps its figure in front of the name.
 
 Shared parts (`parts.tsx`):
@@ -969,9 +968,9 @@ Shared parts (`parts.tsx`):
   - `--col` is the column's width, set per layout in `cqw` (each spread is a size container).
   - `--em` is the widest line's width in em, from the measured Bodoni capital widths in `lib/members.ts` (`capsWidth`).
 
-  So a name always fills its column without overflowing. Two-word names break between the first words and the last word; a one-word name splits in half.
+  So a name always fills its column without overflowing. Two-word names break between the first words and the last word. A one-word name stays on one line in A (in B, C and D it splits in half). A's gaps leave room for a 140-character quote (4 lines) down to a 720px-tall screen.
 - **Kicker**: Sora 500, 11px, tracking 0.6em, uppercase ("T H E   P R E S I D E N T").
-- **Portraits**: `grayscale contrast-110`, turning to colour on hover over 600ms (§7 exception). `rounded-image`, except A's full-bleed half.
+- **Portraits**: always in full colour (no filter, no hover change). `rounded-image`, except A's full-bleed half.
 - **Blobs**: `bg-iris` (the maroon → red sheen) at 30%, `blur(clamp(48px, 7vw, 110px))`, behind the content (each spread is `isolate`): a dim red light pool on black.
 - **Body text**: 14px, muted, narrow columns.
 - **Connect**: a caps link with a long arrow line that extends on hover. It goes to the first of LinkedIn, GitHub, Instagram that the member has.

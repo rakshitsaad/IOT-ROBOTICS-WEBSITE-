@@ -1,3 +1,4 @@
+import { seniorCore } from "./senior-core";
 import { DEFAULT_FOCAL_POINT, MEMBER_LIMITS, type Member, type MemberSocials } from "@/lib/types";
 
 /*
@@ -23,6 +24,9 @@ type MemberInput = Pick<Member, "full_name" | "role" | "year" | "branch"> &
   Partial<Omit<Member, "socials">> & { socials?: Partial<MemberSocials> };
 
 const NO_SOCIALS: MemberSocials = { linkedin: null, github: null, instagram: null };
+
+/** Seniors 1–8 keep the ids other mocks (projects, achievements) point at; 9–15 come after the juniors' 22–47. */
+const SENIOR_IDS = [1, 2, 3, 4, 5, 19, 20, 21, 48, 49, 50, 51, 52, 53, 54];
 
 let order = 0;
 function member(n: number, { socials, ...input }: MemberInput): Member {
@@ -54,7 +58,7 @@ function member(n: number, { socials, ...input }: MemberInput): Member {
   return row;
 }
 
-/** A 4:5 placeholder portrait (shown in black and white; colour on hover). */
+/** A 4:5 placeholder portrait. */
 const portrait = (seed: string) => `https://picsum.photos/seed/iotr-${seed}/960/1200`;
 
 const LI = "https://www.linkedin.com/";
@@ -62,104 +66,22 @@ const GH = "https://github.com/";
 const IG = "https://www.instagram.com/";
 
 export const members: Member[] = [
-  // Senior Core (tier "senior"), in display order. The spreads cycle layouts A, B, C, D by position.
-  member(1, {
-    full_name: "Aarav Mehta",
-    role: "President",
-    kicker: "The President",
-    tier: "senior",
-    year: 4,
-    branch: "B.Tech CSE",
-    photo_url: portrait("aarav"),
-    quote: "Ship the prototype first. The perfect version can wait for the second semester.",
-    bio: "Aarav builds swarm robots and runs the club like a sprint board: weekly demos, short meetings, and a whiteboard nobody is allowed to erase. He has led the team through two national robotics finals.",
-    socials: { linkedin: LI, github: GH, instagram: IG },
-  }),
-  member(2, {
-    full_name: "Ishita Rao",
-    role: "Vice President",
-    kicker: "The Vice President",
-    tier: "senior",
-    year: 4,
-    branch: "B.Tech ECE",
-    photo_url: portrait("ishita"),
-    quote: "Every sensor lies a little. The craft is knowing how much, and when.",
-    bio: "Embedded systems, sensor fusion and very strong opinions on solder. Ishita mentors the first-years through their first PCB and keeps the lab's parts inventory honest.",
-    socials: { linkedin: LI, github: GH },
-  }),
-  member(3, {
-    full_name: "Kabir Sethi",
-    role: "General Secretary",
-    kicker: "The Secretary",
-    tier: "senior",
-    year: 4,
-    branch: "B.Tech CSE (AI/ML)",
-    photo_url: portrait("kabir"),
-    cutout_url: "/members/cutout-1.png",
-    quote: "Fifty people, twelve events, one calendar. Somebody has to hold the pen.",
-    bio: "Kabir keeps fifty people and twelve events pointed the same way. Between permissions, venues and timelines, he still finds time to train vision models for the drone team.",
-    socials: { linkedin: LI, instagram: IG },
-  }),
-  member(4, {
-    full_name: "Meera Iyer",
-    role: "Technical Head",
-    kicker: "The Engineer",
-    tier: "senior",
-    year: 4,
-    branch: "B.Tech ECE",
-    photo_url: portrait("meera"),
-    quote: "If it compiles on the first try, I get suspicious.",
-    bio: "ROS, computer vision and the club's 3D printer whisperer. Meera sets the technical roadmap each semester and reviews every design before it goes anywhere near a motor driver.",
-    socials: { github: GH, linkedin: LI },
-  }),
-  member(5, {
-    full_name: "Rohan Kapoor",
-    role: "Treasurer",
-    kicker: "The Treasurer",
-    tier: "senior",
-    year: 3,
-    branch: "B.Tech Mechanical",
-    photo_url: portrait("rohan"),
-    quote: "A budget is just a parts list with feelings.",
-    bio: "Rohan turns budgets into motors, sensors and pizza. He negotiates with vendors, tracks every rupee, and machines chassis parts on the side.",
-  }),
-  member(19, {
-    full_name: "Nisha Varghese",
-    role: "Research Head",
-    kicker: "The Researcher",
-    tier: "senior",
-    year: 4,
-    branch: "B.Tech CSE (Data Science)",
-    photo_url: portrait("nisha"),
-    quote: "Write it down, or it did not happen. Then publish it.",
-    bio: "Nisha runs the research division: reading groups, paper sprints and the club's first conference submissions on low-power edge inference.",
-    socials: { linkedin: LI, github: GH },
-  }),
-  member(20, {
-    full_name: "Yash Thakur",
-    role: "Operations Head",
-    kicker: "The Operator",
-    tier: "senior",
-    year: 3,
-    branch: "B.Tech Electrical",
-    photo_url: portrait("yash"),
-    // No cutout on purpose: this C-slot spread falls back to the split layout.
-    quote: "Logistics wins competitions. The robot only has to show up working.",
-    bio: "Yash handles everything between the idea and the arena: travel, shipping crates, spare batteries and the checklist that gets read twice before every match.",
-    socials: { linkedin: LI, instagram: IG },
-  }),
-  member(21, {
-    full_name: "Sara Fernandes",
-    role: "Creative Head",
-    kicker: "The Storyteller",
-    tier: "senior",
-    year: 3,
-    branch: "B.Des Communication Design",
-    photo_url: portrait("sara"),
-    quote: "Good engineering deserves to be seen. That part is my job.",
-    bio: "Sara leads design, multimedia and social media: the posters, the reels and the build logs that make a month of soldering look as exciting as it felt.",
-    socials: { instagram: IG, linkedin: LI },
-  }),
+  // Senior Core: edit lib/mock/senior-core.ts. Every spread uses layout A (lib/members.ts CYCLE).
+  ...seniorCore.map((row, i) =>
+    member(SENIOR_IDS[i] ?? 100 + i, {
+      full_name: row.name,
+      role: row.role,
+      kicker: row.kicker,
+      tier: "senior",
+      year: row.year,
+      branch: row.branch,
+      photo_url: row.photo,
+      cutout_url: row.cutout,
+      quote: row.quote,
+      bio: row.bio,
+      socials: row.socials,
+    }),
+  ),
 
   // Junior Core (tier "junior"), grouped by team on the page; each team's first row is its lead.
   // Tech has 10 so its accordion wraps past 8. Manav Arora and Aditya Rawat have no photo (initials avatar).

@@ -73,7 +73,7 @@ export function Kicker({ children, className }: { children: ReactNode; className
   );
 }
 
-/** Black-and-white portrait (grayscale + contrast) that turns to colour on hover over 600ms. */
+/** A senior's portrait, always in full colour. */
 export function Portrait({
   src,
   alt,
@@ -96,8 +96,7 @@ export function Portrait({
         sizes={sizes}
         draggable={false}
         className={cn(
-          "object-cover grayscale contrast-110 select-none",
-          "transition-[filter] duration-[600ms] ease-power3 hover:grayscale-0 hover:contrast-100",
+          "object-cover select-none",
           imgClassName,
         )}
       />
@@ -209,6 +208,7 @@ export function Counter({ value, from, total }: { value: number; from: number; t
             </span>
           );
         })}
+        <span className="mono-label ml-2 self-end pb-[0.12em] text-muted">/ {total}</span>
       </span>
     </p>
   );

@@ -55,7 +55,7 @@ const MOBILE_PAD = "px-gutter pt-[calc(var(--nav-h)+1.5rem)] pb-12";
 
 /* ------------------------------------------------------------------ intro */
 
-const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"];
+const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen"];
 
 export function IntroSpread({
   term,
@@ -232,7 +232,9 @@ function Meta({ member, className }: { member: Member; className?: string }) {
 /** A: portrait fills the left half; kicker, giant name and quote on the right. */
 function SplitSpread(props: MemberSpreadProps) {
   const { member: m } = props;
-  const lines = nameLines(m.full_name);
+  // A one-word name stays on one line here (nameLines would split it in half).
+  const name = m.full_name.trim();
+  const lines = /\s/.test(name) ? nameLines(name) : [name];
   return (
     <Spread labelledBy={titleId(m)} className={cn("flex flex-col", MOBILE_PAD, "md:grid md:grid-cols-2 md:p-0")}>
       <Blob speed={0.7} className="top-[12%] left-[25%] w-[75vw] md:top-[16%] md:left-[36%] md:w-[32vw]" />
@@ -246,13 +248,14 @@ function SplitSpread(props: MemberSpreadProps) {
       )}
       <div className="flex flex-1 flex-col pt-8 [--col:calc(100cqw-2*var(--gutter))] md:min-h-0 md:px-gutter md:pt-[calc(var(--nav-h)+1.75rem)] md:pb-(--gutter) md:[--col:calc(50cqw-2*var(--gutter))]">
         {m.kicker && <Kicker>{m.kicker}</Kicker>}
-        <h2 id={titleId(m)} className={cn(NAME_SIZE, NAME_TYPE, "mt-5 md:mt-[3svh]")} style={emStyle(lines)}>
+        <h2 id={titleId(m)} className={cn(NAME_SIZE, NAME_TYPE, "mt-5 md:mt-[2svh]")} style={emStyle(lines)}>
           <span className="sr-only">{m.full_name}</span>
           <span aria-hidden="true">
             <MaskedLetters lines={lines} />
           </span>
         </h2>
-        <div data-sc-fade aria-hidden="true" className="mt-6 h-px w-full bg-line md:mt-[3.5svh]" />
+        {/* Gaps are tight so a 140-character quote (4 lines) fits a 720px-tall screen. */}
+        <div data-sc-fade aria-hidden="true" className="mt-6 h-px w-full bg-line md:mt-[2.5svh]" />
         <Quote quote={m.quote} className="mt-6 max-w-[32ch] text-[length:clamp(1.25rem,1.8vw,1.7rem)] md:mt-[2.5svh]" />
         <Meta member={m} className="mt-4" />
         <ConnectLink member={m} className="mt-6 md:mt-[2.5svh]" />
@@ -388,7 +391,7 @@ function CutoutSpread(props: MemberSpreadProps) {
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
               draggable={false}
-              className="object-contain object-bottom grayscale contrast-110 transition-[filter] duration-[600ms] ease-power3 select-none hover:grayscale-0 hover:contrast-100"
+              className="object-contain object-bottom select-none"
             />
           </div>
         )}
