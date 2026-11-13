@@ -20,7 +20,7 @@ import { useLabStore } from "./lab-store";
  *   holds with CSS sticky (it is (stations + 1) screens tall).
  * - ONE scrubbed timeline moves the robot through the whole page by tweening
  *   botTransform: hero → statement → lab → corner (slider, event, numbers) →
- *   on top of the join card → fades out before the footer. It also drives the
+ *   on top of the join card → back to the corner for the footer. It also drives the
  *   hero's wordmark and decorations, the lab's photo pans, pips and grid pan.
  *   Its time unit is px of scroll, so every phase starts at an exact scroll
  *   position, measured from the layout.
@@ -33,7 +33,8 @@ import { useLabStore } from "./lab-store";
  * The robot's head keeps tracking the cursor on top of botTransform and the
  * mood engine keeps running; scroll moments use botActions.react() / hold().
  *
- * Phones (< 768px): the robot fades out in the statement and stays hidden.
+ * Phones (< 768px): the robot ducks into the bottom-right corner in the
+ * statement and stays there to the end. The sidekick drone flies the whole way.
  * Reduced motion: nothing is built (no pin, no scrub); everything renders in
  * its final position and the stage CSS keeps the poster in the hero.
  */
@@ -57,7 +58,7 @@ export const HOME_SCROLL = {
     statementScale: 0.6,
     statementBase: 0.8,
     statementRotY: -0.45,
-    /** Scroll (in hero heights) over which it moves into the statement / fades out on phones. */
+    /** Scroll (in hero heights) over which it moves into the statement / into the corner on phones. */
     enter: 0.85,
     fade: 0.45,
   },
@@ -82,15 +83,12 @@ export const HOME_SCROLL = {
     height: 0.34,
     /** The robot lands when the card's bottom edge reaches this fraction of the viewport (the whole card in view). */
     land: 0.9,
-    /** It has faded out by the time the footer's top reaches this fraction of the viewport… */
+    /** It is back in its corner by the time the footer's top reaches this fraction of the viewport… */
     footer: 0.8,
-    /** …fading over this much scroll (screens). */
-    fade: 0.25,
+    /** …moving there over this much scroll (screens). */
+    back: 0.25,
   },
 } as const;
-
-/** Far enough right that the robot is outside its stage, so the canvas stops rendering. */
-const OFFSTAGE_X = 50;
 
 type SceneId = "free" | "lab" | "slider" | "event" | "join";
 
@@ -179,12 +177,13 @@ export function HomeScroll({ children }: { children: ReactNode }) {
       let sceneAt: (t: number) => SceneId = () => "free";
       let labStart = Infinity;
 
+      /** Bottom-right corner, only the head peeking up. */
+      const C = HOME_SCROLL.corner;
+      const corner = { ...pose(W - gutter - halfWidth(C.height), 1 + C.height - C.peek, C.height), rotY: -0.3 };
+
       if (mobile) {
-        /* 2. Phones: the robot fades out as the statement comes in, then leaves the stage (rendering stops). */
-        const fade = R.fade * H;
-        tl.to(stage, { autoAlpha: 0, duration: fade }, P);
-        tl.to(botTransform, { y: dropY - 0.25, duration: fade }, P);
-        tl.set(botTransform, { x: OFFSTAGE_X }, P + fade);
+        /* 2. Phones: the robot ducks into the corner as the statement comes in and stays there to the end of the page. */
+        tl.to(botTransform, { ...corner, duration: R.fade * H }, P);
       } else {
         /* 2. Statement: to the right edge, smaller, turned towards the headline: [P, P + enter] */
         const enter = R.enter * H;
@@ -250,17 +249,13 @@ export function HomeScroll({ children }: { children: ReactNode }) {
         }
 
         /* 4. Slider, event, numbers: ducks into the bottom-right corner, only its head peeking up. */
-        const C = HOME_SCROLL.corner;
         const cornerAt = lab ? labEnd : P + enter;
-        tl.to(
-          botTransform,
-          { ...pose(W - gutter - halfWidth(C.height), 1 + C.height - C.peek, C.height), rotY: -0.3, duration: 0.8 * H },
-          cornerAt,
-        );
+        tl.to(botTransform, { ...corner, duration: 0.8 * H }, cornerAt);
 
-        /* 5. Join: lands on the card's top edge, centred, waves, rides up with the card, fades before the footer. */
+        /* 5. Join: lands on the card's top edge, centred, waves, rides up with the card, then back to the corner for the footer. */
         const J = HOME_SCROLL.join;
         let land = Infinity;
+        let back = Infinity;
         if (card) {
           const navH = parseFloat(getComputedStyle(root).getPropertyValue("--nav-h")) || 84;
           // Card top (px from the viewport top) when the robot lands: whole card in view, robot clear of the
@@ -273,17 +268,15 @@ export function HomeScroll({ children }: { children: ReactNode }) {
           const joinPose = pose(W / 2, (landY - stageBox.top) / stageBox.height + 0.012, J.height);
           const joinIn = Math.max(cornerAt + 0.8 * H, land - 0.8 * H);
           tl.to(botTransform, { ...joinPose, rotY: 0, duration: land - joinIn }, joinIn);
-          // Then it rides up with the card (1px of scroll = 1px up)…
-          const ride = Math.max(1, docMax - land);
-          tl.to(botTransform, { y: joinPose.y + ride / ppu, duration: ride }, land);
-          // …and fades out before the footer arrives, or (portrait tablets) by the time half of it has ridden
-          // out through the top of its stage.
-          let fadeAt = footer ? marks.footer - J.footer * H : docMax;
-          if (stageBox.top > navH) fadeAt = Math.min(fadeAt, land + landY - stageBox.top - robotPx / 2);
-          const fadeEnd = Math.min(Math.max(fadeAt, land + 2), docMax);
-          const fadeStart = Math.max(land + 1, fadeEnd - J.fade * H);
-          tl.to(stage, { autoAlpha: 0, duration: Math.max(1, fadeEnd - fadeStart) }, fadeStart);
-          tl.set(botTransform, { x: OFFSTAGE_X }, fadeEnd);
+          // It is back in its corner before the footer arrives, or (portrait tablets) by the time half of it
+          // would have ridden out through the top of its stage; it stays there to the end of the page.
+          let backAt = footer ? marks.footer - J.footer * H : docMax;
+          if (stageBox.top > navH) backAt = Math.min(backAt, land + landY - stageBox.top - robotPx / 2);
+          const backEnd = Math.min(Math.max(backAt, land + 2), docMax);
+          back = Math.max(land + 1, backEnd - J.back * H);
+          // Until then it rides up with the card (1px of scroll = 1px up).
+          tl.to(botTransform, { y: joinPose.y + (back - land) / ppu, duration: back - land }, land);
+          tl.to(botTransform, { ...corner, duration: Math.max(1, backEnd - back) }, back);
         }
 
         const starts: [SceneId, number][] = (
@@ -293,6 +286,7 @@ export function HomeScroll({ children }: { children: ReactNode }) {
             ["event", event ? marks.event - 0.6 * H : Infinity],
             ["free", numbers ? marks.numbers - 0.6 * H : Infinity],
             ["join", land - 0.35 * H],
+            ["free", back],
           ] as [SceneId, number][]
         ).filter(([, t]) => Number.isFinite(t));
         sceneAt = (t) => {

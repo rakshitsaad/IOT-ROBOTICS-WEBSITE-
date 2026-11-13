@@ -10,7 +10,7 @@ export function ResultBadge({ result, className }: { result: string; className?:
   return (
     <span
       className={cn(
-        "inline-block rounded-pill px-3 py-1 text-[12px] leading-none font-semibold whitespace-nowrap",
+        "inline-block rounded-pill px-3 py-1 text-[12px] leading-none font-medium whitespace-nowrap",
         isWin(result) ? "bg-red text-text" : "bg-text/10 text-text/80",
         className,
       )}

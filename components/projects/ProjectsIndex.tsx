@@ -190,7 +190,7 @@ function ProjectGrid({ list }: { list: ProjectWithTeam[] }) {
               />
             </div>
             <div className="mt-4 flex items-baseline justify-between gap-4">
-              <h2 className="text-xl font-bold tracking-[-0.02em] underline-offset-4 group-hover:underline">{p.title}</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.01em] underline-offset-4 group-hover:underline">{p.title}</h2>
               <MonoLabel>{p.year}</MonoLabel>
             </div>
             <TagList tags={p.tags} className="mt-2.5" />

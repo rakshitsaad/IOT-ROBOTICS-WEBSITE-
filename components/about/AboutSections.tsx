@@ -24,7 +24,7 @@ function SectionHead({ label, id, children }: { label: string; id: string; child
       <MonoLabel>{label}</MonoLabel>
       <h2
         id={id}
-        className="mt-5 max-w-[18ch] text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]"
+        className="mt-5 max-w-[18ch] text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]"
       >
         {children}
       </h2>
@@ -49,7 +49,7 @@ export function Purpose() {
           >
             <MonoLabel tone={card.accent}>{card.label}</MonoLabel>
             <DotGrid rows={3} cols={4} className="absolute top-[clamp(1.75rem,4vw,3.5rem)] right-[clamp(1.75rem,4vw,3.5rem)] text-text/20" />
-            <h3 className="mt-auto pt-16 text-[length:clamp(1.75rem,3vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
+            <h3 className="mt-auto pt-16 text-[length:clamp(1.75rem,3vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em]">
               {card.title}
             </h3>
             <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-muted md:text-[17px]">{card.body}</p>
@@ -82,7 +82,7 @@ export function Pillars() {
                 <PillarIcon name={pillar.icon} className="size-7" />
               </span>
             </div>
-            <h3 className="mt-10 text-2xl font-semibold tracking-[-0.02em] md:mt-14">{pillar.title}</h3>
+            <h3 className="mt-10 text-2xl font-semibold tracking-[-0.01em] md:mt-14">{pillar.title}</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted">{pillar.body}</p>
           </li>
         ))}
@@ -139,10 +139,10 @@ export function History({ milestones }: { milestones: Milestone[] }) {
                   left ? "md:col-start-1 md:text-right" : "md:col-start-2",
                 )}
               >
-                <p className="text-[length:clamp(2.25rem,4vw,3.5rem)] leading-none font-extrabold tracking-[-0.04em] tabular-nums">
+                <p className="text-[length:clamp(2.25rem,4vw,3.5rem)] leading-none font-display font-semibold tracking-[-0.03em] tabular-nums">
                   {m.year}
                 </p>
-                <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em]">{m.title}</h3>
+                <h3 className="mt-4 text-xl font-semibold tracking-[-0.01em]">{m.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-muted">{m.description}</p>
               </article>
             </li>
@@ -170,7 +170,7 @@ export function TeamsOverview({ teams }: { teams: Team[] }) {
       <ul
         data-reveal-group
         aria-label="Teams"
-        className="mt-10 flex flex-wrap gap-x-3 gap-y-4 text-[length:clamp(1.25rem,2.6vw,2.25rem)] font-semibold tracking-[-0.02em] md:mt-14"
+        className="mt-10 flex flex-wrap gap-x-3 gap-y-4 text-[length:clamp(1.25rem,2.6vw,2.25rem)] font-display font-semibold tracking-[-0.01em] md:mt-14"
       >
         {teams.map((team) => (
           <li key={team.id} data-reveal-item>

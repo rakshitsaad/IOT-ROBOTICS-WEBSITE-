@@ -21,7 +21,7 @@ export function Logo({ name, shortName, className }: LogoProps) {
       className={cn("group/logo inline-flex items-center gap-2.5", className)}
     >
       <LogoMark />
-      <span className="whitespace-nowrap text-[15px] font-bold leading-none tracking-[-0.02em] md:text-base">
+      <span className="whitespace-nowrap text-[15px] font-display font-semibold leading-none tracking-[-0.01em] md:text-base">
         <span className="sm:hidden">{shortName}</span>
         <span className="hidden sm:inline">{name}</span>
       </span>

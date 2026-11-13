@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { MonoLabel, Pill, PillButton } from "@/components/ui";
+import { MonoLabel, PillButton } from "@/components/ui";
 import { BotHeadIcon } from "@/components/robot/BotHeadIcon";
 import { cn } from "@/lib/cn";
 import {
@@ -186,7 +186,7 @@ export function Lab({ projects }: { projects: Project[] }) {
                 </MonoLabel>
                 <div className="mt-4 flex items-center gap-3.5">
                   <BotHeadIcon icon={station.icon} className="size-10" />
-                  <h3 className="text-[1.35rem] leading-tight font-bold tracking-[-0.02em]">{station.title}</h3>
+                  <h3 className="text-[1.35rem] leading-tight font-semibold tracking-[-0.01em]">{station.title}</h3>
                 </div>
                 <p className="mt-3 text-[15px] leading-relaxed text-muted">{station.description}</p>
                 <PillButton href={stationHref(station)} variant="ghost" size="sm" arrow className="mt-5">
@@ -203,13 +203,9 @@ export function Lab({ projects }: { projects: Project[] }) {
 
 function LabHeading() {
   return (
-    <h2 className="text-[length:clamp(1.9rem,3.3vw,3.4rem)] leading-[1.14] font-bold tracking-[-0.03em]">
-      <span className="block">
-        <Pill color="red">What we build</Pill>
-      </span>
-      <span className="mt-[0.1em] block">
-        <Pill color="white">inside the lab</Pill>
-      </span>
+    <h2 className="text-[length:clamp(1.9rem,3.3vw,3.4rem)] leading-[1.14] font-semibold tracking-[-0.02em]">
+      <span className="block">What we build</span>
+      <span className="serif-accent block leading-[1.05]">inside the lab</span>
     </h2>
   );
 }

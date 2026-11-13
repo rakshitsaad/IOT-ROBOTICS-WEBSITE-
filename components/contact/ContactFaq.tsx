@@ -15,7 +15,7 @@ export function ContactFaq() {
         <MonoLabel as="p">
           FAQ
         </MonoLabel>
-        <h2 id="faq-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]">
+        <h2 id="faq-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]">
           Good questions
         </h2>
         <p className="mt-5 max-w-[30ch] text-[15px] leading-relaxed text-muted">
@@ -24,7 +24,7 @@ export function ContactFaq() {
             type="button"
             data-cursor="link"
             onClick={() => scrollToMessage(lenis)}
-            className="font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
+            className="font-medium text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
           >
             Send us a message
           </button>

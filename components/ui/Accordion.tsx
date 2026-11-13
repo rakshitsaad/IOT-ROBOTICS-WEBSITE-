@@ -56,7 +56,7 @@ function AccordionRow({ item, open, onToggle }: { item: AccordionItem; open: boo
           data-cursor="link"
           className="group/acc flex w-full items-center justify-between gap-6 py-5 text-left md:py-6"
         >
-          <span className="text-[17px] leading-snug font-semibold tracking-[-0.01em] md:text-xl">{item.q}</span>
+          <span className="text-[17px] leading-snug font-display font-semibold tracking-[-0.01em] md:text-xl">{item.q}</span>
           <span
             aria-hidden="true"
             className={cn(

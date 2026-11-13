@@ -31,7 +31,7 @@ export function IrisButton({
       data-cursor="link"
       {...(props as ActionProps)}
       className={cn(
-        "group/iris relative inline-flex shrink-0 rounded-pill bg-red p-px font-semibold",
+        "group/iris relative inline-flex shrink-0 rounded-pill bg-red p-px font-medium",
         "transition-transform duration-[350ms] ease-power3 active:scale-[0.97]",
         "focus-visible:outline-offset-4",
         className,

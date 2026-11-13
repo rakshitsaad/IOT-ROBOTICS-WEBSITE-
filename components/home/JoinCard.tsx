@@ -25,9 +25,9 @@ export function JoinCard({ settings }: { settings: Settings }) {
             <MonoLabel>Join the club</MonoLabel>
             <h2
               id="join-title"
-              className="mt-6 text-[length:clamp(2.6rem,6.4vw,6.25rem)] leading-[1.05] font-bold tracking-[-0.045em]"
+              className="mt-6 text-[length:clamp(2.6rem,6.4vw,6.25rem)] leading-[1.05] font-semibold tracking-[-0.035em]"
             >
-              <Pill color="red">Hands on</Pill> with hardware
+              <span className="serif-accent">Hands on</span> with hardware
             </h2>
           </div>
 
@@ -45,7 +45,7 @@ export function JoinCard({ settings }: { settings: Settings }) {
                 </MonoLabel>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {settings.open_teams.map((team) => (
-                    <li key={team} className="text-[13px] font-semibold">
+                    <li key={team} className="text-[13px] font-medium">
                       <Pill color="raised">{team}</Pill>
                     </li>
                   ))}

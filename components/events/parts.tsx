@@ -13,13 +13,13 @@ import { eventDate, type ShowcaseEvent } from "@/lib/events";
  */
 export function StatusBadge({ event, quiet, className }: { event: Pick<ShowcaseEvent, "status">; quiet?: boolean; className?: string }) {
   return event.status === "upcoming" ? (
-    <Pill color={quiet ? "raised" : "maroon"} className={cn("inline-block px-2.5 py-1 leading-none font-semibold whitespace-nowrap", className)}>
+    <Pill color={quiet ? "raised" : "maroon"} className={cn("inline-block px-2.5 py-1 leading-none font-medium whitespace-nowrap", className)}>
       Registrations open
     </Pill>
   ) : (
     <span
       className={cn(
-        "inline-block rounded-pill bg-text/10 px-2.5 py-1 leading-none font-semibold whitespace-nowrap text-muted",
+        "inline-block rounded-pill bg-text/10 px-2.5 py-1 leading-none font-medium whitespace-nowrap text-muted",
         className,
       )}
     >

@@ -111,24 +111,24 @@ export function wrapCentered(v: number, len: number): number {
 /* ------------------------------------------------------------- title */
 
 /**
- * Sora 800 advance widths in em for capitals, digits and the space, measured
- * in the browser (canvas measureText). The title's tracking (-0.02em per
+ * Archivo 700 advance widths in em for capitals, digits and the space, measured
+ * in the browser. The title's tracking (-0.02em per
  * character) is added in titleEm(). Used to size the vertical title so the
  * longest one still fits, and to butt its two halves together.
  */
-const SORA_CAPS: Record<string, number> = {
-  A: 0.79, B: 0.696, C: 0.802, D: 0.778, E: 0.592, F: 0.56, G: 0.833, H: 0.798, I: 0.338, J: 0.644, K: 0.777,
-  L: 0.562, M: 0.988, N: 0.885, O: 0.864, P: 0.676, Q: 0.864, R: 0.74, S: 0.659, T: 0.626, U: 0.771, V: 0.75,
-  W: 1.08, X: 0.73, Y: 0.658, Z: 0.645,
-  "0": 0.769, "1": 0.43, "2": 0.636, "3": 0.638, "4": 0.682, "5": 0.651, "6": 0.696, "7": 0.618, "8": 0.677,
-  "9": 0.696,
-  " ": 0.204,
+const ARCHIVO_CAPS: Record<string, number> = {
+  A: 0.724, B: 0.722, C: 0.733, D: 0.739, E: 0.683, F: 0.622, G: 0.802, H: 0.754, I: 0.301, J: 0.603, K: 0.725,
+  L: 0.591, M: 0.872, N: 0.754, O: 0.793, P: 0.681, Q: 0.793, R: 0.73, S: 0.679, T: 0.641, U: 0.748, V: 0.694,
+  W: 0.964, X: 0.706, Y: 0.699, Z: 0.653,
+  "0": 0.596, "1": 0.596, "2": 0.596, "3": 0.596, "4": 0.597, "5": 0.596, "6": 0.596, "7": 0.596, "8": 0.596,
+  "9": 0.596,
+  " ": 0.196,
 };
 
-/** Length of an uppercase title in em (Sora 800, tracking -0.02em). */
+/** Length of an uppercase title in em (Archivo 700, tracking -0.02em). */
 export function titleEm(title: string): number {
   let em = 0;
-  for (const ch of title.toUpperCase()) em += (SORA_CAPS[ch] ?? 0.72) - 0.02;
+  for (const ch of title.toUpperCase()) em += (ARCHIVO_CAPS[ch] ?? 0.72) - 0.02;
   return Math.max(em, 1);
 }
 

@@ -11,7 +11,6 @@ import { SpreadNav } from "./SpreadNav";
  *   data-sc-rise      a letter/line that rises out of its mask ("x": sideways, for vertical text)
  *   data-sc-portrait  revealed with clip-path inset(100% 0 0 0) → inset(0)
  *   data-sc-fade      rises 24px and fades in
- *   data-sc-odo       an odometer digit column (data-from / data-to, in digits)
  *   data-sc-blob      an iris blob; the value is its drift speed
  * Everything renders in its final state (no JS, reduced motion).
  */
@@ -25,8 +24,8 @@ import { SpreadNav } from "./SpreadNav";
 /** Put it before NAME_TYPE in cn(): tailwind-merge drops a leading-* class that precedes a font-size class. */
 export const NAME_SIZE = "text-[length:min(clamp(4rem,11vw,12rem),calc(var(--col)/var(--em)),17svh)]";
 
-/** Bodoni Moda capitals, tight leading. */
-export const NAME_TYPE = "font-serif font-medium uppercase leading-[0.86] tracking-[-0.01em]";
+/** Instrument Serif capitals (its one weight), tight leading. */
+export const NAME_TYPE = "font-serif font-normal uppercase leading-[0.86] tracking-[-0.01em]";
 
 /** Sets --em for NAME_SIZE from the name's lines. */
 export function emStyle(lines: readonly string[]): CSSProperties {
@@ -58,13 +57,13 @@ export function MaskedLetters({
   ));
 }
 
-/** "T H E   P R E S I D E N T": Sora 500, 11px, tracked 0.6em. */
+/** The role line above a name ("THE PRESIDENT"): a mono label. */
 export function Kicker({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <p
       data-sc-fade
       className={cn(
-        "text-[11px] leading-none font-medium tracking-[0.6em] text-text/80 uppercase [word-spacing:0.5em]",
+        "mono-label text-text/70",
         className,
       )}
     >
@@ -131,7 +130,7 @@ export function ConnectLink({ member, className }: { member: Member; className?:
       rel="noopener noreferrer"
       aria-label={`Connect with ${member.full_name} on ${link.label}`}
       className={cn(
-        "group/connect inline-flex w-fit items-center gap-4 text-[12px] font-semibold tracking-[0.3em] text-text uppercase",
+        "group/connect mono-label inline-flex w-fit items-center gap-4 text-text",
         className,
       )}
     >
@@ -171,59 +170,14 @@ export function SocialLinks({ member, className }: { member: Member; className?:
   );
 }
 
-/**
- * "*1" in Sora 700 (no leading zero). Each digit is a column of 0–9 twice over; entering the
- * spread rolls it like an odometer from the previous number (the ones digit
- * spins a full turn). Rendered at its final digit.
- */
-export function Counter({ value, from, total }: { value: number; from: number; total: number }) {
-  const to = String(value);
-  // The previous number, right-aligned to as many digits as `to` (so the ones digit rolls from the old ones digit).
-  const was = String(from).padStart(to.length, "0").slice(-to.length);
-  return (
-    <p className="text-[length:clamp(3rem,6.5vw,6rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">
-      <span className="sr-only">
-        {value} of {total}
-      </span>
-      <span aria-hidden="true" className="inline-flex">
-        <span className="text-muted">*</span>
-        {Array.from(to).map((d, k) => {
-          const last = k === to.length - 1;
-          const end = Number(d) + (last ? 10 : 0);
-          return (
-            <span key={k} className="inline-block h-[1em] overflow-hidden">
-              <span
-                data-sc-odo
-                data-from={Number(was[k])}
-                data-to={end}
-                className="flex flex-col"
-                style={{ transform: `translateY(${-end * 5}%)` }}
-              >
-                {Array.from({ length: 20 }, (_, n) => (
-                  <span key={n} className="block h-[1em]">
-                    {n % 10}
-                  </span>
-                ))}
-              </span>
-            </span>
-          );
-        })}
-        <span className="mono-label ml-2 self-end pb-[0.12em] text-muted">/ {total}</span>
-      </span>
-    </p>
-  );
-}
-
-/** Bottom-right of every spread: socials and prev/next arrows, then the counter. */
+/** Bottom-right of every spread: socials and prev/next arrows. */
 export function SpreadFooter({
   member,
-  counter,
   nav,
   className,
   children,
 }: {
   member?: Member;
-  counter?: { value: number; from: number; total: number };
   nav: { index: number; count: number; prev: string; next: string };
   className?: string;
   children?: ReactNode;
@@ -235,7 +189,6 @@ export function SpreadFooter({
         {children}
         <SpreadNav {...nav} />
       </div>
-      {counter && <Counter {...counter} />}
     </div>
   );
 }

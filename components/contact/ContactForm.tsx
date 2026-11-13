@@ -136,7 +136,7 @@ export function ContactForm() {
 
         {status === "error" && (
           <div role="alert" className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[14px] bg-red/10 px-4 py-3 ring-1 ring-red/40">
-            <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-bold text-text">
+            <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-medium text-text">
               !
             </span>
             <p className="min-w-0 flex-1 text-[14px] text-text/90">{error}</p>
@@ -144,7 +144,7 @@ export function ContactForm() {
               type="button"
               data-cursor="link"
               onClick={() => submit()}
-              className="rounded-pill px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
+              className="rounded-pill px-3 py-1.5 text-[13px] font-medium text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
             >
               Try again
             </button>
@@ -177,14 +177,14 @@ export function ContactForm() {
         className="flex flex-col items-center justify-center text-center [grid-area:1/1]"
       >
         <SentCheck play={sent} reduced={reduced} />
-        <h3 id="contact-sent" tabIndex={-1} className="mt-7 max-w-[22ch] text-2xl leading-tight font-semibold tracking-[-0.02em] outline-none md:text-3xl">
+        <h3 id="contact-sent" tabIndex={-1} className="mt-7 max-w-[22ch] text-2xl leading-tight font-semibold tracking-[-0.01em] outline-none md:text-3xl">
           Message sent. We&apos;ll get back within 48 hours.
         </h3>
         <button
           type="button"
           data-cursor="link"
           onClick={again}
-          className="mt-6 text-[14px] font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
+          className="mt-6 text-[14px] font-medium text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
         >
           Send another
         </button>

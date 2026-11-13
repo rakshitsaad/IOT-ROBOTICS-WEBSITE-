@@ -328,7 +328,7 @@ function LightboxPanel({ items, index, onIndex, onClose, onDownload, title, redu
       {/* Bottom: caption, and prev/next on phones. */}
       <div className="flex min-h-20 items-center justify-between gap-4 px-gutter py-4">
         <RoundButton label="Previous" icon="prev" onClick={prev} className="md:hidden" />
-        <p className="flex-1 text-center font-hand text-2xl leading-tight text-text md:text-3xl" aria-live="polite">
+        <p className="flex-1 text-center font-serif text-xl leading-tight text-text italic md:text-2xl" aria-live="polite">
           {item.caption ?? <span className="sr-only">{item.alt}</span>}
         </p>
         <RoundButton label="Next" icon="next" onClick={next} className="md:hidden" />

@@ -336,7 +336,7 @@ export function SeniorCoreTrack({ labels, children }: { labels: string[]; childr
 
 /**
  * One spread's entrance: letters rise out of their masks, portraits wipe up
- * (clip-path), text fades up and the counter rolls. Plays once.
+ * (clip-path) and text fades up. Plays once.
  */
 function reveal(spread: HTMLElement, trigger: ScrollTrigger.Vars) {
   const tl = gsap.timeline({ scrollTrigger: trigger });
@@ -357,14 +357,5 @@ function reveal(spread: HTMLElement, trigger: ScrollTrigger.Vars) {
   }
   const fades = spread.querySelectorAll("[data-sc-fade]");
   if (fades.length) tl.from(fades, { y: 24, opacity: 0, duration: DURATION.base, ease: EASE.out, stagger: STAGGER }, 0.3);
-
-  spread.querySelectorAll<HTMLElement>("[data-sc-odo]").forEach((col, k) => {
-    tl.fromTo(
-      col,
-      { y: 0, yPercent: -Number(col.dataset.from) * 5 },
-      { y: 0, yPercent: -Number(col.dataset.to) * 5, duration: DURATION.slow, ease: EASE.expo },
-      0.2 + k * STAGGER,
-    );
-  });
   return tl;
 }

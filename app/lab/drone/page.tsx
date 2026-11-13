@@ -21,7 +21,7 @@ export default async function DroneLabPage() {
             ← Design system
           </PillButton>
         </div>
-        <h1 className="mt-5 max-w-4xl text-[length:clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
+        <h1 className="mt-5 max-w-4xl text-[length:clamp(2.5rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-[-0.035em]">
           Meet the <Pill color="raised">drone</Pill>.
         </h1>
         <p className="mt-6 max-w-xl text-muted">

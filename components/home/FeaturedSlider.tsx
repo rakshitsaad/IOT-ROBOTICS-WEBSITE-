@@ -178,7 +178,7 @@ export function FeaturedSlider({ projects }: { projects: SliderProject[] }) {
                 <MonoLabel tone="text">
                   Featured / {p.year}
                 </MonoLabel>
-                <h3 className="mt-3 text-[length:clamp(2.2rem,5vw,4.75rem)] leading-[0.95] font-extrabold tracking-[-0.04em]">
+                <h3 className="mt-3 text-[length:clamp(2.2rem,5vw,4.75rem)] leading-[0.95] font-bold tracking-[-0.03em]">
                   {p.title}
                 </h3>
                 <ul className="mt-4 flex flex-wrap gap-2" aria-label="Tags">

@@ -67,4 +67,4 @@ export function AnnouncementBar({ text, linkLabel, linkUrl, dismissKey }: Announ
 }
 
 const LINK =
-  "font-semibold text-text underline decoration-text/30 underline-offset-[3px] transition-colors duration-[350ms] hover:decoration-red";
+  "font-medium text-text underline decoration-text/30 underline-offset-[3px] transition-colors duration-[350ms] hover:decoration-red";

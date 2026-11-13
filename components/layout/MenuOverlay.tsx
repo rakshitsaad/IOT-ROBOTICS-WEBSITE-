@@ -114,7 +114,7 @@ function MenuPanel({ onClose, email, socials }: MenuOverlayProps & { onClose: ()
                     )}
                   >
                     <span
-                      className="font-bold leading-[1.04] tracking-[-0.035em] transition-transform duration-600 ease-expo group-hover/item:translate-x-3"
+                      className="font-display font-semibold leading-[1.04] tracking-[-0.025em] transition-transform duration-600 ease-expo group-hover/item:translate-x-3"
                       style={{ fontSize: "clamp(2rem, min(9vw, 6.6vh), 6.5rem)" }}
                     >
                       {item.label}

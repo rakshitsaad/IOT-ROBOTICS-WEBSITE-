@@ -5,7 +5,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
-import { BOT_CAMERA } from "@/components/robot/config";
+import { HOME_ROBOT } from "@/components/home/HomeRobot";
+import { BOT_CAMERA, BOT_HEIGHT } from "@/components/robot/config";
 import { botActions, botAnchors, botInput, botScreen, useBotStore } from "@/components/robot/store";
 import { FLIGHT } from "./config";
 import { Drone, ROTORS, type DroneParts } from "./Drone";
@@ -35,7 +36,8 @@ import { Trail, type TrailApi } from "./Trail";
  *   happy), peekaboo (surprised), wobble, boop (blink + wink). Phones: flip and orbit only.
  * - Cursor within 120px: it darts away. Click (projected hit test; the canvas takes no pointer events) or tap: a flip
  *   and a sparkle. No input for 6s: it lands on the robot's head and both nap until something moves.
- * - It stays in the hero: when the hero scrolls away it zips off the top, and flies back in when you return.
+ * - It flies the whole page: the stage is fixed, so it keeps roaming it as the page scrolls. Its size is fixed (from
+ *   the hero robot's), and while the robot is small (corner, statement, join card) it does solo stunts only.
  * - Physics runs in 1/60s substeps, so the timing holds when frames are slow.
  * Debug: `?sidekick=debug` exposes window.__sidekick (mode, event log, stunt(name), flip(), nap()).
  */
@@ -43,7 +45,7 @@ import { Trail, type TrailApi } from "./Trail";
 const CAM = new THREE.Vector3(...BOT_CAMERA.position);
 const TAN = Math.tan(((BOT_CAMERA.fov / 2) * Math.PI) / 180);
 const MOBILE = "(max-width: 767.98px)";
-type Mode = "away" | "enter" | "fly" | "hover" | "stunt" | "dart" | "land" | "nap" | "exit";
+type Mode = "away" | "enter" | "fly" | "hover" | "stunt" | "dart" | "land" | "nap";
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -96,7 +98,7 @@ export function Sidekick() {
       activity();
       const p = local(e);
       const s = S.screen;
-      if (S.mode === "away" || S.mode === "exit" || !S.visible) return;
+      if (S.mode === "away" || !S.visible) return;
       if (Math.hypot(p.x - s.x, p.y - s.y) > Math.max(SIDEKICK.hit, s.r * 1.25)) return;
       e.stopPropagation();
       S.swallowUntil = performance.now() + 700;
@@ -155,9 +157,12 @@ export function Sidekick() {
     const W = size.width;
     const H = size.height;
     const rs = botAnchors.valid ? botAnchors.scale : 1; // robot scale
-    const ds = rs * 2.4 * (S.mobile ? SIDEKICK.mobileSize : SIDEKICK.size) / 1.6; // drone scale
-    const front = () => 0.95 * rs + Math.random() * 0.45 * rs; // depth band in front of the robot
-    const behind = -1.15 * rs;
+    // The drone's size and depth come from the hero robot, so it doesn't shrink when the robot ducks into its corner.
+    const K = HOME_ROBOT.scale;
+    const ds = (K * BOT_HEIGHT * (S.mobile ? SIDEKICK.mobileSize : SIDEKICK.size)) / 1.6; // drone scale
+    const far = Math.max(rs, K);
+    const front = () => 0.95 * far + Math.random() * 0.45 * far; // depth band in front of the robot
+    const behind = -1.15 * far;
 
     /* ---- Screen ↔ world (the camera looks straight down -z from CAM). */
     const ppu = (z: number) => H / (2 * (CAM.z - z) * TAN);
@@ -166,25 +171,15 @@ export function Sidekick() {
     const toScreen = (v: THREE.Vector3): Pt => ({ x: W / 2 + (v.x - CAM.x) * ppu(v.z), y: H / 2 - (v.y - CAM.y) * ppu(v.z) });
 
     /* ---- Zones (refreshed a few times a second: the wordmark moves while the hero is pinned). */
-    const hero = document.querySelector<HTMLElement>("[data-home-hero]");
-    const canvasRect = gl.domElement.getBoundingClientRect();
-    const heroRect = hero?.getBoundingClientRect();
     if (t - S.zonesAt > 0.3 || !S.zones) {
       S.zonesAt = t;
-      S.zones = readZones(canvasRect, heroRect, W, H);
+      S.zones = readZones(gl.domElement.getBoundingClientRect(), W, H);
     }
     const Z = S.zones;
     const pad = Math.max(18, 0.8 * ds * ppu(rs) * 1.15);
 
-    /* ---- In the hero or not: leave upwards when it scrolls away, come back when it returns. */
-    const heroIn = heroRect ? heroRect.bottom / window.innerHeight : 1;
-    if (S.mode !== "away" && S.mode !== "exit" && heroIn < SIDEKICK.exit) {
-      endStunt();
-      wake(false);
-      S.mode = "exit";
-      log("exit");
-    }
-    if (S.mode === "away" && heroIn > SIDEKICK.back && t > S.enterAt) {
+    /* ---- First appearance: in from the top, after the robot's boot-up. */
+    if (S.mode === "away" && t > S.enterAt) {
       const R = Z.region;
       S.pos.copy(toWorld({ x: R.x + Math.random() * R.w, y: -0.25 * H }, front()));
       S.vel.set(0, 0, 0);
@@ -196,7 +191,7 @@ export function Sidekick() {
     /* ---- Click / tap: flip + sparkle (wakes it first if it was napping). */
     if (S.clickKey !== S.clickSeen) {
       S.clickSeen = S.clickKey;
-      if (S.mode !== "away" && S.mode !== "exit") {
+      if (S.mode !== "away") {
         wake(false);
         startStunt("flip", true);
         burst(70, 1.8);
@@ -206,7 +201,7 @@ export function Sidekick() {
 
     /* ---- Cursor rushing at it: dart away (mouse only), then settle. Never in the middle of a stunt. */
     const ptr = S.pointer;
-    if (ptr && now - ptr.at < 120 && t > S.dartCooldown && !["away", "exit", "enter", "stunt"].includes(S.mode)) {
+    if (ptr && now - ptr.at < 120 && t > S.dartCooldown && !["away", "enter", "stunt"].includes(S.mode)) {
       const d = Math.hypot(ptr.x - S.screen.x, ptr.y - S.screen.y);
       if (d < SIDEKICK.dart.radius && S.pointerSpeed > SIDEKICK.dart.speed) {
         wake(false);
@@ -263,8 +258,11 @@ export function Sidekick() {
       }
       case "hover": {
         if (t > S.until) {
-          if (S.forceStunt || S.flights >= S.stuntAfter) startStunt(S.forceStunt ?? pickStunt(S.mobile ? SIDEKICK.mobileStunts : SIDEKICK.stunts, S.lastStunt));
-          else planFlight();
+          if (S.forceStunt || S.flights >= S.stuntAfter) {
+            // Stunts round the robot need it near its hero size: the drone would not fit round a small one.
+            const pool = (S.mobile ? SIDEKICK.mobileStunts : SIDEKICK.stunts).filter((s) => rs >= 0.8 * K || !SIDEKICK.robotStunts.includes(s));
+            startStunt(S.forceStunt ?? pickStunt(pool, S.lastStunt));
+          } else planFlight();
         }
         // Never park on the text: if something put the stop there (a dart, a resize), move on now.
         if (S.mode === "hover" && insideAny(Z.text, toScreen(S.goal))) planFlight();
@@ -302,16 +300,6 @@ export function Sidekick() {
         stiff = 40;
         perch(S.goal); // follows the head as it droops
         break;
-      case "exit": {
-        stiff = 55;
-        toWorld({ x: S.screen.x, y: -0.4 * H }, S.pos.z, S.goal);
-        if (S.screen.y < -0.12 * H) {
-          S.mode = "away";
-          S.enterAt = t + 0.4;
-          log("away");
-        }
-        break;
-      }
     }
 
     /* ---- Spring, in 1/60s substeps. */
@@ -371,10 +359,9 @@ export function Sidekick() {
       botInput.look.z = S.pos.z;
     }
 
-    /* ---- Trail: subtle, more when faster, a burst of it when zipping off. */
+    /* ---- Trail: subtle, more when faster. */
     if (trail.current && S.visible && !napping) {
-      const boost = S.mode === "exit" ? 2 : 1;
-      const rate = Math.min(220, (speed / rs) * 140) * boost * (S.mobile ? 0.4 : 1);
+      const rate = Math.min(220, (speed / rs) * 140) * (S.mobile ? 0.4 : 1);
       S.emit += rate * Math.min(rawDt, 0.1);
       const k = Math.floor(S.emit);
       S.emit -= k;
@@ -411,7 +398,7 @@ export function Sidekick() {
       pts.push(toWorld(b, front()));
       S.curve = new THREE.CatmullRomCurve3(pts, false, "centripetal");
       const len = S.curve.getLength();
-      S.flightDur = THREE.MathUtils.clamp(len / (1.9 * rs), SIDEKICK.flight[0], SIDEKICK.flight[1]);
+      S.flightDur = THREE.MathUtils.clamp(len / (1.9 * far), SIDEKICK.flight[0], SIDEKICK.flight[1]);
       S.flightT = 0;
       if (S.mode !== "enter") S.mode = "fly";
       log("flight", { via: via.map((w) => w.depth).join(","), dur: Math.round(S.flightDur * 10) / 10 });
@@ -635,15 +622,13 @@ function createRuntime() {
 }
 
 /** The flight region and the no-stop zones, in stage px, from the DOM. */
-function readZones(canvas: DOMRect, hero: DOMRect | undefined, W: number, H: number): Zones {
+function readZones(canvas: DOMRect, W: number, H: number): Zones {
   const toStage = (r: DOMRect): Rect => ({ x: r.left - canvas.left, y: r.top - canvas.top, w: r.width, h: r.height });
-  // Region: the hero inside the stage, inset from its edges, below the header.
-  const top = Math.max(0, (hero?.top ?? canvas.top) - canvas.top);
-  const bottom = Math.min(H, (hero?.bottom ?? canvas.bottom) - canvas.top);
+  // Region: the stage (fixed, so the same box all the way down the page), inset from its edges, below the header.
   const nav = document.querySelector("header nav")?.getBoundingClientRect();
   const navBottom = nav ? nav.bottom - canvas.top : 0;
-  const y0 = Math.max(top + (bottom - top) * 0.08, navBottom + 24);
-  const y1 = bottom - (bottom - top) * 0.14;
+  const y0 = Math.max(H * 0.08, navBottom + 24);
+  const y1 = H * 0.86;
   const region: Rect = { x: W * 0.08, y: y0, w: W * 0.84, h: Math.max(40, y1 - y0) };
 
   const text: Rect[] = [];

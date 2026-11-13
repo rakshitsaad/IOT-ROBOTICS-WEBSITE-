@@ -143,7 +143,7 @@ function CursorInner() {
         >
           <span
             className={cn(
-              "mono-label whitespace-nowrap font-medium text-bg transition-opacity duration-300",
+              "mono-label whitespace-nowrap text-bg transition-opacity duration-300",
               isPill ? "opacity-100 delay-100" : "opacity-0",
             )}
           >

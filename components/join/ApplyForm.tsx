@@ -281,12 +281,12 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
                 <span className="min-w-0 flex-1 text-[14px]">
                   {file ? (
                     <>
-                      <span className="block truncate font-semibold text-text">{file.name}</span>
+                      <span className="block truncate font-medium text-text">{file.name}</span>
                       <span className="text-[12px] text-muted">{(file.size / 1024 / 1024).toFixed(2)} MB · click or drop to replace</span>
                     </>
                   ) : (
                     <>
-                      <span className="font-semibold text-text">Choose a file</span>
+                      <span className="font-medium text-text">Choose a file</span>
                       <span className="text-muted"> or drop it here</span>
                     </>
                   )}
@@ -298,7 +298,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
 
         {status === "error" && (
           <div role="alert" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[14px] bg-red/10 px-4 py-3 ring-1 ring-red/40">
-            <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-bold text-text">
+            <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center rounded-full bg-red text-[12px] font-medium text-text">
               !
             </span>
             <p className="min-w-0 flex-1 text-[14px] text-text/90">{error}</p>
@@ -306,7 +306,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
               type="button"
               data-cursor="link"
               onClick={() => submit()}
-              className="rounded-pill px-3 py-1.5 text-[13px] font-semibold text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
+              className="rounded-pill px-3 py-1.5 text-[13px] font-medium text-text ring-1 ring-text/30 transition-colors duration-[350ms] hover:bg-text/10"
             >
               Try again
             </button>
@@ -337,7 +337,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
       >
         <div className="flex flex-col items-center">
           <SentCheck play={sent} reduced={reduced} />
-          <h2 id="apply-sent" tabIndex={-1} className="mt-7 text-2xl leading-tight font-semibold tracking-[-0.02em] outline-none md:text-3xl">
+          <h2 id="apply-sent" tabIndex={-1} className="mt-7 text-2xl leading-tight font-semibold tracking-[-0.01em] outline-none md:text-3xl">
             Application received{chosen ? ` for ${chosen.team}` : ""}.
           </h2>
           <p className="mt-3 text-[15px] text-muted">
@@ -349,7 +349,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
             <li key={s.title} className="flex gap-3 rounded-[14px] bg-bg/60 p-4 ring-1 ring-line">
               <span className="font-mono text-[12px] text-muted">{i + 2}</span>
               <span>
-                <span className="block text-[15px] font-semibold">{s.title}</span>
+                <span className="block text-[15px] font-medium">{s.title}</span>
                 <span className="text-[13px] text-muted">{s.text}</span>
               </span>
             </li>
@@ -367,7 +367,7 @@ export function ApplyForm({ hiring }: { hiring: Record<string, boolean> }) {
               setStatus("idle");
               window.setTimeout(() => setFocus("name"), 50);
             }}
-            className="h-10 rounded-pill px-5 text-[13px] font-semibold text-text underline decoration-text/30 underline-offset-4 hover:decoration-text md:h-11 md:text-sm"
+            className="h-10 rounded-pill px-5 text-[13px] font-medium text-text underline decoration-text/30 underline-offset-4 hover:decoration-text md:h-11 md:text-sm"
           >
             Apply for someone else
           </button>

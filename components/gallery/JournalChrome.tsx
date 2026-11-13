@@ -150,7 +150,7 @@ function Popover({
 }
 
 const MENU_ITEM =
-  "flex w-full items-center gap-3 rounded-[18px] px-4 py-3 text-left text-sm font-semibold text-text transition-colors duration-[350ms] ease-power3 hover:bg-text/10";
+  "flex w-full items-center gap-3 rounded-[18px] px-4 py-3 text-left text-sm font-medium text-text transition-colors duration-[350ms] ease-power3 hover:bg-text/10";
 
 /* --------------------------------------------------------------- top bar */
 
@@ -318,12 +318,12 @@ export function JournalToolbar({
         <MonoLabel as="p">
           {info.date} · {info.venue}
         </MonoLabel>
-        <p className="mt-2 text-lg leading-snug font-semibold tracking-[-0.01em]">{info.title}</p>
+        <p className="mt-2 text-lg leading-snug font-display font-semibold tracking-[-0.01em]">{info.title}</p>
         <p className="mt-2 text-sm text-muted">{info.summary}</p>
         <MonoLabel as="p" className="mt-4">
           {info.photos} Photos / {info.videos} Videos
         </MonoLabel>
-        {info.caption && <p className="mt-4 border-t border-line pt-4 font-hand text-2xl leading-tight">“{info.caption}”</p>}
+        {info.caption && <p className="mt-4 border-t border-line pt-4 font-serif text-xl leading-snug italic">“{info.caption}”</p>}
       </Popover>
     </div>
   );
@@ -342,7 +342,7 @@ export function Toast({ message }: { message: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: DURATION.micro, ease: BEZIER.out }}
-            className="rounded-pill bg-text px-5 py-3 text-sm font-semibold text-bg shadow-2xl shadow-black/50"
+            className="rounded-pill bg-text px-5 py-3 text-sm font-medium text-bg shadow-2xl shadow-black/50"
           >
             {message}
           </motion.p>

@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { splitTitle, titleEm } from "@/lib/projects";
 
 /**
- * The huge vertical title over the reel (DESIGN.md §16): Sora 800, uppercase,
+ * The huge vertical title over the reel (DESIGN.md §16): Archivo 700, uppercase,
  * reading upwards (vertical-rl + rotate-180). When the title changes, the old
  * letters slide up out of their mask and the new ones come in from below,
  * 25ms apart (CSS keyframes letter-out / letter-in).
@@ -19,7 +19,7 @@ import { splitTitle, titleEm } from "@/lib/projects";
  *   --title-top     the top half's top edge once split
  *   --title-bottom  the bottom half's bottom edge once split
  * The font size is min(--title-max, --title-fit / its length in em), using the
- * measured Sora cap widths in lib/projects.ts.
+ * measured Archivo cap widths in lib/projects.ts.
  */
 
 const STAGGER_MS = 25;
@@ -131,7 +131,7 @@ function Half({
   return (
     <span
       className={cn(
-        "absolute left-1/2 -translate-x-1/2 rotate-180 overflow-hidden whitespace-pre [padding:0_0.06em] text-(length:--fs) leading-none font-extrabold tracking-[-0.02em] text-text [writing-mode:vertical-rl]",
+        "absolute left-1/2 -translate-x-1/2 rotate-180 overflow-hidden whitespace-pre [padding:0_0.06em] text-(length:--fs) leading-none font-display font-bold tracking-[-0.02em] text-text [writing-mode:vertical-rl]",
         className,
       )}
     >

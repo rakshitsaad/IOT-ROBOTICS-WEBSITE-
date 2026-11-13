@@ -291,7 +291,7 @@ export function EventShowcase({ list, active, autoplay, paused, onSelect, onStep
             <h2
               data-ev-leave
               id="event-showcase-title"
-              className="text-[length:clamp(2rem,9vw,3rem)] leading-[0.98] font-bold tracking-[-0.04em] text-white md:text-[length:clamp(2.5rem,min(6vw,11cqh),5.5rem)]"
+              className="text-[length:clamp(2rem,9vw,3rem)] leading-[0.98] font-bold tracking-[-0.03em] text-white md:text-[length:clamp(2.5rem,min(6vw,11cqh),5.5rem)]"
             >
               <SplitTitle text={shown.title} intro={intro} delay={M.titleAt} stagger={M.titleStagger} />
             </h2>

@@ -104,7 +104,7 @@ export function AchievementsExperience({ items }: { items: Achievement[] }) {
                   <Pill
                     color={on ? "white" : "raised"}
                     className={cn(
-                      "block px-4 py-2.5 text-[13px] leading-none font-semibold",
+                      "block px-4 py-2.5 text-[13px] leading-none font-medium",
                       "transition-[background-color,color] duration-[350ms] ease-power3",
                       !on && "bg-bg-2/70 backdrop-blur-md group-hover/pill:bg-text/15",
                     )}

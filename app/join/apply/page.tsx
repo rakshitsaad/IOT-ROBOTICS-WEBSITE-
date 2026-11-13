@@ -36,7 +36,7 @@ export default async function ApplyPage() {
               <MonoLabel as="p" tone="text">
                 Recruitment {SENIOR_CORE_TERM.year}
               </MonoLabel>
-              <h1 id="apply-title" className="mt-3 text-[length:clamp(2.2rem,6vw,4rem)] leading-[1.04] font-bold tracking-[-0.04em]">
+              <h1 id="apply-title" className="mt-3 text-[length:clamp(2.2rem,6vw,4rem)] leading-[1.04] font-semibold tracking-[-0.03em]">
                 Apply to the crew
               </h1>
               <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed text-muted md:text-[17px]">

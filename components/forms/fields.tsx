@@ -38,7 +38,7 @@ export function Field({
   return (
     <div className={className}>
       <div className="mb-2 flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-[13px] font-semibold text-text/85">
+        <label htmlFor={id} className="text-[13px] font-medium text-text/85">
           {label}
         </label>
         {aside}

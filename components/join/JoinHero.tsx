@@ -7,7 +7,7 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { JOIN_HERO } from "@/lib/join";
 
 /**
- * The /join hero (DESIGN.md §21): simple and calm. A mono label, a big uppercase headline, one line and one button,
+ * The /join hero (DESIGN.md §21): simple and calm. A mono label, a big headline with one serif word, one line and one button,
  * over a crowd of small flat figures (`crowd`, the server-rendered <Crowd> SVGs) filling the bottom of the screen, with
  * one soft red glow rising from behind it.
  *
@@ -61,10 +61,10 @@ export function JoinHero({ recruitmentOpen, year, crowd }: { recruitmentOpen: bo
         </p>
         <h1
           id="join-title"
-          className={`mt-5 text-[length:clamp(2rem,9vw,2.6rem)] leading-[1.05] font-bold tracking-[0.03em] text-balance text-text uppercase md:mt-6 md:text-[length:clamp(2.6rem,6.5vw,5.5rem)] ${fade}`}
+          className={`mt-5 text-[length:clamp(2rem,9vw,2.6rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance text-text md:mt-6 md:text-[length:clamp(2.6rem,6.5vw,5.5rem)] ${fade}`}
           style={delay(1)}
         >
-          Join our community
+          Join our <span className="serif-accent">community</span>
         </h1>
         <p className={`mt-5 max-w-[480px] text-[15px] leading-relaxed text-muted md:mt-6 md:text-[17px] ${fade}`} style={delay(2)}>
           Build drones, robots and connected things with people who love it as much as you do.

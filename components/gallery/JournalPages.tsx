@@ -138,7 +138,7 @@ function CaptionTag({ text }: { text: string }) {
       )}
     >
       <span aria-hidden="true" className="size-[1.9cqw] shrink-0 rounded-full bg-bg/55 ring-[0.5cqw] ring-bg/10" />
-      <span className="font-hand text-[length:6.6cqw] leading-[1.02] text-bg">{text}</span>
+      <span className="font-serif text-[length:5.4cqw] leading-[1.05] italic text-bg">{text}</span>
     </span>
   );
 }
@@ -288,7 +288,7 @@ function NotePage({ item, date }: { item: GalleryItem; date: string }) {
       <MonoLabel className="absolute top-[4.2cqw] right-[7cqw] text-[length:2.6cqw] tracking-[0.14em] text-bg/45">
         {journalDate(date)}
       </MonoLabel>
-      <p className="font-hand text-[length:8.6cqw] leading-[9cqw] text-bg/85 [text-wrap:pretty]">{item.caption}</p>
+      <p className="font-serif text-[length:7cqw] leading-[9cqw] italic text-bg/85 [text-wrap:pretty]">{item.caption}</p>
     </div>
   );
 }

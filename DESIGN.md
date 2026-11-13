@@ -22,10 +22,10 @@ Check everything visually at **`/lab`**. The robot mascot's developer test page 
 ```
 app/
   globals.css        tokens, Tailwind theme, utilities, base, reduced-motion CSS
-  fonts.ts           next/font setup (5 families)
+  fonts.ts           next/font setup (4 families)
   layout.tsx         root layout: providers, header, footer, cursor
   template.tsx       route transition wrapper
-  page.tsx           home: hero, statement, lab, featured, event, numbers, join; the robot travels through them (§12)
+  page.tsx           home: hero, statement, lab, featured, event, numbers, join; the robot and its drone travel through them (§12)
   about/page.tsx     /about: the pinned robot hand intro, mission and vision, pillars, history, teams (§15)
   members/page.tsx   /members: Senior Core spreads + Junior Core team accordions (§13)
   gallery/page.tsx   /gallery: the shelf of event journals (§14)
@@ -95,9 +95,9 @@ lib/
   home.ts            home config: lab stations, photo depths, pan distance
   about.ts           /about config: the intro's pin (ABOUT_INTRO), mission and vision, pillars; client-safe
   gallery.ts         journal pages from gallery items (buildJournalPages), seeded(), dates; client-safe
-  members.ts         /members config: term, layout cycle, name lines, Bodoni capital widths, social links;
+  members.ts         /members config: term, layout cycle, name lines, Instrument Serif capital widths, social links;
                      Junior Core: cards per line, row ids, first name, initials
-  projects.ts        /projects config: filters, REEL constants and curve maths, Sora capital widths, the split title,
+  projects.ts        /projects config: filters, REEL constants and curve maths, Archivo capital widths, the split title,
                      STRIP sizes and buildStrip(); client-safe
   events.ts          /events config: showcase order, filters, IST dates, EVENTS_MOTION, EVENT_BANNER; client-safe
   achievements.ts    /achievements config: filters, ACH_MOTION, ACH_CARD, isWin, link label, IST dates; client-safe
@@ -162,7 +162,7 @@ rainbow version; it now means this sheen.) Use it **sparingly**, only for:
 Senior Core's vertical spread also uses a small iris rectangle at 25% opacity over a
 portrait's corner; that is the only iris fill shape outside the list above.
 
-/about (§15) opens with its heading's first line in a red pill after a small red dot, and the robot hand's wrist cuff
+/about (§15) opens with its heading's first line in a red pill after a small red dot (the heading's only pill), and the robot hand's wrist cuff
 is red (its fingertip pads maroon, the pointing fingertip's brief glow red). The design asks for both; the hand is an
 illustration, and the rest of the view stays black, charcoal and warm white.
 
@@ -229,32 +229,59 @@ fields **14px** (also on /join/apply, §21).
 
 ## 3. Typography
 
-Loaded in `app/fonts.ts` with `next/font/google` and exposed as Tailwind font
-families. All but Anton are variable fonts, so the weight ranges below are **design
-rules**, not loading limits.
+Four families, loaded in `app/fonts.ts` with `next/font/google` and exposed as Tailwind font families. Nothing else:
+no handwriting font, no separate condensed font. Archivo and Manrope are variable fonts, so the weights below are
+**design rules**, not loading limits.
 
-| Family         | Tailwind                  | Weights               | Use |
-| -------------- | ------------------------- | --------------------- | --- |
-| Sora           | `font-sans` (default), `font-display` | **500–800** | All display and body text. Body is 500 (set on `body`). Headlines 700–800 with negative tracking (`-0.02em` to `-0.05em`). Never use 100–400. |
-| JetBrains Mono | `font-mono`, `mono-label` | **400–500**           | Small uppercase technical labels only: 11px (12px ≥ md), `letter-spacing: 0.14em`. Use the `mono-label` utility or `<MonoLabel>`. |
-| Bodoni Moda    | `font-serif`              | 400–700 + *italic*    | **Senior Core section only.** Nowhere else. |
-| Caveat         | `font-hand`               | default               | **Handwritten gallery captions only** (caption tags, note pages, lightbox captions, §14). Nowhere else. |
-| Anton          | `font-condensed`          | 400 (its only weight) | **/achievements slide titles only** (§19): huge, condensed, uppercase. Nowhere else. |
+| Family           | Tailwind                 | Weights           | Use |
+| ---------------- | ------------------------ | ----------------- | --- |
+| Archivo          | `font-display`, every `h1`–`h6` | **600–700** | Headings and display type. 600 is the default (set on the heading elements in `globals.css`); 700 is for page-level display type only (below). |
+| Manrope          | `font-sans` (default)    | **400–500**       | Body and UI text. Body is 400 (set on `body`), line-height 1.6. 500 (`font-medium`) for buttons, filter chips, form labels, links and `<strong>`. Never heavier. |
+| IBM Plex Mono    | `font-mono`, `mono-label` | **400** (its only loaded weight) | Small technical labels, dates, counters, departments: 11px (12px ≥ md), uppercase, `letter-spacing: 0.08em`. Use the `mono-label` utility or `<MonoLabel>`. |
+| Instrument Serif | `font-serif`, `serif-accent` | **400** + *italic* | Editorial accents: Senior Core (§13), one italic word or line in a heading, gallery captions and notes (§14). Always with `font-normal` inside a heading, or the browser fakes a bold. |
 
-**One exception to the mono rule:** the home event countdown (`components/home/Countdown.tsx`)
-sets its digits in large JetBrains Mono 500, because the design calls for it. Its `size="sm"`
-variant (`clamp(1.4rem, 2.2vw, 1.9rem)` digits, "Days / Hrs / Min") does the same on the /events card and detail
-overlay (§17). Nothing else uses big mono.
+### Hierarchy
+
+| Level | Type | Where |
+| --- | --- | --- |
+| Display | Archivo **700**, tracking `-0.03em` to `-0.04em`, leading 0.85–0.95 | The home wordmark, page titles ("Journals", "Junior Core"), the event and featured-project titles, the home numbers, the footer wordmark, the /projects vertical title |
+| Section heading | Archivo **600**, `clamp(2.2rem, 5vw, 4.5rem)`, tracking `-0.03em`, leading 1.04 | Every section's `h2` |
+| Card and row title | Archivo **600**, 20–24px, tracking `-0.01em` | Cards, timeline entries, list rows, accordion questions, member names |
+| Body | Manrope **400**, 15–17px, leading 1.6–1.65, `text-muted`, at most ~46ch (or 440–480px) | Paragraphs. An opening phrase can be `<strong>` (500, `text-text`) |
+| UI | Manrope **500**, 13–15px | Buttons, chips, labels, links |
+| Label | `mono-label` | Section labels, dates, counts, roles, tags |
+
+Rules:
+- **Weight is a level, not an emphasis.** Don't bold things to make them louder: size, the serif accent or colour
+  (`text-text` against `text-muted`) do that. Nothing is heavier than 700, and Manrope is never above 500.
+- **Tracking** tightens with size: `-0.03em` and beyond only above ~40px, `-0.01em` to `-0.02em` for 20–40px, none for
+  body text.
+- **Uppercase** is kept to the mono labels and four pieces of display type: the home wordmark, the /projects vertical
+  title, the /achievements slide titles and the Senior Core names. No other heading is uppercase, and no label is
+  letter-spaced wider than the mono label.
+- **The serif accent** (`serif-accent` utility: Instrument Serif italic, 1.08em, because its x-height is lower than
+  Archivo's): one word or one line per heading, at most one heading per view. It replaces the pill as the way to stress
+  a phrase ("that *move*, *fly*", "*inside the lab*", "Join our *community*"). Inside a clipped mask (a rising word) set
+  the same styles by hand, because the utility's `line-height: 0` would be clipped (the /contact headline does).
+- **No gradient fills on text.**
+
+**Big mono.** The home event countdown (`components/home/Countdown.tsx`) sets its digits in large IBM Plex Mono 400,
+because the design calls for it. Its `size="sm"` variant (`clamp(1.4rem, 2.2vw, 1.9rem)` digits, "Days / Hrs / Min")
+does the same on the /events card and detail overlay (§17). Nothing else uses big mono.
 
 Junior Core's cards (§13) keep their mono labels (the vertical first name, the role)
 at 11px from md up instead of 12px, because the 76px pill is that narrow.
 
-The /projects title (§16) is Sora 800, uppercase, set vertically (reading upwards), up to
-about 20% of the screen height per letter. It is sized from measured Sora 800 capital
-widths (`SORA_CAPS` in `lib/projects.ts`), so re-measure them if the weight changes.
+**Condensed display.** The /achievements slide titles (§19) are Archivo 700 on its width axis
+(`font-stretch-extra-condensed`, 62.5%), uppercase: the one place the condensed width is used. The axis is loaded with
+the family (`axes: ["wdth"]`), so it costs no extra font.
 
-Bodoni Moda, Caveat and Anton have `preload: false`, so they download only on pages
-that render them.
+**Measured widths.** Three layouts are sized from capital widths measured in the browser, so re-measure them if a
+family or weight changes: the /projects vertical title (`ARCHIVO_CAPS` in `lib/projects.ts`, Archivo 700), the Senior
+Core names (`SERIF_CAPS` in `lib/members.ts`, Instrument Serif) and the /about heading (`HEADING_EM` in
+`AboutIntro.tsx`). The home wordmark's size also assumes "ROBOTICS" is about 5.1em wide.
+
+Instrument Serif has `preload: false`, so it downloads only on pages that render it. All four use `display: swap`.
 
 Fluid display sizes: use `text-[length:clamp(min,vw,max)]` (the `length:` hint is
 required so Tailwind treats it as a font size).
@@ -287,7 +314,7 @@ call is dropped. Put the size first.
 
 ### `<Pill color>`
 A rounded highlight behind a word or phrase. Inherits the parent's font size and wraps cleanly across lines.
-`color`: `red | maroon | white | iris | dark | raised` (default `white`). Text colour follows §1 "Text on colour" (warm white on everything but `white`). Keep `red` to one pill per headline.
+`color`: `red | maroon | white | iris | dark | raised` (default `white`). Text colour follows §1 "Text on colour" (warm white on everything but `white`). In a headline a pill is rare: at most one, in `red`, and only where it carries an animation (the home statement's "think", the /about heading's first line). Stress any other phrase with the serif accent (§3). Pills are otherwise for chips: filters, tags, statuses, team names.
 ```tsx
 <h2>We build robots that <Pill color="red">think</Pill>.</h2>
 ```
@@ -304,7 +331,7 @@ The technical label style. Props: `index?: number | string` (shown before the la
 ```
 **Section labels are names only, never numbered** (no `[01]`, no `01 /`), and **no square brackets anywhere**: counts are
 plain numbers in the text ("10 Members", "Events / 6 Total"), never zero-padded or bracketed. The same goes for
-counters ("1 / 6", "Step 1", "*1"): no leading zeros. Only the countdown's clock digits stay two-digit ("09").
+counters ("1 / 6", "Step 1"): no leading zeros. Only the countdown's clock digits stay two-digit ("09").
 
 ### `<GridBackground>`
 Faint 80px grid lines (`--grid`) plus 4 small corner brackets.
@@ -345,7 +372,7 @@ Used by the /contact and /join FAQs. Instant under reduced motion.
 ```
 
 ### Utilities (`globals.css`)
-`mono-label`, `bg-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
+`mono-label`, `serif-accent` (the italic serif word in a heading, §3), `bg-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
 `paper` (warm white `--text` with a faint grain: gallery pages, caption tags) and `paper-ruled` (the same with faint grey
 rules every `--rule`, default 2rem, and a red margin line: note pages). Gallery only (§14).
 Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (a nudging arrow; unused since the home scroll hint was removed), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateX(−110%) over 0.7s expo, out to translateX(110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`; in vertical text, local x is "up", §16).
@@ -373,7 +400,7 @@ Order: inline no-flash script, skip link, `<Providers>` → `<Header>` → `<mai
 
 - **Announcement bar** (`components/layout/AnnouncementBar.tsx`): text, link and on/off come from `settings` (`announcement_enabled`, `announcement_text`, `announcement_link_label`, `announcement_link_url`). Dismissible: the dismissal is stored in `localStorage` against a hash of the text and link, so a new announcement shows again. An inline script in the layout sets `html[data-ann="off"]` before first paint, which hides the bar and sets `--ann-h: 0`. It collapses once the page is scrolled past 40px or the menu is open.
 - **Navbar** (`Header.tsx`): fixed and transparent. After **40px** of scroll it gains a blurred `bg-2/75` background and a bottom hairline. Logo top-left (short name below `sm`). Right side: "Join us" `IrisButton` → `/join`, "Contact" light `PillButton` → `/contact`, round menu button.
-- **Menu overlay** (`MenuOverlay.tsx`): full-screen, below the header (z-40 vs z-50) so the menu button becomes the close button. Lists Home, About, Members, Projects, Events, Achievements, Gallery, Join, Contact (`lib/nav.ts`) in large Sora (names only, no numbers), staggered in (0.05s apart, expo.out). Locks scroll (stops Lenis), makes `main` and the footer `inert`, focuses the first link, closes on Escape, link click or route change, and returns focus to the menu button. The current page gets a red dot.
+- **Menu overlay** (`MenuOverlay.tsx`): full-screen, below the header (z-40 vs z-50) so the menu button becomes the close button. Lists Home, About, Members, Projects, Events, Achievements, Gallery, Join, Contact (`lib/nav.ts`) in large Archivo 600 (names only, no numbers), staggered in (0.05s apart, expo.out). Locks scroll (stops Lenis), makes `main` and the footer `inert`, focuses the first link, closes on Escape, link click or route change, and returns focus to the menu button. The current page gets a red dot.
 - **Custom cursor** (`Cursor.tsx`): fine pointers only (`(hover: hover) and (pointer: fine)`), never rendered on touch. A 6px dot plus a 36px ring that lags (`gsap.quickTo`, 0.5s power3.out). States via attributes:
   - `data-cursor="view"` / `"drag"`: the ring becomes a light pill labelled VIEW / DRAG (`data-cursor-label="…"` overrides the label)
   - `data-cursor="link"`: the ring grows to a 56px soft filled circle. Links and buttons get this automatically.
@@ -501,9 +528,9 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 ## 8. Data
 
 - Row types for every table in `lib/types.ts`: `members`, `teams`, `projects`, `events` (`ClubEvent`), `achievements`, `gallery_items` (`GalleryItem`), `milestones`, `partners`, `contact_messages` (`ContactMessage`), `settings` (single row). Columns are snake_case so generated Supabase types can replace them.
-- `members`: `tier` (`senior` = Senior Core, `junior` = Junior Core, shown grouped by team, `member`), `sort_order` (display order within the tier), `kicker` (short role line, "The President"), `quote` (max 140 characters), `bio`, `photo_url`, `focal_point` (where a cropped portrait is anchored: a CSS `object-position` value, default `DEFAULT_FOCAL_POINT` = `"50% 30%"`), `cutout_url` (optional transparent PNG of the person, for Senior Core's cutout spread), `socials` (jsonb: `{ linkedin, github, instagram }`, each a URL or null).
-  - Limits are per tier in `MEMBER_LIMITS` (`lib/types.ts`): quote 140 for every tier; bio **300** for seniors (and `member`), **160** for juniors. The mock throws if a row breaks its tier's limit.
-  - The mock has the 15 real seniors (names, roles and photos; year, branch, quote and bio are still placeholders, and there are no cutouts). They live in `lib/mock/senior-core.ts`, the one file to edit; photos are `public/members/senior/firstname-lastname.jpg`, cropped to 4:5 around the person, at most 1200 × 1500. `/members/placeholder.png` is a spare grey silhouette. It also has 33 juniors across all 7 teams: Tech has 10 (so its accordion wraps onto a second line), Manav Arora (Tech) and Aditya Rawat (PR) have no photo (initials avatar), and a few set a non-default `focal_point`. Replace the photos with real ones.
+- `members`: `tier` (`senior` = Senior Core, `junior` = Junior Core, shown grouped by team, `member`), `sort_order` (display order within the tier), `kicker` (short role line, "The President"), `quote` (max 200 characters for seniors, 140 otherwise), `bio`, `photo_url`, `focal_point` (where a cropped portrait is anchored: a CSS `object-position` value, default `DEFAULT_FOCAL_POINT` = `"50% 30%"`), `cutout_url` (optional transparent PNG of the person, for Senior Core's cutout spread), `socials` (jsonb: `{ linkedin, github, instagram }`, each a URL or null).
+  - Limits are per tier in `MEMBER_LIMITS` (`lib/types.ts`): quote **200** for seniors and 140 for the others; bio **300** for seniors (and `member`), **160** for juniors. The mock throws if a row breaks its tier's limit.
+  - The mock has the 15 real seniors, heads first and then sub-heads (names, roles, photos and quotes; three have no quote yet; year, branch and bio are still placeholders, and there are no cutouts). They live in `lib/mock/senior-core.ts`, the one file to edit; photos are `public/members/senior/firstname-lastname.jpg`, cropped to 4:5 around the person, at most 1200 × 1500. `/members/placeholder.png` is a spare grey silhouette. It also has the 34 real juniors (names and photos; role and bio are placeholders) in `lib/mock/junior-core.ts`, in five sections: Tech & Research has 10 (so its accordion wraps onto a second line), Design 4, Social Media & Multimedia 6, Management 7, PR & Outreach 7. Their photos are `public/members/junior/firstname-lastname.jpg`, cropped to 4:5 with the face centred (at most 960 × 1200).
 - `settings.founded_year` feeds the "years running" count (the mock value is a placeholder).
 - `settings.recruitment_open` switches the home join card between "Apply now" and "Get notified"; `settings.open_teams` (team names) lists the teams taking applications.
 - `settings.contact_phone` (null hides the row), `settings.lab_address` and `settings.map_query` (what the map searches
@@ -582,7 +609,8 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - Do use tokens and Tailwind theme classes; don't add hex values or arbitrary colours.
 - Do keep `--iris` rare; don't use it as a background.
 - Do use `MonoLabel` / `mono-label` for technical labels; don't hand-roll mono styles.
-- Do keep Bodoni Moda to the Senior Core section and Caveat to gallery captions and notes.
+- Do keep to the four families (§3). Instrument Serif is an accent: Senior Core, one italic phrase in a heading, gallery captions.
+- Don't stack pills in a headline, bold body text past 500, or add uppercase outside the mono labels (§3).
 - Do check `useReducedMotion` / `prefersReducedMotion` in every animated component.
 - Do test at 360px; no horizontal scroll, ever.
 - Do add `data-cursor="view"` to clickable media and `data-cursor="drag"` to draggable carousels.
@@ -712,7 +740,7 @@ Reactions interrupt the random mood. Priority: leave-window 1, wake 2, click 3, 
 | Cursor leaves the window | `look-left` / `look-right` towards that edge (`idle` for top and bottom) for 2s; ignored while asleep |
 | Page scrolled | the head pitches down, up to 0.2 rad (full at 90% of a viewport) |
 | Boot finishes | `happy` for 1.8s |
-| Page calls `botActions.react(face, ms)` | that face for `ms` (home: `look-left` at 60% of the hero pin, `happy` for 0.9s as each statement pill appears, `surprised` for 0.9s when the featured slide changes) |
+| Page calls `botActions.react(face, ms)` | that face for `ms` (home: `look-left` at 60% of the hero pin, `happy` for 0.9s as the statement's pill appears, `surprised` for 0.9s when the featured slide changes) |
 
 **Touch (no hover-capable pointer):** no sleep and no cursor tracking. The robot looks around by itself (a new target every 2.5–4.5s, slow damping). If the device reports `deviceorientation`, it follows the tilt instead, re-centring slowly. On iOS the permission prompt is requested on the first tap on the robot, because it needs a user gesture.
 
@@ -823,8 +851,8 @@ Data comes from `getSettings`, `getProjects`, `getFeaturedProjects`, `getUpcomin
 
 ### Hero (`HomeHero`)
 - 100svh, pinned for an extra **120vh** (60vh on phones).
-- Wordmark: `club_name` split into two lines (all words but the last, then the last word), uppercase Sora 800, line-height 0.85, tracking -0.04em, line 2 indented `min(8vw, 7.2rem)` (5vw on phones).
-- Wordmark size: `clamp(4rem, min(15vw, 30svh), 14.5rem)`; phones `min(16vw, 28svh)`. "ROBOTICS" is about 5.3em wide, so 18vw cannot fit a phone and a 15rem cap overflows the 1440 shell. Re-check at 360 and 1920 if the club name changes.
+- Wordmark: `club_name` split into two lines (all words but the last, then the last word), uppercase Archivo 700, line-height 0.85, tracking -0.03em, line 2 indented `min(8vw, 7.2rem)` (5vw on phones).
+- Wordmark size: `clamp(4rem, min(15vw, 30svh), 14.5rem)`; phones `min(16vw, 28svh)`. "ROBOTICS" is about 5.1em wide at that tracking, so 18vw cannot fit a phone and a 15rem cap overflows the 1440 shell. Re-check at 360 and 1920 if the club name changes.
 - Letters rise out of a vertical mask on load (`animate-rise`, 40ms apart from 150ms), alongside the robot's bootUp.
 - Nothing else: the wordmark sits on plain black, with no corner labels, scroll hint or decorations (capsules, dot grids,
   cross marks).
@@ -848,8 +876,8 @@ One pin (the hero), then **one scrubbed timeline** (scrub 1, `ease: "none"`, tim
 | each station (one screen) | Its pip's fill grows (scaleX 0 → 1) |
 | lab lets go → +0.8 screens (md and up) | The robot ducks into the bottom-right corner: 34% of the stage tall, 22% of the stage peeking over the bottom edge, turned -0.3 rad. It stays there through the slider, the event and the numbers |
 | join card comes up (md and up) | The robot moves to the centre and lands on the card's top edge when the card's bottom reaches 90% of the viewport (lower if needed, so the robot stays clear of the header and inside its stage) |
-| after landing | It rides up with the card (1:1), then fades out (`autoAlpha`) over 0.25 screens, gone when the footer's top reaches 80% of the viewport (portrait tablets: when half of it has ridden out of its stage). Off stage, the canvas stops |
-| end of pin → +45vh (phones) | The robot stage fades out (`autoAlpha`) while the robot sinks, then the robot moves off stage so the canvas stops. Phones don't show the robot after the statement |
+| after landing | It rides up with the card (1:1), then goes back to the bottom-right corner over 0.25 screens, there when the footer's top reaches 80% of the viewport (portrait tablets: before half of it would have ridden out of its stage). It stays in the corner, with random moods, to the end of the page, so it peeks over the end of the footer's wordmark |
+| end of pin → +45vh (phones) | The robot ducks into the bottom-right corner (the same pose: 34% of the stage tall, 22% peeking) and stays there to the end of the page, with random moods (no scenes on phones) |
 
 The mood engine keeps running throughout: blinks, moods, sleep and wake, and cursor tracking on top of the scroll pose.
 
@@ -865,38 +893,40 @@ The timeline's `onUpdate` works out which section the robot is in and holds a sc
 | `join` | 35% of a screen before it lands | `happy`, and a wave when it arrives scrolling down |
 
 ### Sidekick drone (`components/drone/Sidekick.tsx`, `sidekick-plan.ts`; numbers in `SIDEKICK`)
-The drone (§18) as the robot's little sidekick in the hero: about a sixth of the robot's size (drone width = robot height /
-6; phones 0.13), rendered in the robot's own canvas (`<BotStage sidekick>` → `BotScene`; no second canvas). Its rotor rings,
+The drone (§18) as the robot's little sidekick, flying the whole home page: about a sixth of the hero robot's size (drone
+width = hero robot height / 6; phones 0.13; fixed, so it doesn't shrink when the robot does), rendered in the robot's own canvas (`<BotStage sidekick>` → `BotScene`; no second canvas). Its rotor rings,
 lens and LED strip are the site's red; the trail is red with some warm white, at most **300** particles (110 on phones),
 each living **0.8s**, more when it flies faster.
-- **Free flight**: it enters from the top after the robot boots. Each stop is a random point in the hero inside the stage
-  (inset from the edges, below the header), never on the wordmark's letters or the header's links and buttons, and not in
+- **Free flight**: it enters from the top after the robot boots. Each stop is a random point in the robot's stage
+  (inset from the edges, below the header; the stage is fixed, so this is the same box all the way down the page), never on the wordmark's letters or the header's links and buttons, and not in
   front of the robot. It flies there along a Catmull-Rom curve through 2–3 random midpoints (1.4–3s), on its spring,
   tilting (≤ 20°) and banking with its motion, and hovers 1–2s with a gentle bob. A midpoint that would sit on a letter is
   lifted above the wordmark. If the straight line crosses the robot, the path goes **behind** it (past its near side, behind
-  its centre at −1.15 × its scale, out past the far side) or over its head; never through it. Phones, with little room:
+  its centre at −1.15 × its scale, out past the far side) or over its head; never through it. A robot at the stage's edge (its corner) leaves no room to
+  pass behind, so there the path always goes over its head. Phones, with little room:
   the open grid spot farthest from every zone.
 - **Stunts** after every 2–3 flights, at random, never the same twice in a row (phones: flip and orbit only), 1–2s each:
   barrel roll (sideways, rolling once), flip (forward, in place, small burst), loop (a small vertical circle), orbit (two
   laps round the robot's head, behind it; the robot watches it and looks happy), peekaboo (hides behind the robot, pops out
   the other side; the robot looks surprised), wobble (loses its balance, drops, boosts back up), boop (taps the robot's
   screen; the robot blinks and winks). Orbit, peekaboo and boop wake the robot first (`botActions.nudge()`), and during any
-  stunt near the robot the robot's head follows the drone instead of the cursor (`botInput.look`).
+  stunt near the robot the robot's head follows the drone instead of the cursor (`botInput.look`). Those three
+  (`SIDEKICK.robotStunts`) run only while the robot is at least 80% of its hero size; while it is small (statement,
+  corner, join card) the drone does the solo stunts (phones: flip).
 - **Cursor** (mouse): coming at it fast (over 350px/s within 120px), it darts 210px away and settles; a slow approach
   doesn't startle it. **Click or tap** on it (hit-tested by projecting it to the screen: the canvas takes no pointer events):
   a flip and a sparkle; the click goes no further (the robot isn't poked).
 - **Idle**: a cursor that has been still for 6s (mouse users, once they have moved it): it lands on the robot's head
   (`botAnchors.top`, following the head as it droops), its rotors slow and its lights dim, and the robot holds `sleepy`
   (`hold("sidekick")`). Any input wakes both. Touch and an untouched page keep flying.
-- **Scroll**: when the hero's bottom passes 70% of the viewport it zips off the top (trail doubled) and hides; above 82% it
-  flies back in.
+- **Scroll**: nothing changes; it keeps flying the stage from the hero to the footer, on phones too.
 - **Reduced motion**: no drone (the robot is the poster). Debug: `?sidekick=debug` exposes `window.__sidekick` (runtime,
   event log, the robot's store, `stunt(name)`, `flip()`, `nap()`).
 
 ### Statement (`Statement`)
-- Headline: Sora 600, `clamp(2.4rem, 5.5vw, 5.5rem)`, line-height 1.12, four explicit lines of about four words; a red dot starts line 2. Pills (`<Pill reveal>`): club name `white`, "move" and "fly" `raised` (charcoal), "think" `red` (the headline's one red word).
+- Headline: Archivo 600, `clamp(2.4rem, 5.5vw, 5.5rem)`, line-height 1.12, tracking -0.025em, four explicit lines of about four words; a red dot starts line 2. "move" and "fly" are serif accents (§3); "think" is the one pill (`<Pill reveal>`, `red`, the headline's one red word).
 - Two paragraphs: max 46ch, 17px, muted, opening phrase bold in `text-text`; indented 8vw from md.
-- Each `[data-reveal]` (headline lines and paragraphs) rises 40px and fades in once at `top 80%` (0.9s power3.out). Its pills grow 150ms later (0.06s apart), and the robot shows `happy` for 0.9s as each one starts.
+- Each `[data-reveal]` (headline lines and paragraphs) rises 40px and fades in once at `top 80%` (0.9s power3.out). Its pill grows 150ms later, and the robot shows `happy` for 0.9s as it starts.
 - The section is `min-h-svh` with its content centred, so the robot holds beside it while it is read.
 
 ### Inside the lab (`Lab`, `LabPanel`, `lab-store`; config in `lib/home.ts`)
@@ -904,7 +934,7 @@ each living **0.8s**, more when it flies faster.
 - Photos: up to 3 projects per station whose tags include the domain and that have a cover (`stationProjects`). "See projects" goes to `/projects?tag=<domain>` (`stationHref`).
 - **md and up, with motion:** the section is (stations + 1) × 100svh tall. Two sticky layers hold for one screen per station (sticky, not a GSAP pin, §7):
   - `[data-lab-photos]`, below the robot: three layers (`[data-lab-layer]` back / mid / front), each station's frames one pan to the right of the previous. Back frames 15vw at 40% opacity, mid 21vw at 80%, front 18.5vw at 4:5; all `rounded-image`; mid and front have a mono "Title / year" caption.
-  - `[data-lab-ui]` (z-35, above the robot): the heading top left, two `Pill`s, "What we build" (red) and "inside the lab" (white); the counter top right (`2/4 ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
+  - `[data-lab-ui]` (z-35, above the robot): the heading top left, "What we build" over "inside the lab" as a serif accent, no pills; the counter top right (`2/4 ROBOTICS`, the number and the word roll like an odometer, 0.9s expo); the card bottom right (`bg-2`, `rounded-card`, max 360px): station label in its accent, title, description, ghost "See projects" button and the pips (the active pip is a 40px bar whose fill the timeline scrubs; the rest are dots). The card's content cross-fades on a station change.
 - **Phones and reduced motion:** four stacked blocks, photos (two-column grid) then the card, with a `BotHeadIcon` showing the station's icon beside each title. No pinning.
 
 ### Featured slider (`Featured`, `FeaturedSlider`)
@@ -922,12 +952,12 @@ each living **0.8s**, more when it flies faster.
 
 ### Numbers (`Numbers`, `CountUp`)
 - Four counts from `getHomeStats()`: members, projects built, events hosted (events that have started), years running.
-- Large Sora 800 digits (`clamp(3.4rem, 8vw, 7.5rem)`) with mono labels, 2 columns on phones, 4 from md. Each counts up once at `top 85%` (1.2s power3.out, 0.06s apart). The server HTML has the final numbers, and nothing counts under reduced motion.
+- Large Archivo 700 digits (`clamp(3.4rem, 8vw, 7.5rem)`) with mono labels, 2 columns on phones, 4 from md. Each counts up once at `top 85%` (1.2s power3.out, 0.06s apart). The server HTML has the final numbers, and nothing counts under reduced motion.
 
 ### Join card (`JoinCard`, `NotifyForm`)
-- `bg-2`, hairline border, `rounded-card`. Left: "Hands on with hardware" with "Hands on" in a red pill. Right: two sentences, `settings.open_teams` as small charcoal (`raised`) pills, "Apply now" IrisButton (`join_form_url`, else `/join`).
+- `bg-2`, hairline border, `rounded-card`. Left: "Hands on with hardware" with "Hands on" as a serif accent. Right: two sentences, `settings.open_teams` as small charcoal (`raised`) pills, "Apply now" IrisButton (`join_form_url`, else `/join`).
 - When `recruitment_open` is false: closed-intake copy and a "Get notified" email form (`useActionState` + the `notifyWhenRecruiting` server action).
-- md and up, with motion: 40svh of space above the card and 22svh below it, so the robot can land on it, ride and fade before the footer.
+- md and up, with motion: 40svh of space above the card and 22svh below it, so the robot can land on it, ride and step back to its corner before the footer.
 
 ### Reduced motion
 Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in its final position: the robot is the poster in the hero (it only blinks), the lab is stacked, the slider doesn't autoplay, the event poster is straight and the numbers show their final values.
@@ -937,43 +967,43 @@ Nothing is built: no pin, no scrub, no reveals, no scenes. Everything renders in
 ## 13. Members page (`app/members/page.tsx`, `components/members`)
 
 ```tsx
-<SeniorCore members={getSeniorCore()} settings />   // editorial spreads, Bodoni Moda
-<JuniorCore teams={getJuniorCoreByTeam()} />        // team pills + one expanding accordion per team (Sora)
+<SeniorCore members={getSeniorCore()} settings />   // editorial spreads, Instrument Serif
+<JuniorCore teams={getJuniorCoreByTeam()} />        // team pills + one expanding accordion per team (Archivo)
 ```
 
 ### Senior Core
 An editorial run of full-screen "spreads" on the near-black background (`bg-bg`
-covers the grid), and the only place Bodoni Moda is used. The genre is a fashion
+covers the grid), and the one section built on Instrument Serif. The genre is a fashion
 magazine: huge serif names, full-colour portraits, a cut-out figure in front
-of giant letters, a spinning badge and `*1` counters. Keep it original: no
+of giant letters and a spinning badge. Keep it original: no
 borrowed layouts, assets or branding.
 
 Order: **intro**, one spread per senior (`tier = "senior"`, by `sort_order`), **closing**.
-- **Intro**: `Senior Core / 2026-27`, "The" small italic over "CORE" huge
+- **Intro**: `Senior Core / 2026-27`, "The" in lowercase italic over "CORE" huge
   (`min(34cqw, 48svh)`; its letters rise with `animate-rise` on first load), one line of text
   ("Fifteen people who…", counted from the data), the `RotatingBadge`
   (`club_name * SENIOR CORE * 2026 *`) and a "Meet them" next arrow. It holds the page's `h1`.
   The term is `SENIOR_CORE_TERM` in `lib/members.ts`, a constant so the page stays static. Update it yearly.
 - **Member spreads**: every senior uses **A, Split**, so all 15 portraits are the same big size (`CYCLE` in `lib/members.ts` is `["split"]`). B, C and D are still built; add them to `CYCLE` and `seniorLayout()` cycles them by position again:
-  - **A, Split**: the portrait fills the left half at full height. On the right: kicker, name, hairline, quote (Bodoni italic), role / branch, Connect.
-  - **B, Vertical**: the name in two vertical columns (`writing-mode: vertical-rl` + `rotate-180`, reading upwards) either side of a medium portrait set high, with an iris rectangle (25%) over its lower corner. Kicker, role (Bodoni italic), bio and Connect sit bottom left; the quote bottom right.
+  - **A, Split**: the portrait fills the left half at full height. On the right: kicker, name, hairline, quote (serif italic), role / branch, Connect.
+  - **B, Vertical**: the name in two vertical columns (`writing-mode: vertical-rl` + `rotate-180`, reading upwards) either side of a medium portrait set high, with an iris rectangle (25%) over its lower corner. Kicker, role (serif italic), bio and Connect sit bottom left; the quote bottom right.
   - **C, Cutout** (the signature spread): the name in two giant lines across the full width (fitted to the width, up to `26svh` / 20rem), with the `cutout_url` figure standing on the bottom edge between them. Line 1 sits behind the person. Line 2's fill also sits behind, and a 1px outline copy sits in front, so the line passes partly behind. **Without a `cutout_url` it falls back to A.** Portrait tablets (`md:portrait:`) make the figure 74svh and move the lines to 26% / 52%.
   - **D, Stacked**: first name, last name and "the {role}" (italic, 0.42em) stacked top left; a small square portrait bottom left; the badge (`name * role * Senior Core`) on the right; the bio beside the portrait (two columns from `lg`).
 - **Closing**: "Want a seat / at this / *table?*", the view's one `IrisButton` ("Join the club" → `join_form_url`, else `/join`) and a ghost "Junior Core ↓" button to `#junior-core`. The pin then lets go and the page scrolls on to Junior Core.
-- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has), prev/next arrows, and the counter `*1` (Sora 700, no leading zero; `clamp(3rem, 6.5vw, 6rem)`, tabular figures) with a small mono `/ 15` (the senior count) after it.
+- **Bottom right of every spread**: mono `LI / GH / IG` links (only the networks the member has) and the prev/next arrows. There is no position counter.
 - **Phones**: each spread stacks portrait, then name, then text, about one screen tall. Layout C keeps its figure in front of the name.
 
 Shared parts (`parts.tsx`):
-- **Names**: Bodoni Moda 500, uppercase, leading 0.86. The size is `min(clamp(4rem, 11vw, 12rem), column / width, 17svh)`:
+- **Names**: Instrument Serif 400, uppercase, leading 0.86. The size is `min(clamp(4rem, 11vw, 12rem), column / width, 17svh)`:
   - `--col` is the column's width, set per layout in `cqw` (each spread is a size container).
-  - `--em` is the widest line's width in em, from the measured Bodoni capital widths in `lib/members.ts` (`capsWidth`).
+  - `--em` is the widest line's width in em, from the measured Instrument Serif capital widths in `lib/members.ts` (`capsWidth`).
 
-  So a name always fills its column without overflowing. Two-word names break between the first words and the last word. A one-word name stays on one line in A (in B, C and D it splits in half). A's gaps leave room for a 140-character quote (4 lines) down to a 720px-tall screen.
-- **Kicker**: Sora 500, 11px, tracking 0.6em, uppercase ("T H E   P R E S I D E N T").
+  So a name never overflows its column. Instrument Serif's capitals are narrow, so most names are held by the 17svh cap instead of filling the column. Two-word names break between the first words and the last word. A one-word name stays on one line in A (in B, C and D it splits in half). A's gaps leave room for a 200-character quote (5 lines) down to a 720px-tall screen. A senior without a quote shows none.
+- **Kicker**: a mono label ("THE PRESIDENT"), `text-text/70`.
 - **Portraits**: always in full colour (no filter, no hover change). `rounded-image`, except A's full-bleed half.
 - **Blobs**: `bg-iris` (the maroon → red sheen) at 30%, `blur(clamp(48px, 7vw, 110px))`, behind the content (each spread is `isolate`): a dim red light pool on black.
 - **Body text**: 14px, muted, narrow columns.
-- **Connect**: a caps link with a long arrow line that extends on hover. It goes to the first of LinkedIn, GitHub, Instagram that the member has.
+- **Connect**: a mono label with a long arrow line that extends on hover. It goes to the first of LinkedIn, GitHub, Instagram that the member has.
 - Links inside the track must set `data-cursor="link"` themselves, or the track's DRAG state wins.
 
 ### Motion (`SeniorCoreTrack`, `SENIOR_CORE_MOTION`)
@@ -998,17 +1028,17 @@ Horizontal controls. They all move the page scroll, so there is only one timelin
 Reveals play once per spread as it enters (horizontal: `containerAnimation`, at `left 62%`):
 - letters rise out of their masks (`yPercent` 110 → 0, 1.2s expo, 0.04s apart; the vertical name moves sideways instead);
 - portraits wipe up (`clip-path: inset(100% 0 0 0)` → `inset(0)`);
-- text rises 24px and fades in;
-- the counter rolls like an odometer from the previous number (each digit is a 0–9 column, twice over; the ones digit spins a full turn).
+- text rises 24px and fades in.
 
 Blobs drift against the track at their own speeds (scrubbed with `containerAnimation`, ±14% of the width × speed). Badges spin faster while the page scrolls.
 
 ### Junior Core (`JuniorCore`, `JuniorCoreNav`, `TeamAccordion`)
 The juniors (`tier = "junior"`) are grouped by team, in the teams' order (`getJuniorCoreByTeam()`), with one expanding
-accordion per team. **Sora and mono only** (no Bodoni). The section keeps the `#junior-core` id that Senior Core's
+accordion per team. **Archivo, Manrope and mono only** (no serif). The section keeps the `#junior-core` id that Senior Core's
 closing button links to.
 
-- **Heading**: the mono label `33 MEMBERS / 7 TEAMS` (both numbers counted from the data), then "Junior Core" (Sora 800, `clamp(3rem, 9vw, 8rem)`).
+- **Sections**: Tech and Research are one department, as are Social Media and Multimedia, so each pair shares one section: their juniors sit on the Tech and Social Media teams, and `juniorSectionName()` (`lib/members.ts`) titles the rows "Tech & Research", "Social Media & Multimedia" and "PR & Outreach". The `teams` table still has all 7 (for /join and /about).
+- **Heading**: the mono label `34 MEMBERS / 5 TEAMS` (both numbers counted from the data), then "Junior Core" (Archivo 700, `clamp(3rem, 9vw, 8rem)`).
 - **Team bar** (`JuniorCoreNav`):
   - **Layout.** A sticky strip of team `Pill`s (`raised`, the current team in its accent), `sticky top-(--nav-h)`, `bg/80` with a backdrop blur and hairlines above and below. No ancestor up to `main` may set `overflow` or `transform`, or it stops sticking.
   - **Why only `--nav-h`.** It sticks at `--nav-h`, not `--nav-h + --ann-h`: the announcement bar has always collapsed (past 40px of scroll) by the time this section is on screen.
@@ -1018,13 +1048,13 @@ closing button links to.
   - **Lenis anchors.** The click handler stops propagation, because Lenis (`anchors: true`) would otherwise scroll to the anchor itself without the offset.
   - **Without JS.** The pills are real `#jc-<slug>` links, and the rows have a scroll-margin for the header and bar.
   - **Scroll spy.** A row is current while it spans a line 40% down the screen (never above the bar). Its ScrollTriggers use `refreshPriority: -1`, below Senior Core's pin.
-- **Row**: the team name, an accent bar (shown while highlighted) and `10 Members` sit above the accordion below `lg`, and in a 10rem column to its left from `lg`. The row sets `--jc-accent` to the team's accent (`teamAccent`).
+- **Row**: the team name, an accent bar (shown while highlighted) and `10 Members` sit above the accordion below `lg`, and in a 13rem column to its left from `lg` (wide enough for "Management"). The row sets `--jc-accent` to the team's accent (`teamAccent`).
 - **Accordion, md and up** (`@container`; sizes are CSS variables in `cqw`, so a full line with one card open always fits the column):
   - **Line.** A flex row of cards 440px tall, gap `clamp(8px, 1.1cqw, 12px)`. Each line holds up to 8 cards (`JUNIOR_CORE.perLine`). More members continue on a second line of the same accordion, and the lines are fixed, so cards never jump between them.
   - **Closed card.** A pill `clamp(44px, 6.6cqw, 76px)` wide (radius half its width, so it can animate). The portrait is `object-cover` at the member's `focal_point`, dimmed with `grayscale-40 brightness-80`. The first name runs vertically at the bottom (mono 11px, `text-text/60`) over a faint bottom gradient.
   - **Open card.** `clamp(280px, 42cqw, 460px)` wide, `rounded-card`, full colour. It has the 1px `iris-border` ring and a faint glow in `--jc-accent` (red at 35% / 45%).
   - **Open card's details.** A bottom gradient from transparent to `black/85`, with:
-    - the name (Sora 600, 24px);
+    - the name (Archivo 600, 24px);
     - the role (mono 11px);
     - the bio (13px), clamped to 2 lines from `lg`, 3 at md, 4 on phones, so the longest 160-character bios end in an ellipsis on desktop;
     - round social icon links (`SocialIcon`; LinkedIn, GitHub, Instagram, only those the member has; `data-cursor="link"`).
@@ -1034,7 +1064,7 @@ closing button links to.
   - **Open card.** It grows to 380px tall (`rounded-card`), the portrait fills it, and the details appear. It uses the same timing, animating height.
   - **Keeping it in view.** Tapping a card scrolls just enough to keep the whole opened card on screen, below the bar. This allows for the previously open card above it shrinking.
   - **Variant gotcha.** Phone-only states use `max-md:`, because Tailwind sorts `data-*` variants after `md:`.
-- **No photo**: an initials avatar (first and last initial, Sora 700) in a thin `iris-border` ring on the dark card. It is in the circle slot on phones and high in the card from md up, and it grows when the card opens.
+- **No photo**: an initials avatar (first and last initial, Archivo 600) in a thin `iris-border` ring on the dark card. It is in the circle slot on phones and high in the card from md up, and it grows when the card opens.
 - **Accessibility**:
   - **Structure.** Each card is a list item holding a full-size `<button aria-expanded aria-controls>`, whose accessible name is "Name, Role". The button comes first, so Tab reaches a card's links right after its button.
   - **Arrow keys.** ← / → (and Home / End) move focus between a team's cards; Enter / Space open the focused one.
@@ -1063,19 +1093,19 @@ Items in `sort_order` become pages:
 Collage rotations and stickers come from `seeded(id)` (a hash), so the server and the client agree.
 
 ### Shelf (`/gallery`: `JournalShelf`, `JournalCover`)
-- "Journals" (Sora 800, `clamp(3.4rem, 11vw, 10rem)`) under the mono label `3 EVENTS / 61 PHOTOS` (photos with a file,
+- "Journals" (Archivo 700, `clamp(3.4rem, 11vw, 10rem)`) under the mono label `3 EVENTS / 61 PHOTOS` (photos with a file,
   counted from the data).
 - Year filter `Pill`s ("All" and each year, newest first; `aria-pressed`). Changing the year fades the covers out and the
   rest slide into place (Motion layout); instant under reduced motion.
 - Grid: 1 column on phones, 3 from md. A cover is the event's `cover_url` bound like a notebook (4:5, `rounded-image`, a
-  spine shade and crease, an elastic band), then the title (Sora 700), `19 PAGES` and the mono date (IST).
+  spine shade and crease, an elastic band), then the title (Archivo 600), `19 PAGES` and the mono date (IST).
 - Hover or keyboard focus: the cover turns **rotateY(-12°)** on its spine and three white page edges slide out from its right
   side (7%, 10%, 13% of the width, 40ms apart), 600ms power3, plain CSS. `data-cursor="view"`. It links to `/gallery/<slug>`.
 
 ### Viewer layout (`JournalViewer`)
 Journal view fills the screen (`h-svh`, `pt-header`), top to bottom:
 - **Top bar** (`JournalTopBar`): a round back button (to `/gallery`) and the journal/grid toggle on the left; the title
-  (Sora 600) and `23 PAGES` in the centre (on phones it wraps to its own row); share and a "More" menu on the right. More
+  (Archivo 600) and `23 PAGES` in the centre (on phones it wraps to its own row); share and a "More" menu on the right. More
   has "About the event", "Copy link", "Download this page" and "All journals". In grid view the bar sticks under the header.
 - **The fan** (below).
 - **Scrubber** (`JournalScrubber`): a hairline track whose fill follows the position every frame, a dot, and `12 / 40`. Click
@@ -1133,17 +1163,17 @@ Navigation:
 - **Focus**: only the centre page is in the tab order, and keyboard focus follows it.
 
 ### Page types (`JournalPages`; sizes in `cqw`, each page is a container)
-- **photo**: full bleed. A caption becomes a handwritten note (Caveat) on a small `paper` tag with a punched hole, rotated
+- **photo**: full bleed. A caption becomes a note in serif italic on a small `paper` tag with a punched hole, rotated
   -3°, in the bottom-left corner.
 - **video**: a muted loop that plays only while centred. A sound toggle sits on the centre page (outside its button). The
   poster shows otherwise, with a small play badge.
 - **collage**: 2–3 photos in white print borders, each turned 2–5° (alternating direction, seeded). Each has translucent tape
   strips over two corners. There is one sticker: a red star, a maroon spark, or the club logo on a white disc.
-- **note**: `paper-ruled`, with the caption handwritten large on the rules and the event date in mono at the top right.
+- **note**: `paper-ruled`, with the caption in large serif italic on the rules and the event date in mono at the top right.
 
 ### Grid view and the switch (`JournalGrid`)
 - **The grid**: a masonry (CSS columns: 2 on phones, 3 from md, 4 from lg) of every item. Notes are small ruled cards.
-  Photos and videos open the lightbox; videos show a play badge, and captions sit over a dark gradient in Caveat.
+  Photos and videos open the lightbox; videos show a play badge, and captions sit over a dark gradient in serif italic.
 - **The switch (FLIP)**:
   1. The items on screen are measured in the old view.
   2. The page scrolls to the top.
@@ -1153,7 +1183,7 @@ Navigation:
 
 ### Lightbox (`Lightbox`)
 - **Layout**: portalled to `<body>` at z-90 (above the header, below the cursor). It holds the photo full screen
-  (`object-contain`) or the video with controls, the counter and title, the caption in Caveat, and prev/next, download, zoom
+  (`object-contain`) or the video with controls, the counter and title, the caption in serif italic, and prev/next, download, zoom
   and close buttons. Prev/next sit at the sides from md and at the bottom on phones.
 - **While open**: it makes `#main`, the footer and the header `inert`, stops Lenis, locks the scroll and focuses Close.
   Esc closes it, and focus goes back to the page. The fan then waits on the page of the item you were looking at.
@@ -1195,13 +1225,13 @@ spreads its fingers, points, grips and leaves as you scroll.
 
 **Layout (md and up).** The stage is `h-svh` (with `pt-header`), its content centred vertically, in the `shell`: a grid of
 **42fr | 52fr** with a 6% gap.
-- **Heading** (the page's `h1`): three lines, Sora 600, `min(clamp(2rem, 4vw, 3.4rem), 100cqw / 10.9)` (the left column
-  is a size container, and 10.9em is the widest line with its padding, so "students could build" always fits), line-height
-  1.18, tracking -0.03em. Each line is a pill, in the `<Pill>` fills (§5) but built by hand so its background can grow
-  on its own as a CSS keyframe:
-  1. a small red dot (1.3em), then "The things we" in a `red` pill;
-  2. "always imagined" in a `raised` pill (charcoal, hairline, warm white text);
-  3. "students could build" in a `white` pill (dark text).
+- **Heading** (the page's `h1`): three lines, Archivo 600, `min(clamp(2rem, 4vw, 3.4rem), 100cqw / 8.6)` (the left column
+  is a size container, and 8.6em covers the widest line, the first with its dot and padding), line-height 1.18,
+  tracking -0.02em. One pill, one serif line, the rest plain type:
+  1. a small red dot (1.3em), then "The things we" in a `red` pill, built by hand so its background can grow on its
+     own as a CSS keyframe;
+  2. "always imagined", plain;
+  3. "students could build" as a serif accent (§3).
 - **Copy**: two paragraphs, 15px, muted, max 440px, their first words ("We build", "Our aim is simple:") bold in `text`.
 - **Card**: `rounded-card`, `bg-bg-2`, a hairline border, `overflow-hidden`, `min(72vh, 100svh − header − 4rem)` tall.
 
@@ -1259,7 +1289,7 @@ finishes before the phase ends, leaving a short hold.
 
 **First load** (CSS keyframes from the server HTML, §5):
 - each heading line rises 30px and fades in (`animate-line-up`), from 120ms, 100ms apart;
-- its pill's background grows from scaleX 0 at the left (`animate-pill-grow`), 100ms after its line;
+- the first line's pill background grows from scaleX 0 at the left (`animate-pill-grow`), 100ms after its line;
 - the dot pops in (`animate-dot-in`);
 - then the paragraphs fade up (`animate-fade-up`, 560ms and 660ms).
 
@@ -1275,7 +1305,7 @@ is one ScrollTrigger, and the idle jitter runs only while the hand is visible.
 **Checking it.** `/lab` section 17 drives `setPose` with a slider and buttons for each pose.
 
 ### Below the intro (`AboutSections`, `AboutReveals`)
-Each section has a mono label (no number) and a Sora 700 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
+Each section has a mono label (no number) and an Archivo 600 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
 - **Purpose** (`Mission & vision`): two large cards side by side from md (`bg-2`, `rounded-card`, hairline, a
   `DotGrid` in the corner): the accent mono label (Mission red, Vision warm white), a heading and a paragraph. Copy in
   `ABOUT_PURPOSE`.
@@ -1358,7 +1388,7 @@ Three states on md and up with motion: the **reel** (`/projects`), one project's
   - a lost WebGL context falls back to the plain pages.
 
 ### The title (`ReelTitle`)
-- **Style.** Sora 800, uppercase, vertical (`writing-mode: vertical-rl` + `rotate-180`, reading upwards). It is centred over
+- **Style.** Archivo 700, uppercase, vertical (`writing-mode: vertical-rl` + `rotate-180`, reading upwards). It is centred over
   the panels and sits behind the gallery tiles.
 - **Size.** `min(--title-max, --title-fit / its length in em)`. On the stage these are 19.5cqh and 64cqh. Below lg the length
   also stays between the filter row and the names, because there the pills reach the middle column.
@@ -1458,7 +1488,7 @@ A streaming-app style showcase: one big card per event, its subject popping out 
   shoulders rise above the card: about 30px on phones, about 7% of the width on desktops. The cutout layer is clipped at
   the card's sides only, and fades out downwards (from 40% to 62% of the card height; from 12% to 32% on phones) so the
   title reads over the banner, not over a sharp figure. Without a cutout the card is just the banner.
-- **Bottom left**: the title (Sora 700, white, `clamp(2.5rem, min(6vw, 11cqh), 5.5rem)`; phones `clamp(2rem, 9vw, 3rem)`;
+- **Bottom left**: the title (Archivo 700, white, `clamp(2.5rem, min(6vw, 11cqh), 5.5rem)`; phones `clamp(2rem, 9vw, 3rem)`;
   the `cqh` cap keeps it inside short cards), the 13px details line (date | venue | tags | status badge, hairline
   dividers; a divider never ends a wrapped line), then:
   - **upcoming**: the countdown (`Countdown size="sm"`) and a "Register" `IrisButton`, only when `registration_url` is set;
@@ -1533,7 +1563,7 @@ photography keeps its own colours, but event art made for the site should follow
 ## 18. The drone (`components/drone`)
 
 A small club quadcopter built in code, used in two places:
-- on the home page, as the robot's **sidekick** in the hero, in the robot's own canvas (§12, `Sidekick.tsx`);
+- on the home page, as the robot's **sidekick**, flying the whole page in the robot's own canvas (§12, `Sidekick.tsx`);
 - on **`/lab/drone`**, a test bench where it flies over a dashboard of club stats with its own canvas, so each effect
   (fly to a card, scan, globe, flip, dissolve, reassemble) can be checked in isolation.
 
@@ -1607,17 +1637,17 @@ the right, and the first card grows into the next background.
   one `white`, the rest `raised` with a blur).
 - **Text** (left, max 520px, 6vw in; centred in the band between the filters and the controls from md):
   - a short red dash and "event / location" (13px);
-  - the title in **Anton** (§3), uppercase, two lines split at the space nearest the middle (`titleLines`), each line in
+  - the title in **condensed Archivo 700** (§3), uppercase, two lines split at the space nearest the middle (`titleLines`), each line in
     its own mask: `clamp(3rem, min(7vw, 11svh), 6.5rem)`, line-height 0.95 (phones `clamp(2.2rem, 10vw, 3.2rem)`);
   - the result badge (`ResultBadge`: a win in red, anything else `bg-text/10`) and the date in mono (IST, "12 DEC 2025");
   - the description (15px, muted, at most 3 lines) and the team (small, after a mono "Team");
   - a round red share button (system share sheet, else it copies `/achievements?a=<slug>` and says "Link copied"), and
     a ghost `PillButton` "View certificate" / "Read paper" (research), only when `link` is set.
 - **Waiting cards** (`ACH_CARD`): the next achievements in order, from 52vw to past the right edge (one card always starts
-  off screen), 170 × 260, 18px apart, 16px radius, a soft shadow, the photo with a dark bottom gradient, the title (12px
-  bold caps, two lines) and the result (10px mono). `data-cursor="view"`.
+  off screen), 170 × 260, 18px apart, 16px radius, a soft shadow, the photo with a dark bottom gradient, the title (13px
+  Archivo 600, two lines) and the result (10px mono). `data-cursor="view"`.
 - **Bottom**: round frosted prev/next buttons at the left, a hairline track whose fill shows the position, and the slide
-  number at the bottom right (Sora 700, 64px, an `Odometer` that rolls each digit as a 0–9 column, with `/ 6` in mono; no leading zero).
+  number at the bottom right (Archivo 600, 64px, an `Odometer` that rolls each digit as a 0–9 column, with `/ 6` in mono; no leading zero).
 - **Autoplay line**: a 2px red line just under the header that fills over the autoplay interval.
 
 ### Motion (`AchievementsSlider`; numbers in `ACH_MOTION`)
@@ -1656,7 +1686,7 @@ empty.
 
 ### All achievements (`AchievementsList`)
 `Record`, "All achievements", then one block per year (newest first, with a count, "3 achievements"): a row per achievement with
-the date (mono), the title (Sora 600), the event / location (muted) and the result badge, on hairlines. The showing one has
+the date (mono), the title (Archivo 600), the event / location (muted) and the result badge, on hairlines. The showing one has
 a red dot. Clicking a row scrolls back up (Lenis, 1.2s) and then opens that slide (its card grows); a row outside the
 current filter switches to All first and the rebuilt slider starts on it.
 
@@ -1694,8 +1724,8 @@ glow); here the window is the contact form, and the light is the site's red.
   - a badge `Link`: a `bg-2` pill with a hairline, "Recruitment for 2026 is open" (`SENIOR_CORE_TERM.year`) and a small red
     circle with an arrow, to `join_form_url` or `/join`. While recruitment is closed: "Workshop: <title>" (the next
     workshop, else "Next up: <title>", the next event) to `/events`; with neither, no badge;
-  - the `h1` "Let's build something together": Sora 500, `clamp(2.4rem, min(5.5vw, 8.5svh), 4.5rem)` (phones
-    `clamp(2rem, 9vw, 2.6rem)`), tracking -0.04em, each word a warm white → 65% gradient clipped to the text;
+  - the `h1` "Let's build something together": Archivo 600, `clamp(2.4rem, min(5.5vw, 8.5svh), 4.5rem)` (phones
+    `clamp(2rem, 9vw, 2.6rem)`), tracking -0.03em, plain warm white, "together" in serif italic;
   - a muted line (17px; 15px on phones) and two buttons: "Email us" (ghost `PillButton`, mail icon, `mailto:`) and
     "Send a message" (`IrisButton`: scrolls to the form with Lenis over 1.2s, landing 24px under the navbar, then focuses
     Name). Phones stack them full width;
@@ -1774,7 +1804,7 @@ The partners (names and logos), the phone number and the lab room in the address
 </JoinReveals>
 ```
 
-Simple and premium, from a reference of a big uppercase headline over a crowd of tiny flat-illustrated people filling
+Simple and premium, from a reference of a big headline over a crowd of tiny flat-illustrated people filling
 the bottom of the screen. The sections below share its calm: generous space, cards without borders, one radius, and
 only fade-up reveals.
 
@@ -1782,7 +1812,7 @@ only fade-up reveals.
 - **Background**: `bg` and one soft, wide red glow (a radial gradient, 10%) rising from behind the crowd. Nothing else:
   no grid, no stars, no shapes.
 - **Text** (centred in the space above the crowd, which is the top 55%, 60% on phones): the mono label "Recruitment 2026"
-  (`SENIOR_CORE_TERM.year`); the `h1` "Join our community" (Sora 700, uppercase, tracking 0.03em, `text`,
+  (`SENIOR_CORE_TERM.year`); the `h1` "Join our community" (Archivo 600, tracking -0.03em, `text`, "community" as a serif accent,
   `clamp(2.6rem, 6.5vw, 5.5rem)`; phones `clamp(2rem, 9vw, 2.6rem)`, on two lines); one muted line (17px, 15px on
   phones, max 480px); and one button, "Apply now" (`IrisButton` → `/join/apply`, its → slides 3px right on hover), or,
   while recruitment is closed, the "Get notified" email form (`NotifyForm`, §12).

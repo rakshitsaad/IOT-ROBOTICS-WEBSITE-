@@ -535,7 +535,7 @@ export function AchievementsSlider({
             {current.event_name} / {current.location}
           </span>
         </p>
-        <h2 className="mt-4 font-condensed text-[length:clamp(2.2rem,10vw,3.2rem)] leading-[0.95] uppercase md:text-[length:clamp(3rem,min(7vw,11svh),6.5rem)]">
+        <h2 className="mt-4 font-stretch-extra-condensed text-[length:clamp(2.2rem,10vw,3.2rem)] leading-[0.95] font-bold uppercase md:text-[length:clamp(3rem,min(7vw,11svh),6.5rem)]">
           {[l1, l2].filter(Boolean).map((t, i) => (
             <span key={i} className="-my-[0.04em] block overflow-hidden py-[0.04em]">
               <span
@@ -634,8 +634,8 @@ export function AchievementsSlider({
       >
         <div className="h-full bg-text/80 transition-[width] duration-[900ms] ease-expo" style={{ width: `${((active + 1) / n) * 100}%` }} />
       </div>
-      <p className="absolute right-4 bottom-4 z-20 flex items-end gap-2 font-bold text-text md:right-[6vw] md:bottom-[4svh]">
-        <Odometer value={active + 1} className="text-[44px] tracking-[-0.03em] md:text-[64px]" />
+      <p className="absolute right-4 bottom-4 z-20 flex items-end gap-2 font-display font-semibold text-text md:right-[6vw] md:bottom-[4svh]">
+        <Odometer value={active + 1} className="text-[44px] tracking-[-0.02em] md:text-[64px]" />
         <span className="mono-label mb-[0.45rem] text-text/60 md:mb-[0.7rem]">/ {n}</span>
       </p>
 
@@ -654,8 +654,8 @@ function CardFace({ a, small = false }: { a: Achievement; small?: boolean }) {
       <span className={cn("absolute inset-x-0 bottom-0 flex flex-col items-start text-left", small ? "p-2.5" : "p-3.5")}>
         <span
           className={cn(
-            "line-clamp-2 leading-[1.15] font-bold tracking-[0.01em] text-text uppercase",
-            small ? "text-[10px]" : "text-[12px]",
+            "line-clamp-2 leading-[1.15] font-display font-semibold text-text",
+            small ? "text-[11px]" : "text-[13px]",
           )}
         >
           {a.title}

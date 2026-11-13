@@ -40,7 +40,7 @@ export function PillButton({
       data-cursor="link"
       {...(props as ActionProps)}
       className={cn(
-        "group/pill inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-pill font-semibold leading-none",
+        "group/pill inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-pill font-medium leading-none",
         "transition-[background-color,border-color,transform] duration-[350ms] ease-power3 active:scale-[0.97]",
         VARIANT[variant],
         SIZE[size],

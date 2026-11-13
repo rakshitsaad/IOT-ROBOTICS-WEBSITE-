@@ -77,7 +77,7 @@ export function LabCard({ stations }: { stations: LabPanelStation[] }) {
           <MonoLabel tone={s.accent}>
             {s.short}
           </MonoLabel>
-          <h3 className="mt-3 text-[1.35rem] leading-tight font-bold tracking-[-0.02em]">{s.title}</h3>
+          <h3 className="mt-3 text-[1.35rem] leading-tight font-semibold tracking-[-0.01em]">{s.title}</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">{s.description}</p>
         </motion.div>
       </AnimatePresence>

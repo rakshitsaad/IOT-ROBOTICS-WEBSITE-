@@ -158,7 +158,7 @@ function Big({ card, value }: { card: MissionCardId; value: number }) {
     };
   }, [key, value]);
   return (
-    <p className="text-[length:clamp(1.9rem,6svh,4rem)] leading-[0.9] font-extrabold tracking-[-0.05em] tabular-nums">
+    <p className="text-[length:clamp(1.9rem,6svh,4rem)] leading-[0.9] font-display font-bold tracking-[-0.035em] tabular-nums">
       <span ref={ref}>{value}</span>
     </p>
   );

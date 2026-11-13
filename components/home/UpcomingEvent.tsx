@@ -57,7 +57,7 @@ export function UpcomingEvent({ event }: { event: ClubEvent }) {
           </MonoLabel>
           <h2
             id="event-title"
-            className="mt-5 text-[length:clamp(2.4rem,5vw,5rem)] leading-[1] font-bold tracking-[-0.04em]"
+            className="mt-5 text-[length:clamp(2.4rem,5vw,5rem)] leading-[1] font-semibold tracking-[-0.03em]"
           >
             {event.title}
           </h2>

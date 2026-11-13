@@ -21,12 +21,12 @@ export default async function GalleryPage() {
           </MonoLabel>
           <h1
             id="journals-title"
-            className="mt-4 text-[length:clamp(3.4rem,11vw,10rem)] leading-[0.9] font-extrabold tracking-[-0.045em]"
+            className="mt-4 text-[length:clamp(3.4rem,11vw,10rem)] leading-[0.9] font-bold tracking-[-0.035em]"
           >
             Journals
           </h1>
           <p className="mt-6 max-w-[46ch] text-[17px] text-muted">
-            <strong className="font-semibold text-text">One journal per event.</strong> Open one to flip through
+            <strong className="font-medium text-text">One journal per event.</strong> Open one to flip through
             the photos, clips and notes we kept from the day.
           </p>
         </div>

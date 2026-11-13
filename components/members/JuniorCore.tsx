@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { MonoLabel } from "@/components/ui";
 import type { JuniorCoreTeam } from "@/lib/data";
-import { juniorRowId } from "@/lib/members";
+import { juniorRowId, juniorSectionName } from "@/lib/members";
 import { teamAccent } from "@/lib/tokens";
 import { JuniorCoreNav } from "./JuniorCoreNav";
 import { TeamAccordion } from "./TeamAccordion";
@@ -9,7 +9,7 @@ import { TeamAccordion } from "./TeamAccordion";
 /**
  * Junior Core, below Senior Core on /members (DESIGN.md §13): a sticky row of
  * team pills, then one row per team (in the teams' order) whose cards are an
- * expanding accordion. Sora only; Bodoni Moda stays in Senior Core.
+ * expanding accordion. Archivo, Manrope and mono only; the serif stays in Senior Core.
  * `#junior-core` is where Senior Core's closing spread hands off to.
  */
 export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
@@ -29,7 +29,7 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
         </MonoLabel>
         <h2
           id="junior-core-title"
-          className="mt-4 text-[length:clamp(3rem,9vw,8rem)] leading-[0.9] font-extrabold tracking-[-0.045em]"
+          className="mt-4 text-[length:clamp(3rem,9vw,8rem)] leading-[0.9] font-bold tracking-[-0.035em]"
         >
           Junior Core
         </h2>
@@ -37,7 +37,7 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
 
       <div className="mt-10 md:mt-14">
         <JuniorCoreNav
-          teams={teams.map(({ team }) => ({ slug: team.slug, name: team.name, accent: teamAccent(team.name) }))}
+          teams={teams.map(({ team }) => ({ slug: team.slug, name: juniorSectionName(team.name), accent: teamAccent(team.name) }))}
         />
 
         <div className="shell mt-10 flex flex-col gap-14 md:mt-14 md:gap-20">
@@ -46,16 +46,16 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
               key={team.id}
               id={juniorRowId(team.slug)}
               style={{ "--jc-accent": `var(--${teamAccent(team.name)})` } as CSSProperties}
-              className="group/row grid scroll-mt-[calc(var(--nav-h)+6rem)] gap-5 lg:grid-cols-[10rem_minmax(0,1fr)] lg:gap-8"
+              className="group/row grid scroll-mt-[calc(var(--nav-h)+6rem)] gap-5 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8"
             >
               <div className="flex items-baseline justify-between gap-4 lg:flex-col lg:justify-start lg:gap-2.5">
                 <div>
                   <h3
                     data-jc-row-title
                     tabIndex={-1}
-                    className="text-[length:clamp(1.5rem,2.2vw,2rem)] leading-[1.05] font-bold tracking-[-0.03em] outline-none transition-colors duration-[350ms] ease-power3 group-data-[highlight]/row:text-(--jc-accent)"
+                    className="text-[length:clamp(1.5rem,2.2vw,2rem)] leading-[1.05] font-semibold tracking-[-0.02em] outline-none transition-colors duration-[350ms] ease-power3 group-data-[highlight]/row:text-(--jc-accent)"
                   >
-                    {team.name}
+                    {juniorSectionName(team.name)}
                   </h3>
                   {/* Highlight after a pill click: an accent bar grows under the name. */}
                   <span
@@ -65,7 +65,7 @@ export function JuniorCore({ teams }: { teams: JuniorCoreTeam[] }) {
                 </div>
                 <MonoLabel>{members.length} {members.length === 1 ? "Member" : "Members"}</MonoLabel>
               </div>
-              <TeamAccordion team={team.name} members={members} />
+              <TeamAccordion team={juniorSectionName(team.name)} members={members} />
             </div>
           ))}
         </div>

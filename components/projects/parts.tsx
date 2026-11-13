@@ -49,7 +49,7 @@ export function ProjectFilters({
             <Pill
               color={on ? "white" : "raised"}
               className={cn(
-                "block px-3.5 py-2 text-xs leading-none font-semibold transition-colors duration-[350ms] ease-power3",
+                "block px-3.5 py-2 text-xs leading-none font-medium transition-colors duration-[350ms] ease-power3",
                 !on && "text-muted hover:text-text",
               )}
             >
@@ -99,7 +99,7 @@ export function ProjectInfo({
       <Heading
         ref={headingRef}
         tabIndex={-1}
-        className="mt-2.5 text-[clamp(1.6rem,2.4vw,2rem)] leading-[1.05] font-bold tracking-[-0.03em] outline-none"
+        className="mt-2.5 text-[clamp(1.6rem,2.4vw,2rem)] leading-[1.05] font-semibold tracking-[-0.02em] outline-none"
       >
         {project.title}
       </Heading>

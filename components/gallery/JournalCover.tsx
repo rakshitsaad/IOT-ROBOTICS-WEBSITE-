@@ -78,7 +78,7 @@ export function JournalCover({ journal, eager = false }: { journal: JournalSumma
       </div>
 
       <div className="mt-6 flex items-start justify-between gap-4">
-        <h2 className="text-[22px] leading-tight font-bold tracking-[-0.02em] md:text-2xl">{journal.title}</h2>
+        <h2 className="text-[22px] leading-tight font-semibold tracking-[-0.01em] md:text-2xl">{journal.title}</h2>
         <MonoLabel className="mt-1.5 shrink-0">{journal.pages} Pages</MonoLabel>
       </div>
       <MonoLabel as="p" className="mt-2">

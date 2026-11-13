@@ -41,7 +41,7 @@ export type MemberYear = 1 | 2 | 3 | 4;
 
 /**
  * Where a member sits on the /members page.
- * - senior: Senior Core (the editorial spreads, Bodoni Moda)
+ * - senior: Senior Core (the editorial spreads, Instrument Serif)
  * - junior: Junior Core (the team accordions, grouped by team)
  * - member: everyone else
  */
@@ -81,7 +81,7 @@ export interface Member {
   cutout_url: string | null;
   /** Max 300 characters (seniors) or 160 (juniors): MEMBER_LIMITS. */
   bio: string | null;
-  /** Max 140 characters. Senior Core shows it in Bodoni Moda italic. */
+  /** Max 200 characters (seniors) or 140: MEMBER_LIMITS. Senior Core shows it in Instrument Serif italic. */
   quote: string | null;
   socials: MemberSocials;
   is_active: boolean;
@@ -95,7 +95,7 @@ export interface Member {
  * rows). Junior Core shows the bio on two lines of a card, so it is shorter.
  */
 export const MEMBER_LIMITS: Record<MemberTier, { quote: number; bio: number }> = {
-  senior: { quote: 140, bio: 300 },
+  senior: { quote: 200, bio: 300 },
   junior: { quote: 140, bio: 160 },
   member: { quote: 140, bio: 300 },
 };
@@ -235,7 +235,7 @@ export interface GalleryItem {
   url: string | null;
   /** Still frame shown before a video plays. Videos only. */
   poster_url: string | null;
-  /** Short handwritten caption, rendered in Caveat. A note's whole text. */
+  /** Short caption, rendered in Instrument Serif italic. A note's whole text. */
   caption: string | null;
   /** Describes the photo or video for screen readers. */
   alt: string;

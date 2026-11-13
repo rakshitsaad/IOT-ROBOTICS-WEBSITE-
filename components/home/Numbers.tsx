@@ -21,7 +21,7 @@ export function Numbers({ stats }: { stats: HomeStats }) {
           {items.map((item, i) => (
             <div key={item.label} className="flex flex-col-reverse border-t border-line pt-6">
               <dt className="mono-label mt-4 text-muted">{item.label}</dt>
-              <dd className="text-[length:clamp(3.4rem,8vw,7.5rem)] leading-[0.9] font-extrabold tracking-[-0.05em] tabular-nums">
+              <dd className="text-[length:clamp(3.4rem,8vw,7.5rem)] leading-[0.9] font-display font-bold tracking-[-0.035em] tabular-nums">
                 <CountUp value={item.value} delay={i * STAGGER} />
               </dd>
             </div>

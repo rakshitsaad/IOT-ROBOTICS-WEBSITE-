@@ -23,14 +23,14 @@ export function AchievementsList({
       <MonoLabel as="p">
         Record
       </MonoLabel>
-      <h2 id="all-achievements-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]">
+      <h2 id="all-achievements-title" className="mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]">
         All achievements
       </h2>
       {years.map((year) => {
         const own = items.filter((a) => achYear(a.date) === year).sort((a, b) => b.date.localeCompare(a.date));
         return (
           <div key={year} className="mt-12 md:mt-16">
-            <h3 className="flex items-center gap-4 text-2xl font-bold tracking-[-0.03em] tabular-nums">
+            <h3 className="flex items-center gap-4 text-2xl font-semibold tracking-[-0.02em] tabular-nums">
               {year}
               <span aria-hidden="true" className="h-px flex-1 bg-line" />
               <MonoLabel>{own.length} {own.length === 1 ? "achievement" : "achievements"}</MonoLabel>
@@ -59,7 +59,7 @@ export function AchievementsList({
                           aria-hidden="true"
                           className={cn("size-1.5 shrink-0 rounded-full bg-red transition-opacity duration-[350ms]", on ? "opacity-100" : "opacity-0")}
                         />
-                        <span className="text-xl leading-tight font-semibold tracking-[-0.02em] transition-transform duration-[350ms] ease-power3 group-hover/row:translate-x-1.5 md:text-2xl">
+                        <span className="text-xl leading-tight font-display font-semibold tracking-[-0.01em] transition-transform duration-[350ms] ease-power3 group-hover/row:translate-x-1.5 md:text-2xl">
                           {a.title}
                         </span>
                       </span>

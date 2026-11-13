@@ -60,7 +60,7 @@ export default function LabPage() {
 
       <header className="shell pb-10 pt-12 md:pb-16 md:pt-20">
         <MonoLabel index="LAB">Design system</MonoLabel>
-        <h1 className="mt-5 max-w-4xl text-[length:clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
+        <h1 className="mt-5 max-w-4xl text-[length:clamp(2.5rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-[-0.035em]">
           Every <Pill color="iris">primitive</Pill>, on the grid.
         </h1>
         <p className="mt-6 max-w-xl text-muted">
@@ -99,34 +99,36 @@ export default function LabPage() {
         <Section index={3} title="Typography">
           <div className="space-y-8">
             <div>
-              <MonoLabel>Sora · display & body · 500–800</MonoLabel>
+              <MonoLabel>Archivo · headings · 600–700</MonoLabel>
               <div className="mt-3 space-y-1">
-                <p className="text-[length:clamp(2.25rem,6vw,4.5rem)] font-extrabold leading-none tracking-[-0.045em]">Sense. Think. Move.</p>
-                <p className="text-3xl font-bold tracking-[-0.03em] md:text-4xl">Bold 700 headline</p>
-                <p className="text-xl font-semibold tracking-[-0.02em]">Semibold 600 subheading</p>
-                <p className="max-w-xl text-muted">
-                  Medium 500 body. We are a student club that designs, builds and ships connected devices and robots,
-                  from first LED blink to competition podiums.
+                <p className="font-display text-[length:clamp(2.25rem,6vw,4.5rem)] leading-none font-bold tracking-[-0.035em]">Sense. Think. Move.</p>
+                <p className="font-display text-3xl font-semibold tracking-[-0.02em] md:text-4xl">
+                  Section heading 600, with <span className="serif-accent">one serif word</span>
                 </p>
+                <p className="font-display text-xl font-semibold tracking-[-0.01em]">Card title 600</p>
               </div>
             </div>
             <div>
-              <MonoLabel>JetBrains Mono · labels · 11–12px · 0.14em</MonoLabel>
-              <p className="mono-label mt-3 text-text">ESP32-S3 · ROS 2 · LoRaWAN · [04] Projects</p>
-            </div>
-            <div>
-              <MonoLabel tone="red">Bodoni Moda · Senior Core section only</MonoLabel>
-              <p className="mt-3 font-serif text-4xl leading-tight md:text-5xl">
-                The Senior <em className="italic">Core</em>
+              <MonoLabel>Manrope · body 400 · UI 500</MonoLabel>
+              <p className="mt-3 max-w-[46ch] text-muted">
+                <strong className="text-text">Body 400, emphasis 500.</strong> We are a student club that designs, builds
+                and ships connected devices and robots, from first LED blink to competition podiums.
               </p>
             </div>
             <div>
-              <MonoLabel tone="white">Caveat · handwritten gallery captions only</MonoLabel>
-              <p className="mt-3 -rotate-2 font-hand text-3xl text-text/90">3am, 14th attempt, it finally moved</p>
+              <MonoLabel>IBM Plex Mono · labels · 11–12px · 0.08em</MonoLabel>
+              <p className="mono-label mt-3 text-text">ESP32-S3 · ROS 2 · LoRaWAN · 4 Projects</p>
             </div>
             <div>
-              <MonoLabel tone="white">Anton · /achievements slide titles only</MonoLabel>
-              <p className="mt-3 font-condensed text-5xl leading-[0.95] uppercase md:text-6xl">
+              <MonoLabel tone="red">Instrument Serif · editorial accents</MonoLabel>
+              <p className="mt-3 font-serif text-4xl leading-tight md:text-5xl">
+                The Senior <em className="italic">Core</em>
+              </p>
+              <p className="mt-3 font-serif text-2xl text-text/90 italic">3am, 14th attempt, it finally moved</p>
+            </div>
+            <div>
+              <MonoLabel tone="white">Archivo 700, extra-condensed · /achievements slide titles only</MonoLabel>
+              <p className="mt-3 font-display text-5xl leading-[0.95] font-bold font-stretch-extra-condensed uppercase md:text-6xl">
                 Smart India
                 <br />
                 Hackathon
@@ -137,11 +139,11 @@ export default function LabPage() {
 
         {/* 04 Pill */}
         <Section index={4} title="<Pill color>">
-          <p className="text-[length:clamp(1.75rem,4.5vw,3.25rem)] font-bold leading-[1.15] tracking-[-0.035em]">
+          <p className="text-[length:clamp(1.75rem,4.5vw,3.25rem)] font-display leading-[1.15] font-semibold tracking-[-0.025em]">
             We build <Pill color="white">robots</Pill> that <Pill color="raised">sense</Pill>, <Pill color="red">think</Pill>{" "}
             and <Pill color="raised">move</Pill>.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2 text-lg font-semibold">
+          <div className="mt-6 flex flex-wrap gap-2 text-lg font-medium">
             {PILL_COLORS.map((c) => (
               <Pill key={c} color={c}>
                 {c}
@@ -237,7 +239,7 @@ export default function LabPage() {
 
         {/* 10 Team accents */}
         <Section index={10} title="Team accent map">
-          <ul className="flex flex-wrap gap-2 text-base font-semibold md:text-lg">
+          <ul className="flex flex-wrap gap-2 text-base font-medium md:text-lg">
             {(Object.keys(TEAM_ACCENT) as TeamName[]).map((team) => (
               <li key={team}>
                 <Pill color={TEAM_ACCENT[team]}>{team}</Pill>
@@ -307,13 +309,13 @@ export default function LabPage() {
         <Section index={16} title="paper & paper-ruled · gallery journal pages">
           <div className="flex flex-wrap items-start gap-6 md:gap-10">
             <div className="paper grid aspect-[4/5] w-48 place-items-center rounded-image p-[6px] shadow-2xl shadow-black/60 md:w-56">
-              <span className="paper -rotate-3 rounded-[3px] px-3 py-1.5 font-hand text-xl text-bg shadow-lg shadow-black/40">
+              <span className="paper -rotate-3 rounded-[3px] px-3 py-1.5 font-serif text-lg text-bg italic shadow-lg shadow-black/40">
                 a caption tag
               </span>
             </div>
             <div className="paper aspect-[4/5] w-48 rounded-image p-[6px] shadow-2xl shadow-black/60 md:w-56">
               <div className="paper-ruled size-full rounded-[12px] pt-8 pr-5 pl-[19%] [--rule:1.6rem]">
-                <p className="font-hand text-2xl leading-[1.6rem] text-bg/85">A note page: Caveat on the rules.</p>
+                <p className="font-serif text-xl leading-[1.6rem] text-bg/85 italic">A note page: serif italic on the rules.</p>
               </div>
             </div>
           </div>
@@ -371,7 +373,7 @@ function Swatch({ name, value, className }: { name: string; value: string; class
     <div className="overflow-hidden rounded-image border border-line">
       <div className={`h-16 md:h-20 ${className}`} />
       <div className="bg-bg-2 px-3 py-2.5">
-        <p className="text-sm font-semibold">{name}</p>
+        <p className="text-sm font-medium">{name}</p>
         <p className="mono-label mt-0.5 truncate text-muted">{value}</p>
       </div>
     </div>

@@ -113,7 +113,7 @@ function Panel({ event, onClose, onPhoto, covered, reduced }: Props) {
           <MonoLabel as="p" tone="text">
             Event / {event.type}
           </MonoLabel>
-          <h2 id="event-detail-title" className="mt-4 max-w-[16ch] text-[length:clamp(2.5rem,7vw,6rem)] leading-[0.95] font-bold tracking-[-0.04em]">
+          <h2 id="event-detail-title" className="mt-4 max-w-[16ch] text-[length:clamp(2.5rem,7vw,6rem)] leading-[0.95] font-bold tracking-[-0.03em]">
             {event.title}
           </h2>
 
@@ -143,7 +143,7 @@ function Panel({ event, onClose, onPhoto, covered, reduced }: Props) {
 
           <div className="mt-10 grid gap-10 md:grid-cols-12">
             <div className="md:col-span-7">
-              <p className="text-[length:clamp(1.25rem,2vw,1.6rem)] leading-snug font-semibold tracking-[-0.02em]">{event.summary}</p>
+              <p className="text-[length:clamp(1.25rem,2vw,1.6rem)] leading-snug font-medium tracking-[-0.02em]">{event.summary}</p>
               <p className="mt-5 max-w-[60ch] text-[17px] leading-relaxed text-muted">{event.description}</p>
             </div>
             <div className="flex flex-col items-start gap-6 md:col-span-5 md:items-end">

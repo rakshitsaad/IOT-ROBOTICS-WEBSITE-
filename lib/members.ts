@@ -34,26 +34,26 @@ export function nameLines(name: string): [string, string] {
 }
 
 /**
- * Advance widths of Bodoni Moda capitals (weight 500), in em, measured in the
- * browser. Names are sized from these so the longest line exactly fills its
- * column, whatever its letters (I is 0.32em, W 1.06em).
+ * Advance widths of Instrument Serif capitals (weight 400), in em, measured in the
+ * browser. Names are sized from these so the longest line never overflows its
+ * column, whatever its letters (I is 0.25em, M 0.66em).
  */
-const BODONI_CAPS: Record<string, number> = {
-  A: 0.774, B: 0.684, C: 0.797, D: 0.788, E: 0.598, F: 0.56, G: 0.829, H: 0.803, I: 0.32,
-  J: 0.641, K: 0.703, L: 0.549, M: 0.937, N: 0.858, O: 0.865, P: 0.649, Q: 0.865, R: 0.71,
-  S: 0.682, T: 0.609, U: 0.785, V: 0.719, W: 1.056, X: 0.705, Y: 0.654, Z: 0.652,
-  " ": 0.211, "-": 0.506, "'": 0.264, ".": 0.26,
+const SERIF_CAPS: Record<string, number> = {
+  A: 0.431, B: 0.47, C: 0.48, D: 0.52, E: 0.453, F: 0.408, G: 0.507, H: 0.546, I: 0.249,
+  J: 0.249, K: 0.484, L: 0.413, M: 0.657, N: 0.54, O: 0.53, P: 0.466, Q: 0.53, R: 0.501,
+  S: 0.401, T: 0.461, U: 0.536, V: 0.441, W: 0.635, X: 0.48, Y: 0.413, Z: 0.427,
+  " ": 0.17, "-": 0.43, "'": 0.233, ".": 0.213,
 };
 /** Unknown characters (accents, other scripts) count as a wide capital. */
-const FALLBACK_EM = 0.86;
-/** Names are tracked -0.01em; 4% spare covers rounding and optical-size changes. */
+const FALLBACK_EM = 0.6;
+/** Names are tracked -0.01em; 4% spare covers rounding. */
 const TRACKING = -0.01;
 const SAFETY = 1.04;
 
-/** Width of the widest line in em when set in Bodoni Moda capitals. */
+/** Width of the widest line in em when set in Instrument Serif capitals. */
 export function capsWidth(lines: readonly string[]): number {
   const width = (line: string) =>
-    Array.from(line.toUpperCase()).reduce((w, ch) => w + (BODONI_CAPS[ch] ?? FALLBACK_EM) + TRACKING, 0);
+    Array.from(line.toUpperCase()).reduce((w, ch) => w + (SERIF_CAPS[ch] ?? FALLBACK_EM) + TRACKING, 0);
   return Math.max(0.5, ...lines.map(width)) * SAFETY;
 }
 
@@ -92,6 +92,13 @@ export function socialLinks(member: Member): SocialLink[] {
  * `perLine` members continues on another line of the same accordion.
  */
 export const JUNIOR_CORE = { perLine: 8 } as const;
+
+/**
+ * Junior Core section titles. Tech and Research are one department, as are Social Media and
+ * Multimedia, so each pair shares one section (the Tech and Social Media teams' rows).
+ */
+const JUNIOR_SECTION_NAME: Record<string, string> = { Tech: "Tech & Research", "Social Media": "Social Media & Multimedia", PR: "PR & Outreach" };
+export const juniorSectionName = (team: string) => JUNIOR_SECTION_NAME[team] ?? team;
 
 /** Id of a team's row on /members, the target of its filter pill. */
 export const juniorRowId = (slug: string) => `jc-${slug}`;

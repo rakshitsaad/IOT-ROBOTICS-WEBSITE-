@@ -144,7 +144,7 @@ export function JuniorCoreNav({ teams }: { teams: JuniorCoreNavTeam[] }) {
                   <Pill
                     color={on ? accent : "raised"}
                     className={cn(
-                      "block px-4 py-2.5 text-[13px] leading-none font-semibold whitespace-nowrap",
+                      "block px-4 py-2.5 text-[13px] leading-none font-medium whitespace-nowrap",
                       "transition-[background-color,color,box-shadow] duration-[350ms] ease-power3",
                       !on && "group-hover/pill:bg-text/10",
                     )}

@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 import type { Accent } from "@/lib/types";
 
 /**
- * Small uppercase technical label: JetBrains Mono, 11px (12px ≥ md),
+ * Small uppercase technical label: IBM Plex Mono, 11px (12px ≥ md),
  * letter-spacing 0.14em. An optional index renders before the label, without brackets ("404 Not found").
  * Section labels are names only: don't number them.
  *

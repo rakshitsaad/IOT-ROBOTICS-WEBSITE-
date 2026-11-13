@@ -22,6 +22,8 @@ export const SIDEKICK = {
   stuntEvery: [2, 3] as [number, number],
   stunts: ["barrel", "flip", "loop", "orbit", "peekaboo", "wobble", "boop"] as Stunt[],
   mobileStunts: ["flip", "orbit"] as Stunt[],
+  /** Stunts round the robot: only while it is near its hero size (not in its corner, the statement or on the join card). */
+  robotStunts: ["orbit", "peekaboo", "boop"] as Stunt[],
   /** Seconds per stunt (each 1–2s). */
   stuntTime: { barrel: 1.2, flip: 1, loop: 1.5, orbit: 2, peekaboo: 2, wobble: 1.5, boop: 1.7 } as Record<Stunt, number>,
   /**
@@ -31,9 +33,6 @@ export const SIDEKICK = {
   dart: { radius: 120, speed: 350, distance: 210, time: 0.55, settle: 0.7, cooldown: 0.9 },
   /** No input for this long (ms): it lands on the robot's head and both nap. */
   idle: 6000,
-  /** Leaves upward when the hero's bottom is above this fraction of the viewport, comes back above `back`. */
-  exit: 0.7,
-  back: 0.82,
   /** Click target radius, px (at least). */
   hit: 30,
 } as const;
@@ -60,7 +59,7 @@ export function crosses(r: Rect, a: Pt, b: Pt) {
 }
 
 export interface Zones {
-  /** Where it may fly: the hero inside the stage, inset from the edges and clear of the header. */
+  /** Where it may fly: the robot's stage, inset from the edges and clear of the header. */
   region: Rect;
   /** Where it may never stop: the wordmark's letters (per line) and the header's links and buttons. */
   text: Rect[];
@@ -139,7 +138,9 @@ export function planVia(z: Zones, a: Pt, b: Pt, pad: number): Waypoint[] {
     const near = leftToRight ? robot.x : robot.x + robot.w;
     const far = leftToRight ? robot.x + robot.w : robot.x;
     const y = robot.y + robot.h * rand(0.15, 0.45);
-    if (Math.random() < 0.65) {
+    // Behind needs room past both its sides; a robot in the corner has none, so there it is always over the top.
+    const room = Math.min(near, far) >= R.x && Math.max(near, far) <= R.x + R.w;
+    if (room && Math.random() < 0.65) {
       // Behind: skirt the near side, pass behind its centre, come out past the far side.
       return [
         { x: near + (leftToRight ? -pad : pad), y, depth: "front" },
@@ -150,8 +151,8 @@ export function planVia(z: Zones, a: Pt, b: Pt, pad: number): Waypoint[] {
     // Over the top of its head.
     const over = Math.max(R.y - pad, robot.y - pad * 1.5);
     return [
-      { x: near, y: over, depth: "front" },
-      { x: far, y: over, depth: "front" },
+      { ...clampPt({ x: near, y: over }), depth: "front" },
+      { ...clampPt({ x: far, y: over }), depth: "front" },
     ];
   }
 

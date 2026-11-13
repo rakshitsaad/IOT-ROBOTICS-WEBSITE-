@@ -80,9 +80,9 @@ export function IntroSpread({
         <MonoLabel className="hidden sm:inline-flex">{count} people</MonoLabel>
       </div>
 
-      <h1 id="senior-core-title" className="relative mt-auto pt-16 font-serif uppercase md:pt-0">
+      <h1 id="senior-core-title" className="relative mt-auto pt-16 font-serif font-normal uppercase md:pt-0">
         <span className="sr-only">The Senior Core</span>
-        <span aria-hidden="true" className="block overflow-hidden pl-[0.4em] text-[length:clamp(1.4rem,3vw,3rem)] leading-none tracking-[0.35em]">
+        <span aria-hidden="true" className="block overflow-hidden pl-[0.12em] text-[length:clamp(2rem,4.2vw,4.2rem)] leading-none normal-case">
           <span className="inline-block animate-rise italic motion-reduce:animate-none" style={{ animationDelay: "150ms" }}>
             The
           </span>
@@ -90,7 +90,7 @@ export function IntroSpread({
         {/* "CORE" is 2.64em wide: 34% of the spread fills the width (capped by height). */}
         <span
           aria-hidden="true"
-          className="-mt-[0.04em] block overflow-hidden text-[length:min(34cqw,48svh)] leading-[0.84] font-medium tracking-[-0.02em]"
+          className="-mt-[0.04em] block overflow-hidden text-[length:min(34cqw,48svh)] leading-[0.84] tracking-[-0.01em]"
         >
           {Array.from("CORE").map((ch, i) => (
             <span
@@ -106,7 +106,7 @@ export function IntroSpread({
 
       <div className="mt-8 flex flex-col gap-8 md:mt-10 md:flex-row md:items-end md:justify-between">
         <p className="max-w-[40ch] text-[15px] leading-relaxed text-muted">
-          <strong className="font-bold text-text">{word} people</strong> who keep the lab open, the projects moving and the
+          <strong className="font-medium text-text">{word} people</strong> who keep the lab open, the projects moving and the
           calendar honest.
         </p>
         <SpreadFooter nav={nav}>
@@ -144,7 +144,7 @@ export function ClosingSpread({
 
       <h2
         id="sc-closing-title"
-        className="mt-auto pt-16 font-serif text-[length:min(12cqw,17svh)] leading-[0.95] tracking-[-0.02em] md:pt-0"
+        className="mt-auto pt-16 font-serif text-[length:min(12cqw,17svh)] leading-[0.95] font-normal tracking-[-0.02em] md:pt-0"
       >
         <MaskedLetters lines={["Want a seat"]} />
         <MaskedLetters lines={["at this"]} lineClassName="pl-[1.2em]" />
@@ -177,9 +177,6 @@ export function ClosingSpread({
 export interface MemberSpreadProps {
   member: Member;
   layout: SeniorLayout;
-  /** 1-based position among the seniors, and their count. */
-  n: number;
-  total: number;
   nav: SpreadNavInfo;
 }
 
@@ -199,8 +196,8 @@ export function MemberSpread(props: MemberSpreadProps) {
 const titleId = (m: Member) => `sc-${m.id}`;
 const alt = (m: Member) => `Portrait of ${m.full_name}`;
 
-function Footer({ member, n, total, nav, className }: MemberSpreadProps & { className?: string }) {
-  return <SpreadFooter member={member} counter={{ value: n, from: n - 1, total }} nav={nav} className={className} />;
+function Footer({ member, nav, className }: MemberSpreadProps & { className?: string }) {
+  return <SpreadFooter member={member} nav={nav} className={className} />;
 }
 
 function Quote({ quote, className }: { quote: string | null; className?: string }) {
@@ -254,7 +251,7 @@ function SplitSpread(props: MemberSpreadProps) {
             <MaskedLetters lines={lines} />
           </span>
         </h2>
-        {/* Gaps are tight so a 140-character quote (4 lines) fits a 720px-tall screen. */}
+        {/* Gaps are tight so a 200-character quote (5 lines) fits a 720px-tall screen. */}
         <div data-sc-fade aria-hidden="true" className="mt-6 h-px w-full bg-line md:mt-[2.5svh]" />
         <Quote quote={m.quote} className="mt-6 max-w-[32ch] text-[length:clamp(1.25rem,1.8vw,1.7rem)] md:mt-[2.5svh]" />
         <Meta member={m} className="mt-4" />

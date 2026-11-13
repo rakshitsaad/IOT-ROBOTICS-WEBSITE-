@@ -5,7 +5,7 @@ import { ClosingSpread, IntroSpread, MemberSpread } from "./SeniorSpreads";
 
 /**
  * Senior Core, the top of /members (DESIGN.md §13): an editorial run of
- * full-screen spreads, set in Bodoni Moda (the only place it is used).
+ * full-screen spreads, set in Instrument Serif (the one section built on the serif).
  * Intro, one spread per senior (layouts A–D by position), then a closing
  * spread that hands off to Junior Core below. SeniorCoreTrack makes it
  * horizontal on md+ with motion; otherwise the spreads stack.
@@ -34,8 +34,6 @@ export function SeniorCore({ members, settings }: { members: Member[]; settings:
             key={member.id}
             member={member}
             layout={seniorLayout(member, i)}
-            n={i + 1}
-            total={members.length}
             nav={nav(i + 1)}
           />
         ))}

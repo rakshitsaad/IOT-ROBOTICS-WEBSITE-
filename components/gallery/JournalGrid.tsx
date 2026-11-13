@@ -32,7 +32,7 @@ export function JournalGrid({
                 className="paper-ruled rounded-image px-6 pt-9 pb-7 pl-[18%] [--rule:2.1rem] @container"
               >
                 <p className="mono-label mb-2 text-[10px] text-bg/45">{journalDate(date)}</p>
-                <p className="font-hand text-[length:clamp(1.5rem,9cqw,2rem)] leading-[2.1rem] text-bg/85">{item.caption}</p>
+                <p className="font-serif text-[length:clamp(1.25rem,7.5cqw,1.65rem)] leading-[2.1rem] italic text-bg/85">{item.caption}</p>
               </div>
             </li>
           );
@@ -65,7 +65,7 @@ export function JournalGrid({
                 </span>
               )}
               {item.caption && (
-                <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-bg/85 to-transparent px-3 pt-8 pb-2.5 text-left font-hand text-xl leading-tight text-text">
+                <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-bg/85 to-transparent px-3 pt-8 pb-2.5 text-left font-serif text-lg leading-tight italic text-text">
                   {item.caption}
                 </span>
               )}

@@ -25,10 +25,10 @@ export function HomeHero({ settings }: { settings: Settings }) {
           <h1
             id="hero-title"
             data-hero-wordmark
-            // Sized so line 2 ("ROBOTICS" is ~5.3em wide in Sora 800) fits: 16vw on phones
+            // Sized so line 2 ("ROBOTICS" is ~5.1em wide in Archivo 700 at this tracking) fits: 16vw on phones
             // (18vw would be ~95vw before the indent), 15vw up to a 14.5rem cap that fits the 1440 shell.
             // svh caps keep it inside short landscape screens.
-            className="text-[length:min(16vw,28svh)] leading-[0.85] font-extrabold tracking-[-0.04em] uppercase will-change-transform md:text-[length:clamp(4rem,min(15vw,30svh),14.5rem)]"
+            className="text-[length:min(16vw,28svh)] leading-[0.85] font-bold tracking-[-0.03em] uppercase will-change-transform md:text-[length:clamp(4rem,min(15vw,30svh),14.5rem)]"
           >
             <span className="sr-only">{settings.club_name}</span>
             <span aria-hidden="true" className="block">

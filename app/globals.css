@@ -64,13 +64,11 @@ html[data-ann="off"] {
   --color-white: #ffffff;
   --color-black: #000000;
 
-  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-serif: var(--font-bodoni-moda), "Didot", Georgia, serif;
-  --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
-  /* Anton: the /achievements slide titles only (DESIGN.md §3). */
-  --font-condensed: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  /* Four families (DESIGN.md §3): Manrope body, Archivo headings, IBM Plex Mono labels, Instrument Serif accents. */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
 
   --radius-pill: 999px;
   --radius-card: 28px;
@@ -318,11 +316,28 @@ html[data-ann="off"] {
     min-height: 100dvh;
     color: var(--text);
     font-family: var(--font-sans);
-    font-weight: 500;
-    line-height: 1.55;
+    font-weight: 400;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
+  }
+
+  /* Headings are Archivo 600 unless a class says otherwise (700 is for the largest display type). */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /* Emphasis in running text is one step up (Manrope 500) and warm white, never a heavy bold. */
+  b,
+  strong {
+    font-weight: 500;
   }
 
   ::selection {
@@ -346,17 +361,28 @@ html[data-ann="off"] [data-announcement] {
    UTILITIES
    ========================================================================= */
 
-/* Technical label: JetBrains Mono, 11px (12px ≥ md), +0.14em, uppercase. */
+/* Technical label: IBM Plex Mono 400, 11px (12px ≥ md), +0.08em, uppercase. */
 @utility mono-label {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 400;
   line-height: 1.4;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   @media (width >= 768px) {
     font-size: 12px;
   }
+}
+
+/* An editorial accent inside a heading: one word or phrase in Instrument Serif italic, instead of a pill.
+   A touch larger, because its x-height is lower than Archivo's; line-height 0 keeps the line box unchanged. */
+@utility serif-accent {
+  font-family: var(--font-serif);
+  font-size: 1.08em;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0;
+  letter-spacing: -0.015em;
 }
 
 @utility bg-iris {

@@ -1,59 +1,46 @@
-import { Anton, Bodoni_Moda, Caveat, JetBrains_Mono, Sora } from "next/font/google";
+import { Archivo, IBM_Plex_Mono, Instrument_Serif, Manrope } from "next/font/google";
 
 /**
- * Font roles (see DESIGN.md → Typography):
- * - Sora: display + body. Use weights 500–800 only (body = 500).
- * - JetBrains Mono: small uppercase technical labels. Weights 400–500.
- * - Bodoni Moda: Senior Core section ONLY. 400–700 + italic.
- * - Caveat: handwritten gallery captions ONLY.
- * - Anton: the /achievements slide titles ONLY (condensed uppercase display). One weight (400).
+ * Font roles (see DESIGN.md → Typography). Four families, nothing else:
+ * - Archivo: headings and display type. Weights 600–700. Its width axis is loaded too, for the
+ *   condensed /achievements slide titles.
+ * - Manrope: body and UI text. Weights 400–500.
+ * - IBM Plex Mono: small technical labels, dates, counters. Weight 400.
+ * - Instrument Serif: editorial accents (Senior Core, an italic word in a heading, gallery captions).
+ *   One weight (400), roman and italic.
  *
- * All four are variable fonts, so one file covers the weight range; the
- * allowed weights are a design rule, not a loading restriction.
- * Bodoni Moda, Caveat and Anton are not preloaded: the browser only downloads them
- * on pages that actually render text in those families.
+ * Archivo and Manrope are variable fonts, so one file covers the weight range; the allowed weights are
+ * a design rule, not a loading restriction. Instrument Serif is not preloaded: the browser downloads
+ * it only on pages that render text in it.
  */
 
-export const sora = Sora({
+export const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-sora",
+  axes: ["wdth"],
+  variable: "--font-archivo",
   display: "swap",
 });
 
-export const jetbrainsMono = JetBrains_Mono({
+export const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-manrope",
   display: "swap",
 });
 
-export const bodoniModa = Bodoni_Moda({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
-  variable: "--font-bodoni-moda",
-  display: "swap",
-  preload: false,
-});
-
-export const caveat = Caveat({
-  subsets: ["latin"],
-  variable: "--font-caveat",
-  display: "swap",
-  preload: false,
-});
-
-export const anton = Anton({
+export const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-anton",
+  variable: "--font-plex-mono",
+  display: "swap",
+});
+
+export const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
   display: "swap",
   preload: false,
 });
 
-export const fontVariables = [
-  sora.variable,
-  jetbrainsMono.variable,
-  bodoniModa.variable,
-  caveat.variable,
-  anton.variable,
-].join(" ");
+export const fontVariables = [archivo.variable, manrope.variable, plexMono.variable, instrumentSerif.variable].join(" ");

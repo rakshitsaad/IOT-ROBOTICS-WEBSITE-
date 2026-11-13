@@ -52,7 +52,7 @@ export function Countdown({ to, size = "lg", className }: { to: string; size?: "
         <div key={key} aria-hidden="true" className="flex flex-col">
           <span
             className={cn(
-              "font-mono leading-none font-medium tracking-[-0.04em] tabular-nums",
+              "font-mono leading-none font-normal tracking-[-0.04em] tabular-nums",
               sm ? "text-[length:clamp(1.4rem,2.2vw,1.9rem)]" : "text-[length:clamp(2.6rem,5.2vw,5rem)]",
             )}
           >

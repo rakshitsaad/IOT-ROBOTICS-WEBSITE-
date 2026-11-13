@@ -55,7 +55,7 @@ export function ContactDetails(p: ContactDetailsProps) {
       <div className="flex items-center gap-3">
         <LogoMark />
         <div className="min-w-0">
-          <p className="truncate text-[15px] leading-tight font-bold tracking-[-0.02em]">{p.clubName}</p>
+          <p className="truncate text-[15px] leading-tight font-display font-semibold tracking-[-0.01em]">{p.clubName}</p>
           <p className="mt-0.5 truncate text-[12px] text-muted">{p.collegeName}</p>
         </div>
       </div>

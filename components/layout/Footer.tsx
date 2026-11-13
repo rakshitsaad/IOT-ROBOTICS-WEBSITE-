@@ -28,7 +28,7 @@ export function Footer({ settings }: { settings: Settings }) {
       <div className="shell grid gap-12 pb-12 pt-14 md:grid-cols-12 md:gap-8 md:pb-16 md:pt-20">
         <div className="md:col-span-5">
           <MonoLabel>{settings.college_name}</MonoLabel>
-          <p className="mt-5 max-w-sm text-2xl font-semibold leading-tight tracking-[-0.02em] md:text-3xl">
+          <p className="mt-5 max-w-sm text-2xl font-display font-semibold leading-tight tracking-[-0.01em] md:text-3xl">
             {settings.tagline}
           </p>
           <a
@@ -70,7 +70,7 @@ export function Footer({ settings }: { settings: Settings }) {
       </div>
 
       <div className="px-gutter pb-6 md:pb-8">
-        <FitText estimate={12.4} className="font-extrabold tracking-[-0.055em] text-text">
+        <FitText estimate={12.4} className="font-display font-bold tracking-[-0.04em] text-text">
           {settings.club_name}
         </FitText>
       </div>

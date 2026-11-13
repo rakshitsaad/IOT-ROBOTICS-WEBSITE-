@@ -149,7 +149,7 @@ export function ContactHero({ email, badge, partners }: { email: string; badge: 
 
           <h1
             id="contact-title"
-            className="mt-6 text-[length:clamp(2rem,9vw,2.6rem)] leading-[1.06] font-medium tracking-[-0.04em] text-balance md:text-[length:clamp(2.4rem,min(5.5vw,8.5svh),4.5rem)]"
+            className="mt-6 text-[length:clamp(2rem,9vw,2.6rem)] leading-[1.06] font-semibold tracking-[-0.03em] text-balance md:text-[length:clamp(2.4rem,min(5.5vw,8.5svh),4.5rem)]"
           >
             <span className="sr-only">{HEADLINE}</span>
             <span aria-hidden="true">
@@ -158,7 +158,8 @@ export function ContactHero({ email, badge, partners }: { email: string; badge: 
                   {i > 0 && " "}
                   <span className="-my-[0.08em] inline-block overflow-hidden py-[0.08em] align-top">
                     <span
-                      className="inline-block animate-rise bg-linear-to-b from-text from-30% to-text/65 bg-clip-text text-transparent motion-reduce:animate-none"
+                      // The last word is the serif accent (set here, not with serif-accent: its line-height 0 would be clipped by the mask).
+                      className={`inline-block animate-rise motion-reduce:animate-none ${i === words.length - 1 ? "font-serif text-[1.08em] font-normal tracking-[-0.015em] italic" : ""}`}
                       style={fade(t0 + 100 + i * CONTACT_MOTION.wordStagger * 1000)}
                     >
                       {w}

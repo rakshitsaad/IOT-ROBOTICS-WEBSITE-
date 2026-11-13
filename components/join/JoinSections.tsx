@@ -12,7 +12,7 @@ import { CharacterAvatar } from "./CharacterAvatar";
  * only subtle fade-up reveals (JoinReveals: [data-reveal], [data-reveal-group]).
  */
 
-const HEADING = "mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-bold tracking-[-0.04em]";
+const HEADING = "mt-4 text-[length:clamp(2.2rem,5vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]";
 const SECTION = "shell pt-[clamp(6.5rem,18svh,12rem)]";
 
 /* ------------------------------------------------------------------ why join */
@@ -34,7 +34,7 @@ export function WhyJoin() {
             <span className="grid size-12 place-items-center rounded-full bg-text/[0.06] text-text">
               <BenefitIcon name={b.icon} />
             </span>
-            <h3 className="mt-8 text-xl leading-tight font-semibold tracking-[-0.02em]">{b.title}</h3>
+            <h3 className="mt-8 text-xl leading-tight font-semibold tracking-[-0.01em]">{b.title}</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted">{b.text}</p>
           </li>
         ))}
@@ -113,7 +113,7 @@ export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<
                 />
                 <StatusPill open={isOpen} />
               </div>
-              <h3 className="mt-7 text-2xl leading-tight font-semibold tracking-[-0.02em]">{team.name}</h3>
+              <h3 className="mt-7 text-2xl leading-tight font-semibold tracking-[-0.01em]">{team.name}</h3>
               <p className="mt-2.5 text-[15px] leading-relaxed text-muted">{team.description}</p>
               <ul aria-label="Skills" className="mt-5 flex flex-wrap gap-1.5">
                 {character.skills.map((s) => (
@@ -130,7 +130,7 @@ export function TeamsSection({ teams, hiring }: { teams: Team[]; hiring: Record<
                 ) : (
                   <span
                     aria-disabled="true"
-                    className="inline-flex h-9 cursor-not-allowed items-center rounded-pill bg-text/[0.04] px-4 text-[13px] font-semibold text-text/40"
+                    className="inline-flex h-9 cursor-not-allowed items-center rounded-pill bg-text/[0.04] px-4 text-[13px] font-medium text-text/40"
                   >
                     Opens next round
                   </span>
@@ -185,7 +185,7 @@ export function HowItWorks() {
               <span className="size-1.5 rounded-full bg-text/60" />
             </span>
             <MonoLabel as="p">Step {i + 1}</MonoLabel>
-            <h3 className="mt-3 text-xl leading-tight font-semibold tracking-[-0.02em] md:text-2xl">{s.title}</h3>
+            <h3 className="mt-3 text-xl leading-tight font-semibold tracking-[-0.01em] md:text-2xl">{s.title}</h3>
             <p className="mt-3 max-w-[30ch] text-[15px] leading-relaxed text-muted">{s.text}</p>
           </li>
         ))}
@@ -211,7 +211,7 @@ export function JoinFaq() {
           <Link
             href="/contact"
             data-cursor="link"
-            className="font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
+            className="font-medium text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
           >
             Ask us
           </Link>
@@ -241,7 +241,7 @@ export function JoinCta({ open }: { open: boolean }) {
         className="relative isolate flex min-h-[32rem] flex-col items-center overflow-hidden rounded-card bg-bg-2 px-6 pt-16 text-center md:min-h-[36rem] md:pt-24"
       >
         <span aria-hidden="true" className="absolute inset-0 -z-10 bg-radial-[70%_70%_at_50%_100%] from-red/12 via-red/[0.04] via-45% to-transparent to-75%" />
-        <h2 id="cta-title" className="max-w-[16ch] text-[length:clamp(2.2rem,5vw,4.25rem)] leading-[1.04] font-bold tracking-[-0.04em]">
+        <h2 id="cta-title" className="max-w-[16ch] text-[length:clamp(2.2rem,5vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.03em]">
           Ready to build with us?
         </h2>
         <p className="mt-5 max-w-[38ch] text-[15px] leading-relaxed text-muted md:text-[17px]">

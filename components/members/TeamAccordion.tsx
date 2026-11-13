@@ -295,7 +295,7 @@ function Card({
           </div>
         ) : (
           <div aria-hidden="true" className={AVATAR}>
-            <div className="iris-border grid size-full place-items-center rounded-full bg-bg leading-none font-bold tracking-[-0.04em] text-text">
+            <div className="iris-border grid size-full place-items-center rounded-full bg-bg leading-none font-display font-semibold tracking-[-0.03em] text-text">
               {initials(member.full_name)}
             </div>
           </div>
@@ -326,7 +326,7 @@ function Card({
         {/* Closed, phones: name and role beside the circle, and a plus. */}
         <span aria-hidden="true" className={cn("absolute inset-x-0 top-0 flex h-[72px] items-center gap-3 pr-6 pl-20 md:hidden", CLOSED_LABEL)}>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[15px] leading-tight font-semibold tracking-[-0.01em]">{member.full_name}</span>
+            <span className="block truncate text-[15px] leading-tight font-display font-semibold tracking-[-0.01em]">{member.full_name}</span>
             <span className="mono-label mt-1 block truncate text-muted">{member.role}</span>
           </span>
           <CrossMark size={12} className="rotate-45 text-text/50" />
@@ -334,7 +334,7 @@ function Card({
 
         {/* Open: name, role, bio and links. Inert while closed, so its links are out of the tab order. */}
         <div id={panelId} inert={!active} className={DETAILS}>
-          <p aria-hidden="true" className="text-[24px] leading-[1.15] font-semibold tracking-[-0.02em] text-text">
+          <p aria-hidden="true" className="text-[24px] leading-[1.15] font-display font-semibold tracking-[-0.01em] text-text">
             {member.full_name}
           </p>
           <p aria-hidden="true" className="mono-label mt-1.5 text-[11px] text-text/70 md:text-[11px]">

@@ -61,7 +61,7 @@ export function ContactPanel(props: ContactDetailsProps) {
               <MonoLabel as="p">
                 New message
               </MonoLabel>
-              <h2 id="message" className="mt-3 scroll-mt-28 text-[length:clamp(1.6rem,3vw,2.2rem)] leading-tight font-semibold tracking-[-0.03em]">
+              <h2 id="message" className="mt-3 scroll-mt-28 text-[length:clamp(1.6rem,3vw,2.2rem)] leading-tight font-semibold tracking-[-0.02em]">
                 Send us a message
               </h2>
               <p className="mt-2 max-w-[44ch] text-[14px] text-muted">
@@ -89,7 +89,7 @@ export function ContactPanel(props: ContactDetailsProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="link"
-                className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
+                className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-text underline decoration-text/30 underline-offset-4 transition-colors duration-[350ms] hover:decoration-text"
               >
                 Open in Maps
                 <ContactIcon name="arrow" className="size-3.5" />

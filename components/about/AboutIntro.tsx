@@ -21,13 +21,14 @@ import { RobotHand, type RobotHandHandle } from "./RobotHand";
  * 100ms apart, while its pill grows from the left; then the paragraphs fade up.
  */
 
-/** Widest heading line, in em at the heading's font size: "students could build" plus the pill's padding (measured in Sora 600). */
-const HEADING_EM = 10.9;
+/** Widest heading line, in em at the heading's font size: the dot, the pill's padding and "The things we" (8.35em in Archivo 600), with a little spare. */
+const HEADING_EM = 8.6;
 
-const LINES: { text: string; pill: string; dot?: boolean }[] = [
-  { text: "The things we", pill: "bg-red text-text", dot: true },
-  { text: "always imagined", pill: "bg-bg-2 text-text ring-1 ring-inset ring-line" },
-  { text: "students could build", pill: "bg-text text-bg" },
+/** One pill (line 1), one serif line (line 3); the rest is plain type. */
+const LINES: { text: string; pill?: boolean; serif?: boolean }[] = [
+  { text: "The things we", pill: true },
+  { text: "always imagined" },
+  { text: "students could build", serif: true },
 ];
 
 export function AboutIntro() {
@@ -113,7 +114,7 @@ export function AboutIntro() {
             <h1
               id="about-title"
               style={{ "--h-em": HEADING_EM } as CSSProperties}
-              className="flex flex-col items-start gap-[0.12em] text-[length:min(clamp(2rem,4vw,3.4rem),calc(100cqw/var(--h-em)))] leading-[1.18] font-semibold tracking-[-0.03em]"
+              className="flex flex-col items-start gap-[0.12em] text-[length:min(clamp(2rem,4vw,3.4rem),calc(100cqw/var(--h-em)))] leading-[1.18] font-semibold tracking-[-0.02em]"
             >
               {LINES.map((line, i) => (
                 <span
@@ -121,33 +122,37 @@ export function AboutIntro() {
                   className="flex items-center gap-[0.12em] animate-line-up motion-reduce:animate-none"
                   style={{ animationDelay: `${120 + i * 100}ms` }}
                 >
-                  {line.dot && (
+                  {line.pill && (
                     <span
                       aria-hidden="true"
                       className="size-[1.3em] shrink-0 animate-dot-in rounded-full bg-red motion-reduce:animate-none"
                       style={{ animationDelay: `${120 + i * 100}ms` }}
                     />
                   )}
-                  <span className="relative inline-block px-[0.42em] py-[0.06em] whitespace-nowrap">
-                    <span
-                      aria-hidden="true"
-                      className={cn("absolute inset-0 origin-left animate-pill-grow rounded-pill motion-reduce:animate-none", line.pill)}
-                      style={{ animationDelay: `${220 + i * 100}ms` }}
-                    />
-                    <span className={cn("relative", line.pill.split(" ").find((c) => c.startsWith("text-")))}>{line.text}</span>
-                  </span>
+                  {line.pill ? (
+                    <span className="relative inline-block px-[0.42em] py-[0.06em] whitespace-nowrap">
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 origin-left animate-pill-grow rounded-pill bg-red motion-reduce:animate-none"
+                        style={{ animationDelay: `${220 + i * 100}ms` }}
+                      />
+                      <span className="relative">{line.text}</span>
+                    </span>
+                  ) : (
+                    <span className={cn("whitespace-nowrap", line.serif && "serif-accent leading-[1.1]")}>{line.text}</span>
+                  )}
                 </span>
               ))}
             </h1>
 
             <div className="mt-10 max-w-[440px] space-y-4 text-[15px] leading-relaxed text-muted md:mt-12">
               <p className="animate-fade-up motion-reduce:animate-none" style={{ animationDelay: "560ms" }}>
-                <strong className="font-semibold text-text">We build</strong> the intricate, hands-on projects that
+                <strong className="font-medium text-text">We build</strong> the intricate, hands-on projects that
                 classrooms only describe. Drones that hold their position in the wind, robots that sort, sense and
                 respond, and connected devices that run for months on a coin cell.
               </p>
               <p className="animate-fade-up motion-reduce:animate-none" style={{ animationDelay: "660ms" }}>
-                <strong className="font-semibold text-text">Our aim is simple:</strong> give every member the chance to
+                <strong className="font-medium text-text">Our aim is simple:</strong> give every member the chance to
                 turn an idea into a working machine, and the confidence to keep building after college.
               </p>
             </div>
