@@ -120,11 +120,10 @@ function hasWebGL2() {
 const noSubscribe = () => () => {};
 const useWebGL2 = () => useSyncExternalStore(noSubscribe, hasWebGL2, () => true);
 
-/** The title's size limits (ReelTitle) and where its halves rest in the gallery. --title-fit is set in the class list (it changes below lg). */
+/** The title's size limits (ReelTitle), below the centre panel. */
 const STAGE_VARS = {
-  "--title-max": "19.5cqh",
-  "--title-top": "calc(var(--nav-h) + var(--ann-h) + 3.25rem)",
-  "--title-bottom": "1.75rem",
+  "--title-max": "min(4.2cqw, 8cqh)",
+  "--title-fit": "56cqw",
 };
 
 export function ProjectsStage({ projects, clubName }: { projects: ProjectWithTeam[]; clubName: string }) {
@@ -844,9 +843,6 @@ export function ProjectsStage({ projects, clubName }: { projects: ProjectWithTea
       aria-label="Projects"
       className={cn(
         "relative h-svh w-full touch-none overflow-hidden bg-bg select-none [container-type:size] max-md:hidden motion-reduce:hidden",
-        // The title's longest length. Below lg the filter pills reach the middle column, so it also stays
-        // between the filter row and the names strip.
-        "[--title-fit:64cqh] max-lg:[--title-fit:min(64cqh,calc(100cqh-2*(var(--nav-h)+var(--ann-h)+6.75rem)))]",
       )}
       style={stageStyle}
     >
@@ -857,15 +853,13 @@ export function ProjectsStage({ projects, clubName }: { projects: ProjectWithTea
         )}
       </div>
 
-      {/* The vertical title: over the panels, behind the gallery tiles. */}
+      {/* The title, below the centre panel (half its height is 9.75cqw; the curved side panels reach a little lower).
+          It fades out as the gallery opens, where the info panel carries the title. */}
       {titleProject && (
         <ReelTitle
           title={titleProject.title}
           animate={enabled && inReel}
-          className={cn(
-            "z-10 [transition:opacity_600ms_var(--ease-power3),filter_600ms_var(--ease-power3)]",
-            view?.open && "opacity-30 blur-[4px]",
-          )}
+          className="absolute inset-x-0 top-[calc(50%+11.5cqw+0.75rem)] z-10 [opacity:calc(1-var(--p,0)*4)]"
         />
       )}
 

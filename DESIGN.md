@@ -65,7 +65,7 @@ components/
                      + robot-hand-rig.ts (joints, pose keyframes, poseAt), AboutSections (Purpose, Pillars,
                      History, TeamsOverview), AboutReveals, icons
   projects/          /projects (§16): ProjectsStage (engine: physics, flight, keys, hit buttons),
-                     ReelCanvas (+ reel-shaders, reel-state: shared mutable reel), ReelTitle (vertical title),
+                     ReelCanvas (+ reel-shaders, reel-state: shared mutable reel), ReelTitle (the title below the panel),
                      ProjectStrip (gallery tiles), ImageView (enlarged photo), parts (label, count, filters,
                      tags, info panel), ProjectsIndex (phone carousel, grid), ProjectDetail (+ phone viewer)
   events/            /events (§17): EventsExperience (state, autoplay, keys, overlays), EventShowcase (the card,
@@ -97,7 +97,7 @@ lib/
   gallery.ts         journal pages from gallery items (buildJournalPages), seeded(), dates; client-safe
   members.ts         /members config: term, layout cycle, name lines, Instrument Serif capital widths, social links;
                      Junior Core: cards per line, row ids, first name, initials
-  projects.ts        /projects config: filters, REEL constants and curve maths, Archivo capital widths, the split title,
+  projects.ts        /projects config: filters, REEL constants and curve maths, Archivo capital widths,
                      STRIP sizes and buildStrip(); client-safe
   events.ts          /events config: showcase order, filters, IST dates, EVENTS_MOTION, EVENT_BANNER; client-safe
   achievements.ts    /achievements config: filters, ACH_MOTION, ACH_CARD, isWin, link label, IST dates; client-safe
@@ -244,7 +244,7 @@ no handwriting font, no separate condensed font. Archivo and Manrope are variabl
 
 | Level | Type | Where |
 | --- | --- | --- |
-| Display | Archivo **700**, tracking `-0.03em` to `-0.04em`, leading 0.85–0.95 | The home wordmark, page titles ("Journals", "Junior Core"), the event and featured-project titles, the home numbers, the footer wordmark, the /projects vertical title |
+| Display | Archivo **700**, tracking `-0.03em` to `-0.04em`, leading 0.85–0.95 | The home wordmark, page titles ("Journals", "Junior Core"), the event and featured-project titles, the home numbers, the footer wordmark, the /projects title |
 | Section heading | Archivo **600**, `clamp(2.2rem, 5vw, 4.5rem)`, tracking `-0.03em`, leading 1.04 | Every section's `h2` |
 | Card and row title | Archivo **600**, 20–24px, tracking `-0.01em` | Cards, timeline entries, list rows, accordion questions, member names |
 | Body | Manrope **400**, 15–17px, leading 1.6–1.65, `text-muted`, at most ~46ch (or 440–480px) | Paragraphs. An opening phrase can be `<strong>` (500, `text-text`) |
@@ -256,7 +256,7 @@ Rules:
   (`text-text` against `text-muted`) do that. Nothing is heavier than 700, and Manrope is never above 500.
 - **Tracking** tightens with size: `-0.03em` and beyond only above ~40px, `-0.01em` to `-0.02em` for 20–40px, none for
   body text.
-- **Uppercase** is kept to the mono labels and four pieces of display type: the home wordmark, the /projects vertical
+- **Uppercase** is kept to the mono labels and four pieces of display type: the home wordmark, the /projects
   title, the /achievements slide titles and the Senior Core names. No other heading is uppercase, and no label is
   letter-spaced wider than the mono label.
 - **The serif accent** (`serif-accent` utility: Instrument Serif italic, 1.08em, because its x-height is lower than
@@ -277,7 +277,7 @@ at 11px from md up instead of 12px, because the 76px pill is that narrow.
 the family (`axes: ["wdth"]`), so it costs no extra font.
 
 **Measured widths.** Three layouts are sized from capital widths measured in the browser, so re-measure them if a
-family or weight changes: the /projects vertical title (`ARCHIVO_CAPS` in `lib/projects.ts`, Archivo 700), the Senior
+family or weight changes: the /projects title (`ARCHIVO_CAPS` in `lib/projects.ts`, Archivo 700), the Senior
 Core names (`SERIF_CAPS` in `lib/members.ts`, Instrument Serif) and the /about heading (`HEADING_EM` in
 `AboutIntro.tsx`). The home wordmark's size also assumes "ROBOTICS" is about 5.1em wide.
 
@@ -375,7 +375,7 @@ Used by the /contact and /join FAQs. Instant under reduced motion.
 `mono-label`, `serif-accent` (the italic serif word in a heading, §3), `bg-iris`, `iris-border`, `shell`, `px-gutter`, `pt-header`.
 `paper` (warm white `--text` with a faint grain: gallery pages, caption tags) and `paper-ruled` (the same with faint grey
 rules every `--rule`, default 2rem, and a red margin line: note pages). Gallery only (§14).
-Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (a nudging arrow; unused since the home scroll hint was removed), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateX(−110%) over 0.7s expo, out to translateX(110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`; in vertical text, local x is "up", §16).
+Animations: `animate-rise` (letters rising out of a mask) and `animate-nudge` (a nudging arrow; unused since the home scroll hint was removed), see §7 "First-load entrances"; `animate-grow-x` (scaleX 0 → 1, 5s linear, `both`; the slider's active indicator, which sets its duration inline and advances on `animationend`); `animate-fade-up` (opacity 0 and 12px down → in place, 0.9s power3.out, `both`; small first-load labels, staggered with `animation-delay`); `animate-letter-in` / `animate-letter-out` (the /projects title's letters: in from translateY(110%) over 0.7s expo, out to translateY(−110%) over 0.45s `cubic-bezier(0.7, 0, 0.84, 0)`, §16).
 The /events first load (§17), all `both`: `animate-wipe-in` (a left-to-right `clip-path` wipe with a fade, 0.8s expo),
 `animate-settle` (scale 1.08 → 1, 0.8s expo), `animate-pop-up` (opacity 0 and 40px down → in place, 0.8s expo) and
 `animate-slide-up` (opacity 0 and 20px down → in place, 0.6s power3).
@@ -541,7 +541,7 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
   anchored horizontally when the card crops it, default 50) and `accent_color` (optional; without it the page samples
   the banner's dominant colour and snaps it to red or maroon, §17). The mock has 6 events (2 upcoming, 4 past) with generated placeholder banners and
   cutouts in `/public/events/`; replace them with real art. `projects.tags` decide which lab station a project's photo appears at (a tag equal to the station's domain, any case: `Drones`, `Robotics`, `IoT`, `Research`), and which /projects filter shows it (§16).
-- `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has 12 projects (the home lab shows up to 3 per station), with picsum photos in five shapes.
+- `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has the club's 12 real projects (names and one photo each, `public/projects/<slug>.jpg`, copies of the uploaded files; the home lab shows up to 3 per station, and a project with two domain tags shows at both). Their summaries, descriptions, tags, teams, years and statuses are placeholders, and `images` is empty, so the gallery strip shows only the cover.
 - Mock rows in `lib/mock/*.ts`. Image URLs are `picsum.photos` placeholders (allowed in `next.config.ts` `images.remotePatterns`, along with `*.supabase.co` storage).
 - **Pages and components read data only through `lib/data.ts`** (`getSettings`, `getTeams`, `getMembers`, `getSeniorCore`, `getJuniorCore`, `getProjects`, `getEvents`, `getAchievements`, `getGalleryItems`, `getMilestones`). Switching to Supabase means changing those function bodies only.
 - Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) `getHomeStats()` (members, projects, events that have started, years since `founded_year`) and `getMissionStats()` (the /lab/drone bench's dashboard, §18: members and their running total by joining year, from `year` of study and the Senior Core term; projects per lab domain; this year's events, done and coming; the next event; workshops that have run (type `workshop`, started) and the next one; competitions won = achievements whose `result` is a podium, `PODIUM` in `lib/mission.ts`). The last three depend on the current time, so they use `cacheLife("hours")`.
@@ -1374,7 +1374,7 @@ Three states on md and up with motion: the **reel** (`/projects`), one project's
   - The reel settles on the nearest panel; after a wheel, 160ms after the last event.
 - **Speed**: scrolling adds up to 60% more bend (full at 4000px/s) and an RGB split at the panel edges (full at 3000px/s).
   Both ease back as the reel slows.
-- **Active panel**: the one nearest the centre. Its title shows over the panels (`ReelTitle`, below).
+- **Active panel**: the one nearest the centre. Its title shows below it (`ReelTitle`, below).
 - **Hover**: the panel flattens 35% towards its tangent plane and brightens 12%. The cursor shows a VIEW pill.
 - **Hit areas**: an invisible `<button>` per visible panel ("Open <title>"), moved every frame over the projected panel.
   - They take hover, click and keyboard focus.
@@ -1388,20 +1388,16 @@ Three states on md and up with motion: the **reel** (`/projects`), one project's
   - a lost WebGL context falls back to the plain pages.
 
 ### The title (`ReelTitle`)
-- **Style.** Archivo 700, uppercase, vertical (`writing-mode: vertical-rl` + `rotate-180`, reading upwards). It is centred over
-  the panels and sits behind the gallery tiles.
-- **Size.** `min(--title-max, --title-fit / its length in em)`. On the stage these are 19.5cqh and 64cqh. Below lg the length
-  also stays between the filter row and the names, because there the pills reach the middle column.
-- **Change.** The old letters slide up out of their mask and the new ones come in from below, 25ms apart
+- **Style.** Archivo 700, uppercase, one centred line **below the centre panel**, never over a picture (it starts
+  11.5cqw + 0.75rem below the stage's middle, clear of the curved side panels).
+- **Size.** `min(--title-max, --title-fit / its length in em)`. On the stage these are `min(4.2cqw, 8cqh)` and 56cqw.
+- **Change.** The old letters rise out of their mask and the new ones come up from below, 25ms apart
   (`animate-letter-out` / `animate-letter-in`).
-- **Halves.** It is two halves (`splitTitle`), split at the space nearest the middle, or else in the middle.
-  - In the reel they butt into one word.
-  - In the gallery the first half rests at the bottom (`--title-bottom`) and the rest at the top (`--title-top`), at 38%
-    opacity, behind the photos.
+- **Gallery.** It fades out in the first quarter of the flight; the info panel carries the title there.
 
 ### The flight (reel ↔ gallery)
 One progress value `p` (0 reel, 1 gallery) is tweened over 1.1s `expo.inOut` and written to the stage as `--p`. CSS reads it
-for everything outside WebGL: the title's halves, the filters and names fading, the tiles' entrance and the info panel. So a
+for everything outside WebGL: the title fading, the filters and names fading, the tiles' entrance and the info panel. So a
 reversal mid-flight just tweens `p` back.
 - **The clicked panel** unbends (the shader mixes its curved pose into a flat rectangle) and grows into the cover tile's place.
 - **The other panels** slide 0.9 widths outwards and fade.
@@ -1438,7 +1434,7 @@ reversal mid-flight just tweens `p` back.
 ### Phones (< md: `ProjectsIndex`, `ProjectDetail`)
 - **No WebGL.** The reel is a horizontal scroll-snap carousel of 78vw cards.
   - Each card turns in 3D towards the centre, by up to 26° depending on its distance.
-  - The same vertical title (`ReelTitle`, up to 11svh a letter) sits over the cards.
+  - The same title (`ReelTitle`, up to `clamp(1.8rem, 9vw, 2.6rem)`) sits below the cards, never over them.
   - A `1 / 12` counter and the summary sit below.
 - **Project page.** A card links to `/projects/<slug>`: the info panel, then the photos stacked (two columns from md, under
   reduced motion).
@@ -1450,8 +1446,8 @@ reversal mid-flight just tweens `p` back.
   - The strip's cover does the same where the stage is hidden.
 
 ### Reduced motion
-A grid of project cards (1/2/3 columns) linking to the plain project page. There is no WebGL, no bending, no flight, no split
-title and no letter animation, and the footer shows.
+A grid of project cards (1/2/3 columns) linking to the plain project page. There is no WebGL, no bending, no flight and no letter
+animation, and the footer shows.
 
 ---
 

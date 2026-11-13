@@ -2,22 +2,17 @@
 
 import { useState, type CSSProperties } from "react";
 import { cn } from "@/lib/cn";
-import { splitTitle, titleEm } from "@/lib/projects";
+import { titleEm } from "@/lib/projects";
 
 /**
- * The huge vertical title over the reel (DESIGN.md §16): Archivo 700, uppercase,
- * reading upwards (vertical-rl + rotate-180). When the title changes, the old
- * letters slide up out of their mask and the new ones come in from below,
- * 25ms apart (CSS keyframes letter-out / letter-in).
+ * The active project's title, set below its image (DESIGN.md §16): Archivo 700,
+ * uppercase, one centred line. When the title changes, the old letters rise out
+ * of their mask and the new ones come up from below, 25ms apart (CSS keyframes
+ * letter-out / letter-in).
  *
- * The title is always two halves, so the gallery can split it: the first half
- * slides to the bottom of the screen and the rest to the top, driven by the
- * stage's `--p` (0 = whole and centred, 1 = split). Sizes come from CSS
- * variables set by the parent:
- *   --title-max     largest font size
- *   --title-fit     the whole title must fit in this length
- *   --title-top     the top half's top edge once split
- *   --title-bottom  the bottom half's bottom edge once split
+ * The parent places it and sets two CSS variables:
+ *   --title-max  largest font size
+ *   --title-fit  the whole title must fit in this width
  * The font size is min(--title-max, --title-fit / its length in em), using the
  * measured Archivo cap widths in lib/projects.ts.
  */
@@ -55,7 +50,7 @@ export function ReelTitle({
   }
 
   return (
-    <div aria-hidden="true" className={cn("pointer-events-none absolute inset-0", className)}>
+    <div aria-hidden="true" className={cn("pointer-events-none grid", className)}>
       {state.previous && (
         <TitleLayer
           key={state.previous.id}
@@ -71,71 +66,16 @@ export function ReelTitle({
 
 function TitleLayer({ title, mode, onDone }: { title: string; mode: "in" | "out" | "static"; onDone?: () => void }) {
   const upper = title.toUpperCase();
-  const [first, rest] = splitTitle(upper);
-  const em = titleEm(upper);
-  const vars = { "--em": em.toFixed(3) } as CSSProperties;
-  // Letters are counted without spaces, in reading order (the first half first).
-  const firstCount = letterCount(first);
-  const total = firstCount + letterCount(rest);
+  const vars = { "--em": titleEm(upper).toFixed(3) } as CSSProperties;
+  const total = [...upper].filter((c) => c !== " ").length;
+  let index = 0;
 
   return (
-    <div
-      className={cn(
-        "absolute inset-0 [--fs:min(var(--title-max),calc(var(--title-fit)/var(--em)))] [--len:calc(var(--fs)*var(--em))]",
-        // Slightly see-through once split, behind the gallery tiles.
-        "opacity-[calc(1-var(--p,0)*0.62)]",
-      )}
+    <p
+      className="overflow-hidden py-[0.08em] text-center text-[length:min(var(--title-max),calc(var(--title-fit)/var(--em)))] leading-none font-display font-bold tracking-[-0.02em] whitespace-pre text-text [grid-area:1/1]"
       style={vars}
     >
-      {/* The rest of the title, at the top. */}
-      <Half
-        text={rest}
-        start={firstCount}
-        total={total}
-        mode={mode}
-        onDone={onDone}
-        className="top-[calc((1-var(--p,0))*(50%-var(--len)/2)+var(--p,0)*var(--title-top))]"
-      />
-      {/* The first half, at the bottom (the title reads upwards, so it starts at the bottom). */}
-      <Half
-        text={first}
-        start={0}
-        total={total}
-        mode={mode}
-        onDone={onDone}
-        className="bottom-[calc((1-var(--p,0))*(50%-var(--len)/2)+var(--p,0)*var(--title-bottom))]"
-      />
-    </div>
-  );
-}
-
-const letterCount = (s: string) => [...s].filter((c) => c !== " ").length;
-
-function Half({
-  text,
-  start,
-  total,
-  mode,
-  onDone,
-  className,
-}: {
-  text: string;
-  start: number;
-  total: number;
-  mode: "in" | "out" | "static";
-  onDone?: () => void;
-  className?: string;
-}) {
-  if (!text) return null;
-  let index = start;
-  return (
-    <span
-      className={cn(
-        "absolute left-1/2 -translate-x-1/2 rotate-180 overflow-hidden whitespace-pre [padding:0_0.06em] text-(length:--fs) leading-none font-display font-bold tracking-[-0.02em] text-text [writing-mode:vertical-rl]",
-        className,
-      )}
-    >
-      {[...text].map((ch, i) => {
+      {[...upper].map((ch, i) => {
         if (ch === " ") return " ";
         const order = index++;
         return (
@@ -153,6 +93,6 @@ function Half({
           </span>
         );
       })}
-    </span>
+    </p>
   );
 }

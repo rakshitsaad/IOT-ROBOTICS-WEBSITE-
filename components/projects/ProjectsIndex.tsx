@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MonoLabel } from "@/components/ui";
 import { prefersReducedMotion, useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
@@ -21,8 +21,8 @@ import { BuildsCount, ProjectFilters, ProjectsLabel, TagList } from "./parts";
  * gets the WebGL stage instead (CSS decides, so nothing flashes).
  *
  * - Phones with motion: a horizontal scroll-snap carousel of covers, each
- *   card turned slightly in 3D towards the centre, with the vertical title
- *   (8vh letters) of the centred card over it.
+ *   card turned slightly in 3D towards the centre, with the centred card's
+ *   title below it.
  * - Reduced motion (any width), no JS, or no WebGL: a plain grid of cards.
  * Both link to /projects/[slug].
  */
@@ -61,14 +61,6 @@ export function ProjectsIndex({ projects, clubName }: { projects: ProjectWithTea
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
-
-const TITLE_VARS = {
-  "--p": 0,
-  "--title-max": "11svh",
-  "--title-fit": "92cqh",
-  "--title-top": "0px",
-  "--title-bottom": "0px",
-} as CSSProperties;
 
 function Carousel({ list }: { list: ProjectWithTeam[] }) {
   const scroller = useRef<HTMLDivElement>(null);
@@ -121,7 +113,7 @@ function Carousel({ list }: { list: ProjectWithTeam[] }) {
 
   return (
     <>
-      <div className="relative mt-7 h-[min(97.5vw,58svh)] [container-type:size]" style={TITLE_VARS}>
+      <div className="relative mt-7 h-[min(97.5vw,58svh)]">
         <div
           ref={scroller}
           data-lenis-prevent
@@ -152,17 +144,22 @@ function Carousel({ list }: { list: ProjectWithTeam[] }) {
                   draggable={false}
                   className="object-cover"
                 />
-                <span className="absolute inset-0 bg-linear-to-t from-bg/55 via-transparent to-transparent" />
                 <span className="sr-only">{p.title}</span>
               </Link>
             </div>
           ))}
         </div>
-        {project && <ReelTitle title={project.title} animate={!reduced} />}
       </div>
+      {project && (
+        <ReelTitle
+          title={project.title}
+          animate={!reduced}
+          className="shell mt-5 [--title-fit:calc(100vw-2*var(--gutter))] [--title-max:clamp(1.8rem,9vw,2.6rem)]"
+        />
+      )}
 
       {project && (
-        <div className="shell mt-5 flex items-start justify-between gap-6">
+        <div className="shell mt-4 flex items-start justify-between gap-6">
           <p className="mono-label shrink-0 text-muted" aria-live="polite">
             <span className="text-text">{active + 1}</span> / {list.length}
             <span className="sr-only">: {project.title}</span>

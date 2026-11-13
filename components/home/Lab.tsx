@@ -110,7 +110,8 @@ export function Lab({ projects }: { projects: Project[] }) {
                   const spot = frame.spots[i % frame.spots.length];
                   return (
                     <figure
-                      key={project.id}
+                      // A project tagged with two domains appears at both stations.
+                      key={`${i}-${project.id}`}
                       className={cn("absolute", frame.className)}
                       style={{ left: `${i * stride + spot.x}%`, top: `${spot.y}%`, width: `${frame.w}vw` }}
                     >

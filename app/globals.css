@@ -211,12 +211,12 @@ html[data-ann="off"] {
 
   @keyframes letter-in {
     from {
-      transform: translateX(-110%);
+      transform: translateY(110%);
     }
   }
   @keyframes letter-out {
     to {
-      transform: translateX(110%);
+      transform: translateY(-110%);
     }
   }
 
