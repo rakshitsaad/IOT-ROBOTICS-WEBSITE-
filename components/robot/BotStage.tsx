@@ -344,7 +344,8 @@ export type BotSupport =
   | "poster:forced";
 
 let webgl: boolean | null = null;
-function hasWebGL() {
+/** Can this browser create a WebGL context? (Cached; the /about arm uses it too.) */
+export function hasWebGL() {
   if (webgl !== null) return webgl;
   try {
     const canvas = document.createElement("canvas");
@@ -380,7 +381,8 @@ export function useBotSupport(): BotSupport {
 
 /* ------------------------------------------------------- error boundary */
 
-class CanvasBoundary extends Component<{ children: ReactNode; onError: () => void }, { failed: boolean }> {
+/** Renders nothing once its canvas throws, and reports it (shared with the /about arm). */
+export class CanvasBoundary extends Component<{ children: ReactNode; onError: () => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };

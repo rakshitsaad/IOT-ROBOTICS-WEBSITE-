@@ -36,7 +36,7 @@ function SectionHead({ label, id, children }: { label: string; id: string; child
 
 export function Purpose() {
   return (
-    <section aria-labelledby="purpose-title" className={SECTION}>
+    <section aria-labelledby="purpose-title" data-arm-scene="purpose" className={SECTION}>
       <SectionHead label="Mission & vision" id="purpose-title">
         Why the club exists
       </SectionHead>
@@ -70,7 +70,7 @@ const ICON_FILL: Record<Accent, string> = {
 
 export function Pillars() {
   return (
-    <section aria-labelledby="pillars-title" className={SECTION}>
+    <section aria-labelledby="pillars-title" data-arm-scene="pillars" className={SECTION}>
       <SectionHead label="What we do" id="pillars-title">
         Three ways in
       </SectionHead>
@@ -104,7 +104,7 @@ const DOT_LIT: Record<Accent, string> = {
 
 export function History({ milestones }: { milestones: Milestone[] }) {
   return (
-    <section aria-labelledby="history-title" className={SECTION}>
+    <section aria-labelledby="history-title" data-arm-scene="history" className={SECTION}>
       <SectionHead label="Our story" id="history-title">
         How we got here
       </SectionHead>
@@ -160,7 +160,7 @@ const COUNT_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seve
 export function TeamsOverview({ teams }: { teams: Team[] }) {
   const count = COUNT_WORDS[teams.length] ?? String(teams.length);
   return (
-    <section aria-labelledby="teams-title" className={cn(SECTION, "pb-[clamp(6rem,18svh,11rem)]")}>
+    <section aria-labelledby="teams-title" data-arm-scene="teams" className={cn(SECTION, "pb-[clamp(6rem,18svh,11rem)]")}>
       <SectionHead label="Teams" id="teams-title">
         {count} {teams.length === 1 ? "team" : "teams"}, one club
       </SectionHead>

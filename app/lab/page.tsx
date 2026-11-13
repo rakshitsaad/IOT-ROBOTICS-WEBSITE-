@@ -15,7 +15,6 @@ import {
   type PillColor,
 } from "@/components/ui";
 import { MotionStatus, PillRevealDemo, RevealDemo } from "@/components/lab/MotionDemos";
-import { RobotHandLab } from "@/components/lab/RobotHandLab";
 import { BotHeadIcon } from "@/components/robot/BotHeadIcon";
 import { BOT_ICON_NAMES } from "@/components/robot/icons";
 import { COLORS, TEAM_ACCENT } from "@/lib/tokens";
@@ -321,10 +320,9 @@ export default function LabPage() {
           </div>
         </Section>
 
-        {/* 17 /about robot hand + ambient loops */}
-        <Section index={17} title="<RobotHand> · the /about intro · float, breathe, orbit, pulse-soft, fade-up">
-          <RobotHandLab />
-          <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-5">
+        {/* 17 ambient loops (the /about arm is checked on /about itself, ?arm=debug) */}
+        <Section index={17} title="Ambient loops · float, breathe, orbit, pulse-soft, fade-up">
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {[
               ["float", "animate-float"],
               ["breathe", "animate-breathe"],

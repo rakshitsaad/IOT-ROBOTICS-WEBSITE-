@@ -4,12 +4,10 @@
  */
 import type { Accent } from "./types";
 
-/** The first section: the pinned robot hand (DESIGN.md §15). */
+/** The first section (DESIGN.md §15): pinned on md+ while the arm behind the page plays its intro keys (§22). */
 export const ABOUT_INTRO = {
   /** Pin length on md+, in screens (100vh each). */
-  pin: 2.5,
-  /** ScrollTrigger scrub smoothing, seconds. */
-  scrub: 1,
+  pin: 1.5,
 } as const;
 
 /** Mission and vision cards. */

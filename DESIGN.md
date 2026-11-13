@@ -14,8 +14,8 @@ Check everything visually at **`/lab`**. The robot mascot's developer test page 
 - Next.js 16 (App Router, TypeScript, **Cache Components on**, see §9), Tailwind CSS v4 (CSS-first config, no `tailwind.config`).
 - Motion: `gsap` + `@gsap/react` (ScrollTrigger), `lenis`, `motion` (Framer Motion).
 - 3D: `three`, `@react-three/fiber`, `@react-three/drei`, loaded lazily: the robot mascot (§11) and its sidekick drone
-  (§12, in the robot's canvas), the /projects reel (§16), and the /lab/drone bench (§18, which also uses
-  `@react-three/postprocessing` for its bloom).
+  (§12, in the robot's canvas), the /about industrial arm (§22), the /projects reel (§16), and the /lab/drone bench
+  (§18, which also uses `@react-three/postprocessing` for its bloom).
 - State: `zustand` (`lib/store.ts`, client UI state only).
 - Data: Supabase later. For now, typed mock data.
 
@@ -26,7 +26,7 @@ app/
   layout.tsx         root layout: providers, header, footer, cursor
   template.tsx       route transition wrapper
   page.tsx           home: hero, statement, lab, featured, event, numbers, join; the robot and its drone travel through them (§12)
-  about/page.tsx     /about: the pinned robot hand intro, mission and vision, pillars, history, teams (§15)
+  about/page.tsx     /about: the 3D arm behind the page (§22), the pinned intro, mission and vision, pillars, history, teams (§15)
   members/page.tsx   /members: Senior Core spreads + Junior Core team accordions (§13)
   gallery/page.tsx   /gallery: the shelf of event journals (§14)
   gallery/[slug]/    the journal viewer: 3D page fan, grid view, lightbox (§14)
@@ -61,9 +61,11 @@ components/
                      JournalFan (+ fan.ts geometry), JournalPages (photo, video, collage, note),
                      JournalScrubber, JournalGrid, Lightbox, JournalBackdrop, JournalChrome (top bar,
                      toolbar, popovers, toast), icons, download.ts (download, share, copy)
-  about/             /about (§15): AboutIntro (heading, copy, the card; the pin), RobotHand (the SVG hand, setPose)
-                     + robot-hand-rig.ts (joints, pose keyframes, poseAt), AboutSections (Purpose, Pillars,
+  about/             /about (§15): AboutIntro (label, heading, copy; the pin), AboutSections (Purpose, Pillars,
                      History, TeamsOverview), AboutReveals, icons
+  arm/               the /about industrial arm (§22): ArmStage (fixed layer, support, lazy mount), ArmCanvas (lights,
+                     environment), IndustrialArm (scroll poses, input, servos), arm-model.ts (the procedural arm, ArmRig,
+                     applyJoints), kinematics.ts (IK, springs), arm-input.ts (window pointer, hover, clicks)
   projects/          /projects (§16): ProjectsStage (engine: physics, flight, keys, hit buttons),
                      ReelCanvas (+ reel-shaders, reel-state: shared mutable reel), ReelTitle (the title below the panel),
                      ProjectStrip (gallery tiles), ImageView (enlarged photo), parts (label, count, filters,
@@ -84,8 +86,7 @@ components/
   drone/             the drone (§18): Drone (model), Trail; the home sidekick: Sidekick (+ sidekick-plan.ts: zones,
                      stops, routes, stunts) (§12); the /lab/drone bench: DroneRig, director, ScanBeam, HoloGlobe,
                      Dissolve, DroneCanvas (bloom), DroneStage (lazy mount, poster), store
-  lab/               /lab helpers (MotionDemos, RobotLab, RobotHandLab: the /about hand on a slider,
-                     DroneLab + MissionDashboard: the bench's stat cards)
+  lab/               /lab helpers (MotionDemos, RobotLab, DroneLab + MissionDashboard: the bench's stat cards)
 hooks/               useReducedMotion, useMediaQuery
 lib/
   types.ts           row types for every Supabase table
@@ -94,6 +95,8 @@ lib/
   actions.ts         server actions (recruitment "Get notified")
   home.ts            home config: lab stations, photo depths, pan distance
   about.ts           /about config: the intro's pin (ABOUT_INTRO), mission and vision, pillars; client-safe
+  arm.ts             the /about arm: ARM_DIM, joint limits and motion, ARM_SCENES (poses per section), armPlacement,
+                     ARM_INPUT; client-safe
   gallery.ts         journal pages from gallery items (buildJournalPages), seeded(), dates; client-safe
   members.ts         /members config: term, layout cycle, name lines, Instrument Serif capital widths, social links;
                      Junior Core: cards per line, row ids, first name, initials
@@ -162,9 +165,10 @@ rainbow version; it now means this sheen.) Use it **sparingly**, only for:
 Senior Core's vertical spread also uses a small iris rectangle at 25% opacity over a
 portrait's corner; that is the only iris fill shape outside the list above.
 
-/about (§15) opens with its heading's first line in a red pill after a small red dot (the heading's only pill), and the robot hand's wrist cuff
-is red (its fingertip pads maroon, the pointing fingertip's brief glow red). The design asks for both; the hand is an
-illustration, and the rest of the view stays black, charcoal and warm white.
+/about (§15) opens with its heading's first line in a red pill after a small red dot (the heading's only pill). The 3D
+arm behind the page (§22) keeps red to details: a thin band on each of its three big motors, a status LED, a strip on the
+gripper and a red rim light from behind. The arm itself is graphite, black and aluminium, and the view stays black,
+charcoal and warm white.
 
 /events (§17) marks an upcoming event's status with a `maroon` Pill ("Registrations open"), so it never competes
 with the card's red `IrisButton` ("Register").
@@ -467,10 +471,11 @@ Get the instance with `useUIStore((s) => s.lenis)` (null when off). Use `data-le
   from 120ms, and the crowd fades in and rises 30px as one layer over **1.2s** from 360ms; on scroll it moves at
   **0.85×** the page and fades.
 - Stagger siblings by **0.06s** (`STAGGER`); long lists (menu) use 0.05s.
-- Scrubbed tweens use `ease: "none"`. The **/about robot hand** (§15) is scrubbed linearly too, but its pose keyframes ease
-  inside `setPose` (per phase: cubic out, sine in-out, cubic in; each joint smoothstepped), so the hand moves like a machine
-  rather than at the scroll's constant speed. Its idle servo jitter (a 1–2px fingertip twitch every 2.1–3s while the
-  scroll is still) is a 0.32s stepped GSAP tween, below the 0.6s floor, because a servo correction is that short.
+- Scrubbed tweens use `ease: "none"`.
+- Exception: the **/about industrial arm** (§22) uses no tweens. Each joint is a critically damped servo spring with its
+  speed and acceleration capped (`JOINT_MOTION` in `lib/arm.ts`: the base and shoulder slow, the wrist quicker, the gripper
+  quickest), so scroll, cursor, hover and clicks all blend without snapping. Its click pinch lasts **500ms**, and its idle
+  servo corrections are a tiny step every 2–3.5s.
 - Scroll triggers: reveal at `start: "top 80%"`.
 
 ### First-load entrances
@@ -1215,7 +1220,8 @@ CC0 samples. "About the event" links to
 ## 15. About page (`app/about/page.tsx`, `components/about`)
 
 ```tsx
-<AboutIntro />                   // section 1: the heading, the copy and the pinned robot hand card
+<ArmStage />                     // the 3D industrial arm, fixed behind the whole page (§22)
+<AboutIntro />                   // section 1: "About us", the heading and the copy, pinned while the arm plays its intro
 <AboutReveals>                   // reveals for everything below
   <Purpose />                    // mission & vision cards
   <Pillars />                    // workshops, projects, competitions
@@ -1224,90 +1230,36 @@ CC0 samples. "About the event" links to
 </AboutReveals>
 ```
 
-### Section 1: the robot hand (`AboutIntro`, `RobotHand`, `robot-hand-rig.ts`; the pin in `ABOUT_INTRO`)
-Two columns: the heading and two paragraphs on the left, and on the right a card in which a drawn robot hand slides in,
-spreads its fingers, points, grips and leaves as you scroll.
+### Section 1: the intro (`AboutIntro`; the pin in `ABOUT_INTRO`)
+Two columns: "About us", the heading and two paragraphs on the left; the right half is left open for the industrial arm
+behind the page (§22), which reaches towards the heading, opens, grips and lifts while the section is pinned.
 
 **Layout (md and up).** The stage is `h-svh` (with `pt-header`), its content centred vertically, in the `shell`: a grid of
-**42fr | 52fr** with a 6% gap.
-- **Heading** (the page's `h1`): three lines, Archivo 600, `min(clamp(2rem, 4vw, 3.4rem), 100cqw / 8.6)` (the left column
-  is a size container, and 8.6em covers the widest line, the first with its dot and padding), line-height 1.18,
-  tracking -0.02em. One pill, one serif line, the rest plain type:
+**42fr | 52fr** with a 6% gap; the right column is empty. The section has no background, so the arm shows through.
+- **Label** (the page's `h1`): `MonoLabel` "About us" in `text`.
+- **Heading** (an `h2`, 24px under the label, 32px from md): three lines, Archivo 600,
+  `min(clamp(2rem, 4vw, 3.4rem), 100cqw / 8.6)` (the left column is a size container, and 8.6em covers the widest line,
+  the first with its dot and padding), line-height 1.18, tracking -0.02em. One pill, one serif line, the rest plain type:
   1. a small red dot (1.3em), then "The things we" in a `red` pill, built by hand so its background can grow on its
      own as a CSS keyframe;
   2. "always imagined", plain;
   3. "students could build" as a serif accent (§3).
 - **Copy**: two paragraphs, 15px, muted, max 440px, their first words ("We build", "Our aim is simple:") bold in `text`.
-- **Card**: `rounded-card`, `bg-bg-2`, a hairline border, `overflow-hidden`, `min(72vh, 100svh − header − 4rem)` tall.
 
-**Phones (< 768px).** Stacked: the heading and the copy, then the card, full width and 60svh tall.
+**Phones (< 768px).** The label, the heading and the copy, stacked; the arm stands faint below and behind them.
 
-**The hand (`RobotHand`).** An inline SVG (viewBox 1000 × 1000, `slice`, so it fills the card and narrow cards crop the
-sides), an original flat illustration in the palette:
-- a 2.5px `--bg` outline that stays 2.5px at any scale (`vector-effect: non-scaling-stroke`);
-- warm white plates with a soft grey shade on one side (a hard-stop gradient, so it reads as cel shading);
-- a long forearm with a seam, a segmented wrist cuff in `--red` (shaded `--red-deep`), fingertip pads in `--maroon`;
-- round pins on the joints.
-
-The colours are CSS variables built from the tokens (`--text`, `--muted`, `--bg`, `--red`, `--red-deep`, `--maroon`), set
-in `style`, because SVG presentation attributes don't resolve `var()` reliably. No hex values.
-
-**The rig.**
-- **Anatomy.** The forearm and cuff end at the wrist pivot, then the palm (a plate with an inset panel). The palm carries
-  four fingers of three segments each (proximal, middle, tip) and a thumb of two.
-- **One group per segment.** Every segment is its own `<g data-j>` with `transform="translate(joint) rotate(angle)"` in
-  its parent's frame, so each turns around its own joint and carries the segments beyond it.
-- **Nothing detaches.** The segments are capsules whose round ends are centred on their joints, so no angle opens a gap.
-- **Draw order.** Little, ring, middle and index fingers, then the thumb in front.
-- **Joint positions and poses** live in `robot-hand-rig.ts`.
-
-`setPose(progress)` (on the component's ref) writes the transforms for any progress from 0 to 1, interpolating between
-six keyframes:
-- entering, off the card's top right;
-- entered;
-- open;
-- pointing;
-- gripping;
-- gone, off the bottom right.
-
-Within a phase, the joints don't all move at once. Each finger starts after the one before it (index first), each segment
-after the one below it (proximal → middle → tip), and the thumb after its own delay. Each joint eases with a smoothstep and
-finishes before the phase ends, leaving a short hold.
-
-| Progress | The hand |
-| --- | --- |
-| 0 → 0.15 | Slides in diagonally from beyond the top-right corner (cubic out), turned 35° off vertical, fingers relaxed and slightly open |
-| 0.15 → 0.4 | Moves to the card's centre and turns to 15°; the fingers spread wide one after another, index first, little finger last |
-| 0.4 → 0.6 | The index straightens to point while the others curl halfway and the thumb tucks; the index pad glows red briefly (peak at 0.52) |
-| 0.6 → 0.85 | The grip: finger by finger, each bending proximal, middle, tip (5% of the phase apart, about 70ms at an easy scroll); the thumb closes last |
-| 0.85 → 1 | Loosens a little and leaves through the bottom right (cubic in); the card is empty again |
-
-**Idle.** While the scroll is still (700ms after the last pose) and the hand is on screen with the tab visible, every
-2.1–3s the fingertips and the thumb tip twitch by 1–2px, as a servo correcting (a stepped 0.32s GSAP tween, §7).
-
-**Scroll (one ScrollTrigger).** A proxy `{ p }` tweens 0 → 1 with `ease: "none"`, and its `onUpdate` calls `setPose(p)`.
-- **md and up:** the stage is pinned at `top top` for **2.5 screens** (`ABOUT_INTRO.pin`), scrub 1. The left column stays
-  still; after the pin the page scrolls straight on into Mission & Vision.
-- **Phones:** no pin; the trigger is the card, scrub 1. The entrance plays as the card's bottom comes up to the screen's
-  bottom. The open, point and grip (15–85%) play while the card is wholly on screen, finishing as its top reaches the
-  header. The exit plays as the card scrolls under the header.
+**The pin.** md and up with motion (`gsap.matchMedia`), the stage is pinned at `top top` for **1.5 screens**
+(`ABOUT_INTRO.pin`), so the arm's intro keys (`ARM_SCENES.intro`, spread across the section's span, §22) play while the
+text stays still; then the page scrolls on into Mission & Vision. Phones and reduced motion: no pin.
 
 **First load** (CSS keyframes from the server HTML, §5):
+- the label fades up (`animate-fade-up`, 60ms);
 - each heading line rises 30px and fades in (`animate-line-up`), from 120ms, 100ms apart;
 - the first line's pill background grows from scaleX 0 at the left (`animate-pill-grow`), 100ms after its line;
 - the dot pops in (`animate-dot-in`);
 - then the paragraphs fade up (`animate-fade-up`, 560ms and 660ms).
 
-**Before JS.** The server renders the open pose with `data-state="static"`, hidden (`motion-safe:`) until the controller
-poses the hand, so it never shows in the middle of the card and then jumps off it. A `<noscript>` style shows it without JS.
-
-**Performance.** Only SVG `transform` attributes change, written straight from `setPose` (no React state, no layout). There
-is one ScrollTrigger, and the idle jitter runs only while the hand is visible.
-
-**Reduced motion.** No pin, no ScrollTrigger, no entrance and no jitter: the hand is still, in the open, reaching pose
-(`STATIC_POSE`), and the heading's pills are in place.
-
-**Checking it.** `/lab` section 17 drives `setPose` with a slider and buttons for each pose.
+**Reduced motion.** No pin and no entrance: the text and the heading's pill are in place, and the arm is one still pose.
 
 ### Below the intro (`AboutSections`, `AboutReveals`)
 Each section has a mono label (no number) and an Archivo 600 heading (`clamp(2.2rem, 5vw, 4.5rem)`).
@@ -1885,3 +1837,100 @@ moves on hover; the only motion is the reveal (each block, or each card in a lis
 ### Placeholders
 The four cut-outs stand in for real transparent exports; the mock stores applications in memory and doesn't keep the
 resume. The crowd is illustration, not the club's members.
+
+---
+
+## 22. Industrial arm (`components/arm`, `lib/arm.ts`)
+
+A six-axis industrial robot arm with a parallel gripper, rendered in 3D behind the whole /about page, from the hero to
+the footer. One arm per page (`<ArmStage />`, mounted once in `app/about/page.tsx`); the home page keeps the mascot
+(§11) and /projects its reel (§16), so the arm lives on /about only.
+
+### Layers (`ArmStage`)
+Back to front: the page's black (`html`); a faint maroon radial light where the arm stands (24%, 20% on phones); the
+arm's transparent canvas; the page content. The stage is `fixed inset-0 -z-10` (behind `main`, above the `html`
+background), `aria-hidden` and `pointer-events: none`, and the canvas takes no pointer events either, so every link and
+button stays clickable; the arm reads input from `window` instead. Sections on /about have no background of their own,
+so the arm shows between them; cards (`bg-2`) sit in front of it.
+
+### The model (`arm-model.ts`)
+Built in code from three.js primitives, no download:
+- a base plate with 8 cap screws, a fixed column, the J1 bearing ring, a red status LED and a cable connector;
+- a turret (lathe-turned) carrying the J1 motor; shoulder cheeks with the J2 motor (finned housing, aluminium end cap,
+  6 screws); a tapered upper arm with a service cover and a cable in 3 clips; the elbow housing with the J3 motor;
+- a turned forearm to the wrist yoke; the wrist, flange (6 screws) and a parallel gripper (two fingers on carriages,
+  rubber pads), modelled small and scaled up together (`WRIST_SCALE`);
+- three flexible cables (centripetal Catmull-Rom tubes with sag) rebuilt each frame while the arm moves;
+- cap screws are one `InstancedMesh` with hex sockets; brushed metal uses a generated roughness map.
+
+Materials (`ARM_COLORS`, model colours, not UI tokens): graphite clearcoat paint `#44464C`, cast black `#1B1C1F`, brushed
+aluminium `#B7BAC0`, steel `#86898F`, rubber `#0C0C0D`; red (`COLORS.red`) only for a thin band on each big motor, the LED
+(emissive) and a strip on the gripper.
+
+Lights (`ArmCanvas`): a warm key light that casts the shadow (it travels with the arm, so its shadow box always fits), a
+cool fill, low ambient, two deep red rim lights from behind (a thin edge on the silhouette, not a red arm), and an
+`Environment` of Lightformers rendered once (rect softboxes and a red ring) for the metal's reflections. A
+`ShadowMaterial` floor catches the shadow (high quality only).
+
+### Kinematics (`kinematics.ts`, numbers in `lib/arm.ts`)
+- **Pose → joints.** A pose is where the wrist centre goes (`target`), a point the gripper looks at (`aim`) and the grip
+  (0 open, 1 closed). `solveArm` turns it into J1 base yaw, J2 shoulder, J3 elbow (elbow up, two-link), J4 forearm roll,
+  J5 wrist pitch and J6 flange roll (counter-rolling J4, so the fingers stay level). Every joint is clamped to
+  `JOINT_LIMITS`; J4 has ±180° of travel and takes whichever of its two solutions turns least, so it never winds round.
+- **Servos.** Each joint moves on a critically damped spring with capped speed and acceleration (`JOINT_MOTION`), in
+  1/120s substeps: the base and shoulder start and stop slowly, the wrist is quicker, the gripper quickest (§7).
+- **Start.** The arm starts folded (`ARM_REST`) and unfolds into its first pose as the canvas fades in.
+
+### Scroll (`ARM_SCENES`)
+Each `[data-arm-scene="<name>"]` element (the intro and the four sections below it) and the footer (`#site-footer`)
+place their keys across their span: `at` 0 when the element's top is at the screen's top, 1 when its bottom reaches the
+screen's bottom (an element shorter than that spreads its keys over 60% of its height). Between keys the pose eases
+(smoothstep). A pose also shifts the whole arm (in screen fractions) and sets the layer's opacity, lower where text sits
+over the arm.
+
+| Scene | The arm |
+| --- | --- |
+| intro (pinned, §15) | reaching up in the right half, then towards the heading: opens, closes on it, lifts it |
+| purpose | leans over the two cards, looking down at them (55%) |
+| pillars | raised, scanning across the columns (50%) |
+| history | low, following the timeline down (45%) |
+| teams | gripper open towards the team pills, as if offering one (60%) |
+| footer | at rest, looking down at the wordmark (55%) |
+
+Placement (`armPlacement`): desktops stand the base at 30% right of centre, near the bottom, at full size and opacity;
+portrait tablets (aspect < 1.15) smaller and at 65%; phones smaller still, lower, at 50%, so the text over it reads.
+
+### Input (`arm-input.ts`, `ARM_INPUT`)
+- **Cursor** (mouse and pen; touch is ignored): the wrist leans 22% of the way towards it (at most 0.6 units) and the
+  gripper turns 75% of the way to look at it; the camera shifts a little with it (parallax), so the arm reads as a layer
+  behind the page.
+- **Hover** over a link, button, form control or `[data-cursor]` element: the gripper turns to its centre, leans in and opens.
+- **Click** (left button, not in a field): the gripper pinches shut and the wrist nods, over 500ms.
+- **Idle** (no input for 5s): a slow inspection sweep, a gentle flange roll, a calibration pinch every 7s and tiny servo
+  corrections; any input ends it.
+
+### Performance
+- `next/dynamic` (`ssr: false`), mounted in `requestIdleCallback` after the page has painted, then fading in (1200ms).
+- Quality `high`: soft shadows (`"percentage"`), dpr ≤ 1.75. `low` (touch screens, below 768px, `deviceMemory` ≤ 4): no
+  shadows or floor, dpr ≤ 1.25. No WebGL, a lost context or a render error: no arm (the page is unchanged).
+- It stops rendering (`frameloop="never"`) while the tab is hidden or the menu is open. The cables are the only
+  per-frame geometry, and only while the arm moves.
+
+### Reduced motion
+One still pose (the intro's first), rendered once (`frameloop="demand"`): no unfolding, no scroll poses, no cursor, hover,
+click or idle motion, and no parallax.
+
+### QA
+`?arm=high`, `?arm=low`, `?arm=off`, and `?arm=debug`, which exposes `window.__arm` (`state()`: joints, goals, weights;
+`input`; `rig`).
+
+### Swapping in a GLB
+There is no licensed model yet, so the arm is procedural. To replace it, load the file in a component that returns the
+same `ArmRig` as `buildArm` (`root`, the six joint nodes, the two fingers, `updateCables`, `dispose`); nothing else
+changes. The asset needed:
+- a six-axis industrial arm with a parallel gripper, as `.glb` with PBR (metal/rough) materials, ideally Draco-compressed
+  and under ~2MB, about 30–60k triangles;
+- separate nodes for the base, J1–J6 and each finger, each node's pivot on its joint axis (J1 vertical; J2, J3, J5
+  horizontal; J4, J6 along the forearm and flange), in a straight-up rest pose;
+- link lengths matched to `ARM_DIM` (or `ARM_DIM` updated to match it);
+- a licence that allows use on the site (CC0 or CC-BY with credit).
