@@ -15,7 +15,7 @@ import { useUIStore } from "@/lib/store";
  *   Arrow keys, the spreads' prev/next arrows, dragging and horizontal wheel
  *   gestures all move the page scroll, so everything stays on one timeline.
  *   Reveals and blob drift inside each spread use containerAnimation.
- * - Phones with motion: stacked, with the same reveals on vertical triggers.
+ * - Phones with motion: stacked, with their own editorial reveals (mobileReveals, IntersectionObserver).
  * - Reduced motion: stacked, nothing animates; the arrows jump instantly.
  *
  * gsap.matchMedia() rebuilds this when the width or the motion setting changes.
@@ -30,8 +30,8 @@ export const SENIOR_CORE_MOTION = {
   snap: { min: 0.2, max: 0.6 },
   /** A spread reveals when its left edge reaches this point of the viewport (horizontal)… */
   revealAt: "left 62%",
-  /** …or its top does (stacked). */
-  revealAtStacked: "top 72%",
+  /** …or, stacked (phones), its top crosses 72% of the screen: the IntersectionObserver's bottom margin. */
+  revealMarginStacked: "0px 0px -28% 0px",
   /** Delay between letters (s). */
   letterStagger: 0.04,
   /** px a pointer must move before it counts as a drag; px/s that counts as a flick. */
@@ -103,13 +103,14 @@ export function SeniorCoreTrack({ labels, children }: { labels: string[]; childr
 
       const mm = gsap.matchMedia();
       mm.add(
-        { desktop: "(min-width: 768px)", reduce: "(prefers-reduced-motion: reduce)" },
+        // `phone` is there only so a phone with motion matches something: matchMedia calls back only while one does.
+        { desktop: "(min-width: 768px)", phone: "(max-width: 767px)", reduce: "(prefers-reduced-motion: reduce)" },
         (ctx) => {
           const { desktop, reduce } = ctx.conditions as { desktop: boolean; reduce: boolean };
           if (reduce) return; // final states, stacked; arrows jump instantly
           if (!desktop) {
-            spreads.forEach((spread, i) => {
-              if (i > 0) reveal(spread, { trigger: spread, start: M.revealAtStacked, once: true });
+            const stop = mobileReveals(spreads.slice(1));
+            spreads.forEach((spread) => {
               spread.querySelectorAll<HTMLElement>("[data-sc-blob]").forEach((blob) => {
                 const s = Number(blob.dataset.scBlob) || 0;
                 gsap.fromTo(
@@ -123,7 +124,7 @@ export function SeniorCoreTrack({ labels, children }: { labels: string[]; childr
                 );
               });
             });
-            return;
+            return stop;
           }
           return horizontal(vp, tr, spreads);
         },
@@ -332,6 +333,45 @@ export function SeniorCoreTrack({ labels, children }: { labels: string[]; childr
       <p ref={live} className="sr-only" aria-live="polite" />
     </NavContext.Provider>
   );
+}
+
+/**
+ * Phones only (DESIGN.md §13): each spread's editorial entrance, started by an IntersectionObserver when its top
+ * crosses 72% of the screen, once (scrolling back never replays it). The portrait wipes up from the bottom while its
+ * photo settles from 1.06 to 1; the name's letters rise a beat later; the kicker, the role line and the rest fade up;
+ * a short red line draws along the hairline. Timelines are built paused up front, so their start states apply before
+ * the spread is on screen. Returns the cleanup (gsap.matchMedia reverts the tweens themselves).
+ */
+function mobileReveals(spreads: HTMLElement[]) {
+  const play = new Map<Element, gsap.core.Timeline>();
+  for (const spread of spreads) {
+    const tl = gsap.timeline({ paused: true });
+    const q = <T extends Element = HTMLElement>(s: string) => Array.from(spread.querySelectorAll<T>(s));
+    const portraits = q("[data-sc-portrait]");
+    if (portraits.length) {
+      tl.fromTo(portraits, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: DURATION.slow, ease: EASE.expo }, 0);
+      tl.fromTo(q("[data-sc-portrait] img"), { scale: 1.06 }, { scale: 1, duration: DURATION.slow, ease: EASE.out }, 0);
+    }
+    const ys = q("[data-sc-rise]").filter((el) => el.dataset.scRise !== "x");
+    if (ys.length) tl.from(ys, { yPercent: 110, duration: DURATION.slow, ease: EASE.expo, stagger: 0.03 }, 0.25);
+    const fades = q("[data-sc-fade]");
+    if (fades.length) tl.from(fades, { y: 16, opacity: 0, duration: DURATION.base, ease: EASE.out, stagger: STAGGER }, 0.4);
+    const accents = q("[data-sc-accent]");
+    if (accents.length) tl.from(accents, { scaleX: 0, duration: DURATION.slow, ease: EASE.expo }, 0.55);
+    play.set(spread, tl);
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        play.get(e.target)?.play();
+        io.unobserve(e.target);
+      }
+    },
+    { rootMargin: M.revealMarginStacked },
+  );
+  spreads.forEach((s) => io.observe(s));
+  return () => io.disconnect();
 }
 
 /**

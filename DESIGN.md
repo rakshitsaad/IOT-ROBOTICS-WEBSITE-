@@ -1021,7 +1021,7 @@ The spreads render **stacked**, which is also the layout without JS, on phones a
 | Media | What is built |
 | --- | --- |
 | md+ with motion | **Horizontal.** The viewport gets `data-mode="h"` (CSS lays the track out as a row; the viewport becomes `h-svh overflow-clip`) and `data-cursor="drag"`. It is pinned (`start: "top top"`, end `+= track.scrollWidth − viewport.clientWidth`) and the track tweens to `x: −that` with `ease: "none"` and scrub 1, snapping to each spread (`inertia: false`). |
-| Phones with motion | Stacked, with the same reveals on vertical ScrollTriggers (`top 72%`); blobs drift ±70px × their speed. |
+| Phones with motion | Stacked, with their own editorial reveal (below); blobs drift ±70px × their speed. |
 | Reduced motion | Nothing is built: stacked, final states, badges still, arrows jump instantly. |
 
 Horizontal controls. They all move the page scroll, so there is only one timeline:
@@ -1039,6 +1039,17 @@ Reveals play once per spread as it enters (horizontal: `containerAnimation`, at 
 - portraits wipe up (`clip-path: inset(100% 0 0 0)` → `inset(0)`);
 - text rises 24px and fades in.
 
+**Phones (< md) have their own reveal** (`mobileReveals` in `SeniorCoreTrack`; desktop's `reveal()` is not used there). An
+IntersectionObserver plays it once when a spread's top crosses 72% of the screen (`revealMarginStacked`), so scrolling back
+never replays it; the timelines are built paused up front, so their start states are set before the spread is on screen:
+- the portrait wipes up from the bottom (1.2s expo) while its photo settles from scale 1.06 to 1 (1.2s power3);
+- the name's letters rise 0.25s later (1.2s expo, 0.03s apart);
+- the kicker, the hairline, the quote, the role / branch line and the rest fade up 16px from 0.4s (0.06s apart);
+- a short red accent (48px, `red/80`, `[data-sc-accent]`, phones only) draws along the hairline under the name from 0.55s.
+
+The matchMedia has a `phone` condition only so a phone with motion matches something (it calls back only while one
+condition does, §7); without it nothing was built on phones.
+
 Blobs drift against the track at their own speeds (scrubbed with `containerAnimation`, ±14% of the width × speed). Badges spin faster while the page scrolls.
 
 ### Junior Core (`JuniorCore`, `JuniorCoreNav`, `TeamAccordion`)
@@ -1051,7 +1062,10 @@ closing button links to.
 - **Team bar** (`JuniorCoreNav`):
   - **Layout.** A sticky strip of team `Pill`s (`raised`, the current team in its accent), `sticky top-(--nav-h)`, `bg/80` with a backdrop blur and hairlines above and below. No ancestor up to `main` may set `overflow` or `transform`, or it stops sticking.
   - **Why only `--nav-h`.** It sticks at `--nav-h`, not `--nav-h + --ann-h`: the announcement bar has always collapsed (past 40px of scroll) by the time this section is on screen.
-  - **Phones.** The pills scroll sideways, with no scrollbar, and the current pill is kept centred.
+  - **Phones.** The pills scroll sideways, with no scrollbar, and the current pill is kept centred. The active fill is
+    a red pill behind the strip that slides to the current team (600ms expo, transform and width; it appears in place
+    when none was current, and is instant under reduced motion). So on phones the current pill itself is clear and the
+    others are `bg-text/6`, the same charcoal on the bar, translucent so the indicator shows as it passes.
   - **Click.** It scrolls to the team's row: Lenis, or native smooth scroll without it; 1.2s; instant under reduced motion. It lands 24px below the bar. The offset is the bar's measured bottom (`stickyOffset()` in `junior-scroll.ts`), so it follows the header height.
   - **Click effects.** It also marks the pill `aria-current`, highlights the row for 1.8s (`data-highlight`: the team name turns its accent and an accent bar grows under it), and moves focus to the row's heading.
   - **Lenis anchors.** The click handler stops propagation, because Lenis (`anchors: true`) would otherwise scroll to the anchor itself without the offset.
@@ -1070,7 +1084,11 @@ closing button links to.
   - **Opening.** One card per accordion is open, the first to start with. A click, tap or Enter/Space opens a card; so does hovering with a mouse (md and up, after an 80ms intent).
   - **Motion.** Width and radius animate together over 550ms with `cubic-bezier(0.22, 1, 0.36, 1)`. The text comes in 150ms after that and leaves at once on collapse (the §7 exception).
 - **Accordion, phones (< md)**: a vertical list of full-width 72px pills. Each has a 56px circular portrait on the left and the name and role beside it.
-  - **Open card.** It grows to 380px tall (`rounded-card`), the portrait fills it, and the details appear. It uses the same timing, animating height.
+  - **Open card.** It grows to 380px tall (`rounded-card`), the portrait fills it (settling from scale 1.08 to 1), and
+    the details appear. It uses the same timing, animating height.
+  - **Plus / close.** A plus in a 32px ring sits at the right of the 72px band and stays as the card grows: opening
+    turns it 135° into a × (frosted ring), closing turns it back. Tapping the open card again collapses it, so on
+    phones none may be open (widening past md opens the first again).
   - **Keeping it in view.** Tapping a card scrolls just enough to keep the whole opened card on screen, below the bar. This allows for the previously open card above it shrinking.
   - **Variant gotcha.** Phone-only states use `max-md:`, because Tailwind sorts `data-*` variants after `md:`.
 - **No photo**: an initials avatar (first and last initial, Archivo 600) in a thin `iris-border` ring on the dark card. It is in the circle slot on phones and high in the card from md up, and it grows when the card opens.

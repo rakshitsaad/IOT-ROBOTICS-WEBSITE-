@@ -12,6 +12,7 @@ import { SpreadNav } from "./SpreadNav";
  *   data-sc-portrait  revealed with clip-path inset(100% 0 0 0) → inset(0)
  *   data-sc-fade      rises 24px and fades in
  *   data-sc-blob      an iris blob; the value is its drift speed
+ *   data-sc-accent    phones only: a red line that draws in (scaleX 0 → 1)
  * Everything renders in its final state (no JS, reduced motion).
  */
 

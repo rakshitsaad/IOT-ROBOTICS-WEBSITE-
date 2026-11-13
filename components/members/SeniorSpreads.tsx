@@ -252,7 +252,10 @@ function SplitSpread(props: MemberSpreadProps) {
           </span>
         </h2>
         {/* Gaps are tight so a 200-character quote (5 lines) fits a 720px-tall screen. */}
-        <div data-sc-fade aria-hidden="true" className="mt-6 h-px w-full bg-line md:mt-[2.5svh]" />
+        <div data-sc-fade aria-hidden="true" className="relative mt-6 h-px w-full bg-line md:mt-[2.5svh]">
+          {/* Phones: a short red accent on the hairline, drawn in by the mobile reveal. */}
+          <span data-sc-accent className="absolute inset-y-0 left-0 w-12 origin-left bg-red/80 md:hidden" />
+        </div>
         <Quote quote={m.quote} className="mt-6 max-w-[32ch] text-[length:clamp(1.25rem,1.8vw,1.7rem)] md:mt-[2.5svh]" />
         <Meta member={m} className="mt-4" />
         <ConnectLink member={m} className="mt-6 md:mt-[2.5svh]" />

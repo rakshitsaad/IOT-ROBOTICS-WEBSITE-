@@ -14,9 +14,10 @@ import { scrollPageTo, stickyOffset } from "./junior-scroll";
 import { SocialIcon } from "./SocialIcon";
 
 /**
- * One team's Junior Core accordion (DESIGN.md §13). Exactly one card is open:
- * the first to start with, then whichever was last clicked, tapped, chosen
- * with Enter/Space, or hovered (mouse, md and up).
+ * One team's Junior Core accordion (DESIGN.md §13). One card is open: the
+ * first to start with, then whichever was last clicked, tapped, chosen with
+ * Enter/Space, or hovered (mouse, md and up). On phones, tapping the open card
+ * again collapses it, so none may be open; its plus turns into a × as it opens.
  *
  * - md and up: a row of tall pills; the open card widens to a 460px card.
  *   Past JUNIOR_CORE.perLine members the row continues on a second line of
@@ -105,6 +106,21 @@ const DETAILS = cn(
   "motion-safe:group-data-active/card:delay-[700ms]",
 );
 
+/** Phones only: the row's plus/close, top right in the 72px band; it stays as the card grows. */
+const TOGGLE = "pointer-events-none absolute top-0 right-0 z-20 grid h-[72px] w-16 place-items-center md:hidden";
+const TOGGLE_RING = cn(
+  "grid size-8 place-items-center rounded-full border border-text/15",
+  "group-data-active/card:border-text/25 group-data-active/card:bg-black/40 group-data-active/card:backdrop-blur-sm",
+  "transition-[background-color,border-color]",
+  RESIZE,
+);
+/** A + (the × mark turned 45°) that turns another 135° into a ×. */
+const TOGGLE_MARK = cn(
+  "rotate-45 text-text/50 group-data-active/card:rotate-180 group-data-active/card:text-text",
+  "transition-[rotate,color]",
+  RESIZE,
+);
+
 export function TeamAccordion({ team, members }: { team: string; members: Member[] }) {
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -127,8 +143,8 @@ export function TeamAccordion({ team, members }: { team: string; members: Member
       if (!card) return;
       const grow = M.phone.open - M.phone.closed;
       const rect = card.getBoundingClientRect();
-      // Where the card will be once the transition ends: the old open card above it shrinks.
-      const top = rect.top - (previous < index ? grow : 0);
+      // Where the card will be once the transition ends: the old open card above it (if any) shrinks.
+      const top = rect.top - (previous >= 0 && previous < index ? grow : 0);
       const bottom = top + M.phone.open;
       const min = stickyOffset() + 12;
       const max = window.innerHeight - 12;
@@ -145,13 +161,28 @@ export function TeamAccordion({ team, members }: { team: string; members: Member
     (index: number, source: "click" | "hover") => {
       window.clearTimeout(hoverTimer.current);
       const previous = activeRef.current;
-      if (index === previous) return;
-      activeRef.current = index;
-      setActive(index);
-      if (source === "click" && !window.matchMedia(DESKTOP).matches) keepInView(index, previous);
+      const phone = !window.matchMedia(DESKTOP).matches;
+      // Phones: tapping the open card again collapses it (-1: none open). md+ always keeps one open.
+      const next = index !== previous ? index : source === "click" && phone ? -1 : previous;
+      if (next === previous) return;
+      activeRef.current = next;
+      setActive(next);
+      if (source === "click" && phone && next >= 0) keepInView(next, previous);
     },
     [keepInView],
   );
+
+  /* A phone collapse leaves none open; md+ (a window widened past the breakpoint) always shows one. */
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP);
+    const onChange = () => {
+      if (!mq.matches || activeRef.current >= 0) return;
+      activeRef.current = 0;
+      setActive(0);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const onHover = (index: number, pointerType: string) => {
     if (pointerType !== "mouse" || !window.matchMedia(DESKTOP).matches) return;
@@ -289,6 +320,8 @@ function Card({
                 "object-cover select-none",
                 "brightness-80 grayscale-40 group-data-active/card:brightness-100 group-data-active/card:grayscale-0",
                 "transition-[filter]",
+                // Phones: the photo settles from 1.08 as the row opens out of its circle.
+                "max-md:scale-[1.08] max-md:transition-[filter,scale] max-md:group-data-active/card:scale-100",
                 RESIZE,
               )}
             />
@@ -323,13 +356,19 @@ function Card({
           {firstName(member.full_name)}
         </span>
 
-        {/* Closed, phones: name and role beside the circle, and a plus. */}
-        <span aria-hidden="true" className={cn("absolute inset-x-0 top-0 flex h-[72px] items-center gap-3 pr-6 pl-20 md:hidden", CLOSED_LABEL)}>
+        {/* Closed, phones: name and role beside the circle (the plus is TOGGLE, below). */}
+        <span aria-hidden="true" className={cn("absolute inset-x-0 top-0 flex h-[72px] items-center gap-3 pr-16 pl-20 md:hidden", CLOSED_LABEL)}>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px] leading-tight font-display font-semibold tracking-[-0.01em]">{member.full_name}</span>
             <span className="mono-label mt-1 block truncate text-muted">{member.role}</span>
           </span>
-          <CrossMark size={12} className="rotate-45 text-text/50" />
+        </span>
+
+        {/* Phones: the plus, which turns into a close × as the row opens (and back as it collapses). */}
+        <span aria-hidden="true" className={TOGGLE}>
+          <span className={TOGGLE_RING}>
+            <CrossMark size={12} className={TOGGLE_MARK} />
+          </span>
         </span>
 
         {/* Open: name, role, bio and links. Inert while closed, so its links are out of the tab order. */}

@@ -41,6 +41,9 @@ export function JuniorCoreNav({ teams }: { teams: JuniorCoreNavTeam[] }) {
   const lenis = useUIStore((s) => s.lenis);
   const [current, setCurrent] = useState<string | null>(null);
   const strip = useRef<HTMLUListElement>(null);
+  const indicator = useRef<HTMLLIElement>(null);
+  /** The team the indicator was last placed on (null: hidden). */
+  const shown = useRef<string | null>(null);
   /** True while a pill's scroll runs, so the spy doesn't flick through the rows it passes. */
   const steering = useRef(false);
   const highlight = useRef<{ row: HTMLElement; timer: number } | null>(null);
@@ -66,6 +69,35 @@ export function JuniorCoreNav({ teams }: { teams: JuniorCoreNavTeam[] }) {
     },
     { dependencies: [teams] },
   );
+
+  /* Phones: a red pill slides behind the strip to the current team (positions written straight to the DOM). It
+     slides only from a pill that was showing; from none it appears in place, and re-measures when pills resize. */
+  useEffect(() => {
+    const ul = strip.current;
+    const ind = indicator.current;
+    if (!ul || !ind) return;
+    const place = (slide: boolean) => {
+      const li = current ? ul.querySelector<HTMLElement>(`[data-team="${current}"]`) : null;
+      if (!li) {
+        ind.style.opacity = "0";
+        return;
+      }
+      ind.style.transitionProperty = slide ? "" : "opacity";
+      ind.style.width = `${li.offsetWidth}px`;
+      ind.style.height = `${li.offsetHeight}px`;
+      ind.style.transform = `translate(${li.offsetLeft}px, ${li.offsetTop}px)`;
+      ind.style.opacity = "1";
+    };
+    place(shown.current !== null);
+    shown.current = current;
+    let first = true; // ResizeObserver reports once on observe: skip that, it would cut the slide
+    const ro = new ResizeObserver(() => {
+      if (first) first = false;
+      else place(false);
+    });
+    ul.querySelectorAll("[data-team]").forEach((li) => ro.observe(li));
+    return () => ro.disconnect();
+  }, [current]);
 
   /* Phones: keep the current pill in view inside the sideways-scrolling strip. */
   useEffect(() => {
@@ -130,6 +162,12 @@ export function JuniorCoreNav({ teams }: { teams: JuniorCoreNavTeam[] }) {
           ref={strip}
           className="shell relative flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
+          {/* Phones: the sliding active pill, behind the strip (-z-10 stays inside the bar's stacking context). */}
+          <li
+            ref={indicator}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 left-0 -z-10 rounded-pill bg-red opacity-0 transition-[transform,width,height,opacity] duration-[600ms] ease-expo motion-reduce:transition-none md:hidden"
+          />
           {teams.map(({ slug, name, accent }) => {
             const on = current === slug;
             return (
@@ -147,6 +185,9 @@ export function JuniorCoreNav({ teams }: { teams: JuniorCoreNavTeam[] }) {
                       "block px-4 py-2.5 text-[13px] leading-none font-medium whitespace-nowrap",
                       "transition-[background-color,color,box-shadow] duration-[350ms] ease-power3",
                       !on && "group-hover/pill:bg-text/10",
+                      // Phones: the sliding indicator is the active fill, so the active pill is clear, and the others
+                      // are a translucent charcoal (the same tone on the bar) so the indicator shows as it passes.
+                      on ? "max-md:bg-transparent" : "max-md:bg-text/6",
                     )}
                   >
                     {name}
