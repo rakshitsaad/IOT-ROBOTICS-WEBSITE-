@@ -539,16 +539,20 @@ Reference implementation: `components/lab/MotionDemos.tsx` (`RevealDemo`).
 - `events` for /events (§17): `status` (`upcoming` | `past`), `banner_url` (16:9), `cutout_url` (optional transparent PNG
   of the banner's subject, framed by the cutout convention in §17), `banner_focal_x` (0–100, where the banner is
   anchored horizontally when the card crops it, default 50) and `accent_color` (optional; without it the page samples
-  the banner's dominant colour and snaps it to red or maroon, §17). The mock has 6 events (2 upcoming, 4 past) with generated placeholder banners and
-  cutouts in `/public/events/`; replace them with real art. `projects.tags` decide which lab station a project's photo appears at (a tag equal to the station's domain, any case: `Drones`, `Robotics`, `IoT`, `Research`), and which /projects filter shows it (§16).
+  the banner's dominant colour and snaps it to red or maroon, §17). The mock has 7 events (2 upcoming, 5 past). 3D Verse 2026 uses its own photos
+  (cover and banner from its journal, no cutout; its copy and venue are placeholders); the rest have generated placeholder
+  banners and cutouts in `/public/events/`; replace them with real art. `projects.tags` decide which lab station a project's photo appears at (a tag equal to the station's domain, any case: `Drones`, `Robotics`, `IoT`, `Research`), and which /projects filter shows it (§16).
 - `projects`: `slug`, `title`, `year`, `status`, `tags`, `summary` (the one-line "short description"), `description`, `cover_url`, `images` (jsonb array of `{ url, width, height, alt }`, 4–10 per project; the gallery strip and the phone page show the cover first, then these), `member_ids` (the team; `getProjectsWithTeam()` resolves them to names as `team`), `repo_url` (optional: the "Source code" button shows only when set), `is_featured`. The mock has the club's 12 real projects (names and one photo each, `public/projects/<slug>.jpg`, copies of the uploaded files; the home lab shows up to 3 per station, and a project with two domain tags shows at both). Their summaries, descriptions, tags, teams, years and statuses are placeholders, and `images` is empty, so the gallery strip shows only the cover.
 - Mock rows in `lib/mock/*.ts`. Image URLs are `picsum.photos` placeholders (allowed in `next.config.ts` `images.remotePatterns`, along with `*.supabase.co` storage).
 - **Pages and components read data only through `lib/data.ts`** (`getSettings`, `getTeams`, `getMembers`, `getSeniorCore`, `getJuniorCore`, `getProjects`, `getEvents`, `getAchievements`, `getGalleryItems`, `getMilestones`). Switching to Supabase means changing those function bodies only.
 - Derived reads: `getJuniorCoreByTeam()` (juniors grouped by team, in the teams' order, teams without juniors left out), `getFeaturedProjects()` (`is_featured`), `getUpcomingEvent()` (the earliest event with `starts_at` in the future, or `null`) `getHomeStats()` (members, projects, events that have started, years since `founded_year`) and `getMissionStats()` (the /lab/drone bench's dashboard, §18: members and their running total by joining year, from `year` of study and the Senior Core term; projects per lab domain; this year's events, done and coming; the next event; workshops that have run (type `workshop`, started) and the next one; competitions won = achievements whose `result` is a podium, `PODIUM` in `lib/mission.ts`). The last three depend on the current time, so they use `cacheLife("hours")`.
 - `gallery_items`: `event_id`, `type` (`photo` | `video`), `url` (null for a note), `poster_url` (videos), `caption`,
   `alt`, `width` / `height` (null for notes), `layout_group`, `sort_order` (the spec's "order"; every table here uses
-  `sort_order`), `taken_at`. How they become journal pages is in §14. The mock has four journals (Tech Expo 2025, Hack the
-  Hardware, Build Night: October, 22–28 items each; ROS from Zero, 10 items): picsum photos and posters, and two CC0 sample clips from MDN
+  `sort_order`), `taken_at`. How they become journal pages is in §14. The mock has five journals. **3D Verse 2026** (14 items: 7
+  photos, 7 clips) is real: `public/gallery/3d-verse-2026/`, web copies of the uploads in `public/gallery/3D VERSE 2026/`
+  (photos upright, at most 2000px, quality 86; clips 720p H.264 + AAC, `+faststart`, each with a `-poster.jpg` frame;
+  HEVC phone clips don't play in every browser). Keep new uploads to that pattern. The other four (Tech Expo 2025, Hack the
+  Hardware, Build Night: October, 22–28 items each; ROS from Zero, 10 items) are placeholders: picsum photos and posters, and two CC0 sample clips from MDN
   (`interactive-examples.mdn.mozilla.net`, not the club). Replace them with real files.
 - Project reads: `getProjectsWithTeam()` (every project with `team`, the member names) and `getProject(slug)` (one, or null).
 - Gallery reads: `getJournals()` (the shelf: events with gallery items, newest first, with page, photo and video counts) and
@@ -1202,7 +1206,8 @@ Navigation:
 - The shelf's cover tilt is a CSS transition, so it is instant like every transition.
 
 ### Placeholders
-The mock photos and posters are `picsum.photos`, and the two clips are MDN's CC0 samples. "About the event" links to
+3D Verse 2026 is real. In the other journals the photos and posters are `picsum.photos`, and the two clips are MDN's
+CC0 samples. "About the event" links to
 `/events/<slug>`, which doesn't exist yet.
 
 ---

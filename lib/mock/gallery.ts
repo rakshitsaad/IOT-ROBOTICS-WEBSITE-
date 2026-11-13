@@ -1,10 +1,9 @@
 import type { GalleryItem } from "@/lib/types";
 
 /**
- * Mock gallery: four event journals (Tech Expo 2025, Hack the Hardware,
- * Build Night: October, 22–28 items each, and ROS 2 From Zero, 10 items).
- *
- * Placeholders: photos and video posters are picsum.photos images, and the two
+ * Mock gallery: five event journals. 3D Verse 2026 (14 items) is real (bottom of the file). The other four
+ * (Tech Expo 2025, Hack the Hardware, Build Night: October, 22–28 items each, and ROS 2 From Zero, 10 items)
+ * are placeholders: photos and video posters are picsum.photos images, and the two
  * video clips are CC0 samples from MDN (they show a flower and a street, not
  * the club). Replace them with real files in Supabase Storage.
  */
@@ -183,4 +182,45 @@ const rosFromZero = journal(5, "iotr-ros26", "2026-02-08", [
   ["photo", "L", "The audience and the speaker after the talk", "ros 2 from zero, feb '26"],
 ]);
 
-export const galleryItems: GalleryItem[] = [...techExpo, ...hackTheHardware, ...buildNight, ...rosFromZero];
+/**
+ * 3D Verse 2026 (event 7): the club's own photos and clips, in public/gallery/3d-verse-2026 (web copies of the
+ * uploads in "public/gallery/3D VERSE 2026": photos at most 2000px, clips as 720p H.264 with a "-poster.jpg").
+ * Row: [file, width, height, alt, taken at, caption?, layout group?]; a .mp4 file is a video.
+ */
+const VERSE_DIR = "/gallery/3d-verse-2026";
+const verseRows: readonly (readonly [string, number, number, string, string, (string | null)?, string?])[] = [
+  ["img-1696.jpg", 1125, 2000, "The IoT & Robotics 3D Verse board at the club's stall", "2026-10-26", "3d verse, day one"],
+  ["img-1691.jpg", 1125, 2000, "3D printers and printed parts laid out on the stall's table", "2026-10-26"],
+  ["img-4039.mp4", 720, 1280, "Clip panning across the 3D Verse board", "2026-10-26"],
+  ["img-20261026-122757.jpg", 1125, 2000, "A member setting up a printer at the stall as visitors look on", "2026-10-26"],
+  ["video-20261026-125431.mp4", 720, 1280, "Clip of visitors looking at the printers at the stall", "2026-10-26"],
+  ["img-1720.jpg", 1125, 2000, "Three members giving a thumbs up in front of the 3D Verse board", "2026-10-26"],
+  ["img-4040.mp4", 720, 1280, "Clip of the 3D Verse board and its printed decorations", "2026-10-26"],
+  ["video-20261026-162052.mp4", 720, 1280, "Clip of the crowd around the stall in the afternoon", "2026-10-26"],
+  ["img-1866.jpg", 2000, 1125, "A full hall at the 3D Verse session, the title on the projector", "2026-10-28", "day three"],
+  ["20261028-192439.mp4", 720, 1280, "Clip of the hall full of students at their laptops", "2026-10-28"],
+  ["20261028-192715.mp4", 720, 1280, "Clip looking across the rows of the session", "2026-10-28"],
+  ["video-20261028-192716.mp4", 1280, 720, "Clip of three resin and filament printers on the stage", "2026-10-28"],
+  ["img-20261028-215105.jpg", 2000, 1125, "The team in front of the club's whiteboard", "2026-10-28", null, "team"],
+  ["img-20261028-220044.jpg", 2000, 1125, "More of the team in front of the whiteboard", "2026-10-28", null, "team"],
+];
+const threeDVerse = verseRows.map(([file, width, height, alt, takenAt, caption, group], i): GalleryItem => {
+  const video = file.endsWith(".mp4");
+  return {
+    id: itemId(7, i + 1),
+    event_id: eventId(7),
+    type: video ? "video" : "photo",
+    url: `${VERSE_DIR}/${file}`,
+    poster_url: video ? `${VERSE_DIR}/${file.replace(/\.mp4$/, "-poster.jpg")}` : null,
+    caption: caption ?? null,
+    alt,
+    width,
+    height,
+    layout_group: group ?? null,
+    sort_order: i + 1,
+    taken_at: takenAt,
+    created_at: `${takenAt}T20:00:00+05:30`,
+  };
+});
+
+export const galleryItems: GalleryItem[] = [...threeDVerse, ...techExpo, ...hackTheHardware, ...buildNight, ...rosFromZero];

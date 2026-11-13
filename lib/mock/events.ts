@@ -1,8 +1,9 @@
 import type { ClubEvent } from "@/lib/types";
 
 /**
- * Mock events: 2 upcoming, 4 past. Banners and cutouts in /public/events are generated placeholders (scenes with
- * the club robot or a placeholder figure), not real event photos. Two past events have no cutout, so they show
+ * Mock events: 2 upcoming, 5 past. 3D Verse 2026 uses real photos (its cover and banner are from its journal);
+ * the other banners and cutouts in /public/events are generated placeholders (scenes with
+ * the club robot or a placeholder figure), not real event photos. Three past events have no cutout, so they show
  * the card without a pop-out; four events have no accent_color, so /events samples their banner instead.
  */
 
@@ -52,6 +53,29 @@ export const events: ClubEvent[] = [
     registration_url: "https://example.com/register",
     is_published: true,
     created_at: "2026-10-20T10:00:00+05:30",
+  },
+  {
+    id: id(7),
+    slug: "3d-verse-2026",
+    title: "3D Verse 2026",
+    // Placeholder copy and venue: the photos are real (lib/mock/gallery.ts), the words are not yet.
+    summary: "Three days of 3D printing: a stall full of printers and a packed hands-on session.",
+    description:
+      "The club's 3D printing event: printers and printed parts on show at the stall, then a session in the hall.",
+    type: "exhibition",
+    status: "past",
+    starts_at: "2026-10-26T10:00:00+05:30",
+    ends_at: "2026-10-28T22:00:00+05:30",
+    venue: "Bennett University",
+    tags: ["3D printing", "Workshop"],
+    cover_url: "/gallery/3d-verse-2026/img-1696.jpg",
+    banner_url: "/gallery/3d-verse-2026/img-1866.jpg",
+    cutout_url: null,
+    banner_focal_x: 50,
+    accent_color: null,
+    registration_url: null,
+    is_published: true,
+    created_at: "2026-10-01T10:00:00+05:30",
   },
   {
     id: id(3),
